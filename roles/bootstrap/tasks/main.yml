@@ -1,0 +1,4 @@
+- block:
+  # Specific apt setup
+  - name: system setup | apt
+    import_tasks: system_setup/apt.yml
