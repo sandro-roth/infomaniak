@@ -1,11 +1,16 @@
+# Bootstrap playbook
 - hosts: all
   tags: always
   become: true
   gather_facts: true
+
+  roles:
+    - bootstrap
+
   pre_tasks:
     - name: pre-run | Update apt cache
       ansible.builtin.apt:
-        update_cache: yes
+        update_cache: true
       when: ansible_facts["distribution"] in ["Debian", "Ubuntu"]
 
 # roles
