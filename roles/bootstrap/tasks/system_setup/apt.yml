@@ -8,5 +8,4 @@
     mode: '0644'
   when:
     - ansible_facts["distribution"] in ["Debian", "Ubuntu"]
-    - "'clouds.archive.ubuntu.com' in lookup('file', '/etc/apt/sources.list')"
   notify: update apt cache
