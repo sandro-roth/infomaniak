@@ -11,6 +11,7 @@
     - name: pre-run | Update apt cache
       ansible.builtin.apt:
         update_cache: true
+        cache_valid_time: 7200
       when: ansible_facts["distribution"] in ["Debian", "Ubuntu"]
 
 # roles
