@@ -6,6 +6,6 @@
     - name: pre-run | Update apt cache
       ansible.builtin.apt:
         update_cache: yes
-      when: ansible_distribution in ['Debian', 'Ubuntu']
+      when: ansible_facts["distribution"] in ["Debian", "Ubuntu"]
 
 # roles
