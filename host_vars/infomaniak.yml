@@ -1,6 +1,8 @@
 ---
 branch: main
 
+main_usr: sandro
+admin_group: sudo
 usr_group: sandro
 ansible_python_interpreter: /usr/bin/python3
 
