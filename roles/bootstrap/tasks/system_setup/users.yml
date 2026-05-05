@@ -17,3 +17,11 @@
     create_home: true
     shell: /bin/bash
 
+- name: system setup | users | add sudoers from template
+  tags: users, sudoers
+  ansible.builtin.template:
+    src: sudoers.j2
+    dest: /etc/sudoers.d/{{ main_usr }}
+    owner: root
+    group: root
+    mode: '0440'
