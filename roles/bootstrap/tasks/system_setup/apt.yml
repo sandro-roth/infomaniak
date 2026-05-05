@@ -1,4 +1,4 @@
-- name: system setup | apt | fix APT sources
+- name: system setup | apt | Fix APT sources
   tags: apt
   ansible.builtin.template:
     src: sources.list.j2
