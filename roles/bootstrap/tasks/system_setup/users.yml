@@ -1,0 +1,8 @@
+- name: system setup | users | create group
+  tags: users, groups
+  ansible.builtin.group:
+    name: "{{ usr_group }}"
+    state: present
+
+
+
