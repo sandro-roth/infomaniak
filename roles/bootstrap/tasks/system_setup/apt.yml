@@ -10,6 +10,21 @@
     - ansible_facts["distribution"] in ["Debian", "Ubuntu"]
   notify: update apt cache
 
+- name: system setup | apt | Disable cloud-init apt override
+  tags: apt
+  copy:
+    dest: /etc/cloud/cloud.cfg.d/99-disable-apt-config.cfg
+    content: |
+      apt_preserve_sources_list: true
+
+- name: system setup | apt | Fix ubuntu cloud mirror
+  tags: apt
+  replace:
+    path: /etc/apt/sources.list.d/ubuntu.sources
+    regexp: 'http://.*clouds\.archive\.ubuntu\.com/ubuntu/?'
+    replace: 'http://archive.ubuntu.com/ubuntu'
+    
+
 - name: system setup | apt | Update cache
   tags: apt
   ansible.builtin.apt:
