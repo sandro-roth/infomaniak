@@ -1,3 +1,22 @@
+- name: system setup | apt | Ensure APT directory state is clean
+  tags: apt
+  file:
+    path: /etc/apt/sources.list.d
+    state: directory
+    mode: '0755'
+
+- name: system setup | apt | Remove cloud-init APT sources
+  tags: apt
+  file:
+    path: /etc/apt/sources.list.d/ubuntu.sources
+    state: absent
+
+- name: system setup | apt | Remove default sources.list backup
+  tags: apt
+  file:
+    path: /etc/apt/sourcesllist
+    state: absent
+
 - name: system setup | apt | Fix APT sources
   tags: apt
   ansible.builtin.template:
@@ -8,7 +27,6 @@
     mode: '0644'
   when:
     - ansible_facts["distribution"] in ["Debian", "Ubuntu"]
-  notify: update apt cache
 
 - name: system setup | apt | Disable cloud-init apt override
   tags: apt
@@ -17,13 +35,15 @@
     content: |
       apt_preserve_sources_list: true
 
-- name: system setup | apt | Fix ubuntu cloud mirror
+- name: system setup | apt | Network hardening for APT
   tags: apt
-  replace:
-    path: /etc/apt/sources.list.d/ubuntu.sources
-    regexp: 'http://.*clouds\.archive\.ubuntu\.com/ubuntu/?'
-    replace: 'http://ch.archive.ubuntu.com/ubuntu'
-
+  copy:
+    dest: /etc/apt/apt.conf.d/99-network-hardening
+    content: |
+      Acquire::ForceIPv4 "true";
+      Acuire::Retries "2";
+      Acquire::http::Timeout "10";
+      Acquire::https::Timeout "10";
 
 - name: system setup | apt | Update cache
   tags: apt
