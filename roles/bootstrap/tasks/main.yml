@@ -3,5 +3,8 @@
   - name: system setup | apt
     import_tasks: system_setup/apt.yml
 
+  - name: system setup | users
+    import_tasks: system_setup/users.yml
+
   when: ansible_facts["distribution"] in ["Debian", "Ubuntu"]
   become: true
