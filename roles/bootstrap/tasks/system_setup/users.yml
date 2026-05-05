@@ -4,5 +4,16 @@
     name: "{{ usr_group }}"
     state: present
 
-
+- name: system setup | users | create admin user
+  tags: users, admin
+  ansible.builtin.user:
+    name: "{{ main_usr }}"
+    group: "{{ usr_group }}"
+    groups: "{{ admin_group }}"
+    state: present
+    password: "{{ usr_pwd }}"
+    comment: "Admin user created by Ansible"
+    home: "{{ usr_home }}"
+    create_home: true
+    shell: /bin/bash
 
