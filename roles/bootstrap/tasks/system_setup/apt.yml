@@ -9,3 +9,11 @@
   when:
     - ansible_facts["distribution"] in ["Debian", "Ubuntu"]
   notify: update apt cache
+
+- name: system setup | apt | Update cache
+  tags: apt
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 7200
+  when:
+    - ansible_facts["distribution"] in ["Debian", "Ubuntu"]
