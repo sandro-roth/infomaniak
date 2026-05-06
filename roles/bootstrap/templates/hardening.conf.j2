@@ -1,0 +1,11 @@
+# sshd hardening
+
+Port {{ security_ssh_port }}
+PasswordAuthentication {{ security_ssh_password_authentication | ternary('yes', 'no') }}
+PermitRootLogin {{ security_ssh_permit_root_login | ternary('yes', 'no') }}
+UseDNS {{ security_ssh_use_dns | ternary('yes', 'no') }}
+PermitEmptyPasswords {{ security_ssh_permit_empty_passwords | ternary('yes', 'no') }}
+KbdInteractiveAuthentication {{ security_ssh_challenge_response_auth | ternary('yes', 'no') }}
+GSSAPIAuthentication {{ security_ssh_gssapi_authentication | ternary('yes', 'no') }}
+X11Forwarding {{ security_ssh_x11_forwarding | ternary('yes', 'no') }}
+AllowUsers {{ security_ssh_allowed_users | join(' ') }}
