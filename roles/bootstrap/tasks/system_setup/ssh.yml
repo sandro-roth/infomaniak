@@ -1,0 +1,7 @@
+# sshd hardening configuration
+- name: system setup | ssh | OpenSSH install or update
+  tags: ssh, hardening
+  ansible.builtin.package:
+    name: "{{ openssh_package }}"
+    state: latest
+  notify: restart_sshd
