@@ -5,3 +5,13 @@
     name: "{{ openssh_package }}"
     state: latest
   notify: restart_sshd
+
+- name: system setup | ssh | Ensure ssh config directory exists
+  tags: ssh, hardening
+  ansible.builtin.file:
+    path: /etc/ssh
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
