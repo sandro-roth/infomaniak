@@ -15,3 +15,12 @@
     group: root
     mode: '0755'
 
+- name: system setup | ssh | Ensure sshd config file exists
+  tags: ssh, hardening
+  ansible.builtin.file:
+    path: /etc/ssh/sshd_config
+    state: touch
+    owner: root
+    group: root
+    mode: '0600'
+  
