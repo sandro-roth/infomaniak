@@ -29,6 +29,7 @@
   blockinfile:
     path: /etc/ssh/sshd_config
     marker: "# {mark} ANSIBLE MANAGED BLOCK - DO NOT EDIT"
+    validate: /usr/sbin/sshd -t -f %s
     block: |
       Port {{ security_ssh_port }}
       PasswordAuthentication {{ security_ssh_password_authentication | ternary('yes', 'no') }}
