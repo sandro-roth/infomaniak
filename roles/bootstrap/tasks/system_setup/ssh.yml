@@ -27,7 +27,7 @@
 - name: system setup | ssh | sshd hardening configuration
   tags: ssh, hardening
   ansible.builtin.template:
-    src: hardening.conf.j2
+    src: sshd_hardening.conf.j2
     dest: /etc/ssh/sshd_config.d/99-ansible-hardening.conf
     owner: root
     group: root
