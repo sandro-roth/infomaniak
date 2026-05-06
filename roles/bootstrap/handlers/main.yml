@@ -4,8 +4,7 @@
   ansible.builtin.apt:
     update_cache: yes
 
-- name: restart_sshd
-  ansible.builtin.service:
-    name: "{{ openssh_service }}"
-    state: reloaded
-  listen: restart_sshd
+- name: reload_sshd
+  tags: ssh
+  ansible.builtin.command: systemctl kill -s HUP {{ openssh_service }}
+  changed_when: true
