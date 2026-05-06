@@ -1,3 +1,6 @@
+- include_vars: "{{ ansible_facts['distribution'] }}.yml"
+  tags: always
+
 - block:
   # Specific apt setup
   - name: system setup | apt
@@ -5,6 +8,9 @@
 
   - name: system setup | users
     import_tasks: system_setup/users.yml
+
+  - name: system setup | ssh
+    import_tasks: system_setup/ssh.yml
 
   when: ansible_facts["distribution"] in ["Debian", "Ubuntu"]
   become: true
