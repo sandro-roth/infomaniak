@@ -34,3 +34,13 @@
     owner: "{{ main_usr }}"
     group: "{{ usr_group }}"
     mode: '0700'
+
+- name: system setup | users | add public key to authorized_keys
+  tags: users, ssh
+  ansible.builtin.authorized_key:
+    user: "{{ main_usr }}"
+    state: present
+    key: "{{ item }}"
+  with_file:
+    - ssh/ansible.pub
+
