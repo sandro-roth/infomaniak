@@ -3,3 +3,9 @@
   tags: apt
   ansible.builtin.apt:
     update_cache: yes
+
+- name: restart_sshd
+  ansible.builtin.service:
+    name: "{{ openssh_service }}"
+    state: restarted
+  listen: restart_sshd
