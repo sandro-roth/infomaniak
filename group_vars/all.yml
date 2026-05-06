@@ -1,0 +1,10 @@
+# SSH configuration
+security_ssh_port: 22
+security_ssh_password_authentication: no
+security_ssh_permit_root_login: no
+security_ssh_use_dns: no
+security_ssh_permit_empty_passwords: no
+security_ssh_challenge_response_auth: no
+security_ssh_gssapi_authentication: no
+security_ssh_x11_forwarding: no
+security_ssh_allowed_users: [ubuntu, sandro]
