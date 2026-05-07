@@ -1,1 +1,1 @@
-locale_packages: [locale, language-pack-en, language-pack-de]
+locale_packages: [locales, language-pack-en, language-pack-de]
