@@ -1,10 +1,15 @@
 ---
 - name: update apt cache
-  tags: apt
   ansible.builtin.apt:
     update_cache: yes
 
-- name: reload_sshd
-  tags: ssh
-  ansible.builtin.command: systemctl kill -s HUP {{ openssh_service }}
-  changed_when: true
+- name: validate sshd config
+  listen: reload_sshd
+  ansible.builtin.command: /usr/sbin/sshd -t
+  changed_when: false
+
+- name: reload sshd
+  listen: reload_sshd
+  asnible.builtin.systemd:
+    name: "{{ openssh_service | default('ssh') }}"
+    state: reloaded
