@@ -1,0 +1,12 @@
+- name: system setup | locale | Ensure locale packages are installed
+  tags: locale
+  ansible.builtin.apt:
+    name: "{{ locale_packages }}"
+    state: present
+
+- name: system setup | locale | Generate locale
+  tags: locale
+  community.general.locale_gen:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ gen_locales}}"
