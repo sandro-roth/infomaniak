@@ -20,7 +20,8 @@
       update_cache: true
       cache_valid_time: 7200
 
+  - name: software | common packages
+    import_tasks: software/common_packages.yml
   
-
   when: ansible_facts['distribution'] in ['Debian', 'Ubuntu']
   become: true
