@@ -1,9 +1,8 @@
-# Bootstrap playbook
+# Initialize client machine with Ansible
 - hosts: all
   tags: always
   gather_facts: true
 
   roles:
     - bootstrap
-
-# roles
+    - base
