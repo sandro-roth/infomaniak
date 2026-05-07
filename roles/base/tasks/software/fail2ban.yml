@@ -12,6 +12,7 @@
     owner: root
     group: root
     mode: '0644'
+    validate: "fail2ban-client -t -c %s"
   notify: restart_fail2ban
 
 - name: software | fail2ban | Copy ufw aggressive filter
@@ -22,6 +23,7 @@
     owner: root
     group: root
     mode: '0644'
+    validate: "fail2ban-client -t -c %s"
   notify: restart_fail2ban
 
 - name: software | fail2ban | Handle errors in Ubuntu
