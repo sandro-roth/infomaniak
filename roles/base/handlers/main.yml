@@ -1,4 +1,9 @@
+- name: validate fail2ban config
+  ansible.builtin.command: fail2ban-client -t
+  change_when: false
+
 - name: restart_fail2ban
   ansible.builtin.systemd:
     name: fail2ban
     state: restarted
+    daemon_reload: true
