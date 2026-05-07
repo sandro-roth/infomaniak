@@ -11,3 +11,6 @@ security_ssh_allowed_users: [ubuntu, sandro]
 
 # Firewall configuration
 ipv6_firewall_enabled: yes
+
+# System configuration
+timezone: Europe/Zurich
