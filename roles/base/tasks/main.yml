@@ -4,7 +4,7 @@
 - block:
 
   - name: system setup | timezone
-  - include_tasks: system_setup/timezone.yml
+    import_tasks: system_setup/timezone.yml
 
   when: ansible_facts['distribution'] in ['Debian', 'Ubuntu']
   become: true
