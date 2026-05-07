@@ -1,0 +1,5 @@
+- name: software | fail2ban | Install
+  tags: software, fail2ban
+  ansible.builtin.apt:
+    name: fail2ban
+    state: present
