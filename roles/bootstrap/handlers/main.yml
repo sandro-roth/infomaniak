@@ -10,6 +10,6 @@
 
 - name: reload sshd
   listen: reload_sshd
-  asnible.builtin.systemd:
+  ansible.builtin.systemd:
     name: "{{ openssh_service | default('ssh') }}"
     state: reloaded
