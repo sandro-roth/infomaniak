@@ -9,6 +9,9 @@
   - name: software | sudo
     import_tasks: software/sudo.yml
 
+  - name: software | python
+    import_tasks: software/python.yml
+
   - name: system setup | users
     import_tasks: system_setup/users.yml
 
