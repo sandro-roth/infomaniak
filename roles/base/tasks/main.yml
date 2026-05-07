@@ -6,5 +6,8 @@
   - name: system setup | timezone
     import_tasks: system_setup/timezone.yml
 
+  - name: system setup | locale
+    import_tasks: system_setup/locale.yml
+
   when: ansible_facts['distribution'] in ['Debian', 'Ubuntu']
   become: true
