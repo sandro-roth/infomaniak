@@ -1,0 +1,5 @@
+- name: software | sudo | Assure sudo is installed
+  tags: sudo
+  ansible.builtin.apt:
+    name: sudo
+    state: present
