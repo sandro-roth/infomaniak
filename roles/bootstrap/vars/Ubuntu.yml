@@ -1,2 +1,5 @@
 openssh_package: openssh-server
 openssh_service: ssh
+py_package: python3
+py_package_mngr: python3-pip
+py_venv_package: python3-venv
