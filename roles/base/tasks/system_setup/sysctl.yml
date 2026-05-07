@@ -1,3 +1,10 @@
+- name: system_setup | sysctl | Ensure procps is installed
+  tags: sysctl
+  ansible.builtin.apt:
+    name: procps
+    state: present
+    update_cache: true
+
 - name: system_setup | sysctl | Apply sysctl settings
   tags: sysctl
   ansible.posix.sysctl:
