@@ -1,7 +1,19 @@
+[DEFAULT]
+ignoreip = 127.0.0.0/8 ::1
+maxretry = 3
+bantime = 1w
+findtime = 10m
+backend = systemd
+
+[ufw]
+enabled = true
+filter = ufw.aggressive
+action = ufw
+logpath = /var/log/ufw.log
+
 [sshd]
 enabled = true
 port    = {{ security_ssh_port }}
 filter  = sshd
-{% if ansible_distribution == 'Ubuntu' and ansible_distribution_major_version | int >= 12 %}
-backend = systemd
-{% endif %}
+maxretry = 5
+bantime = 1d
