@@ -1,0 +1,60 @@
+# Basic setup of the firewall with ufw.
+- name: system setup | firewall | install ufw
+  tags: firewall
+  ansible.builtin.apt:
+    name: ufw
+    state: present
+
+- name: system setup | firewall | configure ipv6
+  tags: firewall
+  ansible.builtin.lineinfile:
+    path: /etc/default/ufw
+    regexp: '^IPV6='
+    line: 'IPV6={{ ipv6_firewall_enabled | ternary("yes", "no") }}'
+
+- name: system setup | firewall | reset ufw
+  tags: firewall
+  community.general.ufw:
+    state: reset
+
+- name: system setup | firewall | default deny incoming
+  tags: firewall
+  community.general.ufw:
+    policy: deny
+    direction: incoming
+
+- name: system setup | firewall | default allow outgoing
+  tags: firewall
+  community.general.ufw:
+    policy: allow
+    direction: outgoing
+
+- name: system setup | firewall | enable logging
+  tags: firewall
+  community.general.ufw:
+    logging: "on"
+
+- name: system setup | firewall | allow and rate limit ssh
+  tags: firewall
+  community.general.ufw:
+    rule: limit
+    port: "{{ security_ssh_port }}"
+    proto: tcp
+
+- name: system setup | firewall | enable
+  tags: firewall
+  community.general.ufw:
+    state: enabled
+
+- name: system setup | firewall | wait for ssh
+  tags: firewall
+  ansible.builtin.wait_for:
+    port: "{{ security_ssh_port }}"
+    host: "{{ ansible_host | default(inventory_hostname) }}"
+    timeout: 30
+  delegate_to: localhost
+  become: false
+
+# --------------------------------------------------------------------------
+# PORTS CONFIGURATION
+# --------------------------------------------------------------------------
