@@ -8,8 +8,8 @@
 - name: system_setup | sysctl | Apply sysctl settings
   tags: sysctl
   ansible.posix.sysctl:
-    name: {{ item.key }}
-    value: {{ item.value }}
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
     state: present
     reload: true
   loop: "{{ base_sysctl_settings }}"
