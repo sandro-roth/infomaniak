@@ -1,0 +1,7 @@
+[sshd]
+enabled = true
+port    = {{ security_ssh_port }}
+filter  = sshd
+{% if ansible_distribution == 'Ubuntu' and ansible_distribution_major_version | int >= 12 %}
+backend = systemd
+{% endif %}
