@@ -1,0 +1,12 @@
+- name: system setup | hostname | set hostname
+  tags: hostname
+  ansible.builtin.hostname:
+    name: "{{ base_hostname }}"
+  
+- name: system setup | hostname | set /etc/hosts
+  tags: hostname
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: "^127\\.0\\.1\\.1\\s+"
+    line: "127.0.0.1 {{ base_hostname }}"
+    state: present
