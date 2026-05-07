@@ -12,4 +12,4 @@
     value: "{{ item.value }}"
     state: present
     reload: true
-  loop: "{{ base_sysctl_settings }}"
+  loop: "{{ base_sysctl_settings | dict2items }}"
