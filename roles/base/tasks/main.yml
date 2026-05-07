@@ -12,5 +12,8 @@
   - name: system setup | hostname
     import_tasks: system_setup/hostname.yml
 
+  - name: system setup | sysctl
+    import_tasks: system_setup/sysctl.yml
+
   when: ansible_facts['distribution'] in ['Debian', 'Ubuntu']
   become: true
