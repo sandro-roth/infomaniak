@@ -1,0 +1,8 @@
+- name: software | python | Install packages
+  tags: python
+  ansible.builtin.apt:
+    name:
+      - "{{ py_package }}"
+      - "{{ py_package_mngr }}"
+      - "{{ py_venv_package }}"
+    state: present
