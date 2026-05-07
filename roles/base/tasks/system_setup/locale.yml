@@ -10,3 +10,14 @@
     name: "{{ item }}"
     state: present
   loop: "{{ gen_locales}}"
+
+- name: system setup | locale | Set system locale
+  tags: locale
+  ansible.builtin.copy:
+    dest: /etc/default/locale
+    owner: root
+    group: root
+    mode: '0644'
+    content: |
+      LANG={{ base_locale | default('en_US.UTF-8') }}
+      LC_ALL={{ base_locale | default('en_US.UTF-8') }}
