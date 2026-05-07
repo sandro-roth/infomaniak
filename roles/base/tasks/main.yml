@@ -9,5 +9,8 @@
   - name: system setup | locale
     import_tasks: system_setup/locale.yml
 
+  - name: system setup | hostname
+    import_tasks: system_setup/hostname.yml
+
   when: ansible_facts['distribution'] in ['Debian', 'Ubuntu']
   become: true
