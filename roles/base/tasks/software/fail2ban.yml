@@ -12,4 +12,31 @@
     owner: root
     group: root
     mode: '0644'
-  notify: reload_fail2ban
+  notify: restart_fail2ban
+
+- name: software | fail2ban | Copy ufw aggressive filter
+  tags: software, fail2ban
+  ansible.builtin.template:
+    src: "ufw.aggressive.conf.j2"
+    dest: /etc/fail2ban/filter.d/ufw.aggressive.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart_fail2ban
+
+- name: software | fail2ban | Handle errors in Ubuntu
+  tags: software, fail2ban
+  ansible.builtin.template:
+    src: "fail2ban.local.j2"
+    dest: /etc/fail2ban/fail2ban.local
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart_fail2ban
+
+- name: software | fail2ban | Ensure fail2ban is running and enabled
+  tags: software, fail2ban
+  ansible.builtin.systemd:
+    name: fail2ban
+    state: started
+    enabled: true
