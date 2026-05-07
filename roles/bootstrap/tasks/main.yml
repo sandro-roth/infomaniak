@@ -18,5 +18,8 @@
   - name: system setup | ssh
     import_tasks: system_setup/ssh.yml
 
+  - name: system setup | firewall
+    import_tasks: system_setup/firewall.yml
+
   when: ansible_facts["distribution"] in ["Debian", "Ubuntu"]
   become: true
