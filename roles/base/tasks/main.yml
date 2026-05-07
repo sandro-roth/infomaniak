@@ -15,5 +15,12 @@
   - name: system setup | sysctl
     import_tasks: system_setup/sysctl.yml
 
+  - name: software | apt | update cache
+    ansible.builtin.apt:
+      update_cache: true
+      cache_valid_time: 7200
+
+  
+
   when: ansible_facts['distribution'] in ['Debian', 'Ubuntu']
   become: true
