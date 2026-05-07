@@ -3,6 +3,7 @@
   ansible.builtin.apt:
     name: "{{ locale_packages }}"
     state: present
+    update_cache: true
 
 - name: system setup | locale | Generate locale
   tags: locale
