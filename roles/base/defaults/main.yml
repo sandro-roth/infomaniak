@@ -1,0 +1,2 @@
+gen_locales: ['en_US.UTF-8','de_DE.UTF-8']
+base_locale: 'en_US.UTF-8'
