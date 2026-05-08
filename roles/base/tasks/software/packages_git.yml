@@ -1,54 +1,45 @@
-- name: software | packages_git | clone tmux-completion plugin repository
+- name: software | packages_git | clone tmux plugin repositories
   tags: packages_git, tmux
+  become: true
   become_user: "{{ main_usr }}"
   ansible.builtin.git:
-    repo: https://github.com/srsudar/tmux-completion.git
-    dest: "{{ usr_home }}/.tmux/plugins/completion"
-    force: yes
+    repo: "{{ item.repo }}"
+    dest: "{{ item.dest }}"
+    force: true
+  loop:
+    - repo: https://github.com/srsudar/tmux-completion.git
+      dest: "{{ usr_home }}/.tmux/plugins/completion"
+    - repo: https://github.com/tmux-plugins/tmux-continuum
+      dest: "{{ usr_home }}/.tmux/plugins/continuum"
+    - repo: https://github.com/tmux-plugins/tmux-resurrect
+      dest: "{{ usr_home }}/.tmux/plugins/resurrect"
+    - repo: https://github.com/tmux-plugins/tpm
+      dest: "{{ usr_home }}/.tmux/plugins/tpm"
   notify: update_tmux_plugin_perms
 
-- name: software | packages_git | clone tmux-continuum plugin repository
-  tags: packages_git, tmux
-  become_user: "{{ main_usr }}"
-  ansible.builtin.git:
-    repo: https://github.com/tmux-plugins/tmux-continuum
-    dest: "{{ usr_home }}/.tmux/plugins/continuum"
-    force: yes
-  notify: update_tmux_plugin_perms
-
-- name: software | packages_git | clone tmux-resurrect plugin repository
-  tags: packages_git, tmux
-  become_user: "{{ main_usr }}"
-  ansible.builtin.git:
-    repo: https://github.com/tmux-plugins/tmux-resurrect
-    dest: "{{ usr_home }}/.tmux/plugins/resurrect"
-    force: yes
-  notify: update_tmux_plugin_perms
-
-- name: software | packages_git | clone tmux-pluginmanager plugin repository
-  tags: packages_git, tmux
-  become_user: "{{ main_usr }}"
-  ansible.builtin.git:
-    repo: https://github.com/tmux-plugins/tpm
-    dest: "{{ usr_home }}/.tmux/plugins/tpm"
-    force: yes
-  notify: update_tmux_plugin_perms
-
-- name: software | packages_git | checkout git repositories
+- name: software | packages_git | checkout vim repositories
   tags: packages_git, vim
   become: true
   become_user: "{{ main_usr }}"
   ansible.builtin.git:
     repo: "{{ item.repo }}"
     dest: "{{ item.dest }}"
-    force: yes
-  with_items:
-    - { repo: 'https://github.com/ctrlpvim/ctrlp.vim.git', dest: '{{ usr_home }}/.vim/bundle/ctrlp.vim' }
-    - { repo: 'https://github.com/davidhalter/jedi-vim.git', dest: '{{ usr_home }}/.vim/bundle/jedi-vim' }
-    - { repo: 'https://github.com/pearofducks/ansible-vim', dest: '{{ usr_home }}/.vim/bundle/ansible-vim' }
-    - { repo: 'https://github.com/rhysd/vim-grammarous.git', dest: '{{ usr_home }}/.vim/bundle/vim-grammarous' }
-    - { repo: 'https://github.com/ron89/thesaurus_query.vim', dest: '{{ usr_home }}/.vim/bundle/thesaurus_query' }
-    - { repo: 'https://github.com/scrooloose/nerdtree.git', dest: '{{ usr_home }}/.vim/bundle/nerdtree' }
-    - { repo: 'https://github.com/tpope/vim-obsession.git', dest: '{{ usr_home }}/.vim/bundle/vim-obsession' }
-    - { repo: 'https://github.com/vim-syntastic/syntastic.git', dest: '{{ usr_home }}/.vim/bundle/syntastic' }
+    force: true
+  loop:
+    - repo: https://github.com/ctrlpvim/ctrlp.vim.git
+      dest: "{{ usr_home }}/.vim/bundle/ctrlp.vim"
+    - repo: https://github.com/davidhalter/jedi-vim.git
+      dest: "{{ usr_home }}/.vim/bundle/jedi-vim"
+    - repo: https://github.com/pearofducks/ansible-vim
+      dest: "{{ usr_home }}/.vim/bundle/ansible-vim"
+    - repo: https://github.com/rhysd/vim-grammarous.git
+      dest: "{{ usr_home }}/.vim/bundle/vim-grammarous"
+    - repo: https://github.com/ron89/thesaurus_query.vim
+      dest: "{{ usr_home }}/.vim/bundle/thesaurus_query"
+    - repo: https://github.com/scrooloose/nerdtree.git
+      dest: "{{ usr_home }}/.vim/bundle/nerdtree"
+    - repo: https://github.com/tpope/vim-obsession.git
+      dest: "{{ usr_home }}/.vim/bundle/vim-obsession"
+    - repo: https://github.com/vim-syntastic/syntastic.git
+      dest: "{{ usr_home }}/.vim/bundle/syntastic"
   notify: update_vim_bundle_perms
