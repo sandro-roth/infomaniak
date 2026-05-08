@@ -1,5 +1,5 @@
 - name: software | common packages | install
   tags: software, common_packages
   ansible.builtin.apt:
-    name: "{{ base_common_packages }}"
+    name: "{{ base_common_packages | to_list }}"
     state: present
