@@ -67,3 +67,7 @@
       service:
         daemon_reload: true
       when: docker_service_patch is changed
+
+- name: Ensure handlers are notified now to avoid firewall conflicts.
+  meta: flush_handlers
+
