@@ -44,3 +44,25 @@
   loop:
     - ssh/ansible.pub
 
+- name: system setup | users | create config directories
+  tags: users, config
+  ansible.builtin.file:
+    path: "{{ usr_home }}/{{ item.dir }}"
+    state: directory
+    owner: "{{ main_usr }}"
+    group: "{{ usr_group }}"
+    mode: 0700
+  loop:
+    - { dir: '.bash' }
+    - { dir: '.config' }
+    - { dir: '.config/htop' }
+    - { dir: '.config/mc' }
+    - { dir: '.tmux' }
+    - { dir: '.tmux/config' }
+    - { dir: '.tmux/plugins' }
+    - { dir: '.vim' }
+    - { dir: '.vim/autoload' }
+    - { dir: '.vim/bundle' }
+    - { dir: '.vim/colors' }
+    - { dir: '.vim/ftplugin' }
+    - { dir: '.zsh' }
