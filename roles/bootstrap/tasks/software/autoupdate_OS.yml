@@ -1,0 +1,19 @@
+- block:
+  - name: software | unattended-upgrades | Install
+    tags: unattended-upgrades
+    ansible.builtin.package:
+      name: unattended-upgrades
+      state: present
+
+  - name: software | unattended-upgrades | Copy configuration file
+    tags: unattended-upgrades
+    ansible.builtin.template:
+      src: "{{ item }}.j2"
+      dest: "/etc/apt/apt.conf.d/{{ item }}"
+      owner: root
+      group: root
+      mode: '0644'
+    loop:
+      - 10periodic
+      - 50unattended-upgrades
+  when: ansible_facts['family'] == 'Debian'
