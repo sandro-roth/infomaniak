@@ -1,0 +1,31 @@
+- name: software | needrestart | Install
+  tags: needrestart
+  ansible.builtin.package:
+    name: needrestart
+    state: present
+    update_cache: true
+
+- name: software | needrestart | Configure safe defaults
+  tags: needrestart
+  ansible.builtin.copy:
+    dest: /etc/needrestart/conf.d/99-server-baseline.conf
+    owner: root
+    group: root
+    mode: '0644'
+    content: |
+      # Server baseline needrestart config
+      # l = list only, do not restart services automatically
+      $nrconf{restart} = 'l';
+
+      # Enable kernel hint checks
+      $nrconf{kernelhints} = 1;
+
+      # Do not use UI prompts in automation
+      $nrconf{ui_mode} = 'a';
+
+- name: software | needrestart | Test configuration
+  tags: needrestart
+  ansible.builtin.command: needrestart -r l -b
+  register: needrestart_check
+  changed_when: false
+  failed_when: false
