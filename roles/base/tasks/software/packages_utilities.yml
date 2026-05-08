@@ -1,0 +1,6 @@
+- name: software | package_utilities | install utilities packages
+  tags: packages_utilites
+  ansible.builtin.package:
+    name: '{{ item }}'
+    state: present
+    loop: '{{ utilities_packages }}'
