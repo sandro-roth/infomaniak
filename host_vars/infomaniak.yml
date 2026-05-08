@@ -12,3 +12,11 @@ usr_home: /home/sandro
 # paltform specific
 microcode_amd_install: true
 microcode_intel_install: false
+
+# Audoupdate (Debian/Ubuntu)
+security_autoupdate_enable: true
+security_autoupdate_reboot: "false"
+security_autoupdate_reboot_time: "02:00"
+security_autoupdate_mail_to: "sandro.roth@hotmail.de"
+security_autoupdate_mail_on_error: true
+security_autoupdate_blacklist: [] # List of packages to exclude from automatic updates
