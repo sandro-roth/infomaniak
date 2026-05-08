@@ -3,11 +3,11 @@ timesyncd_package: systemd-timesyncd
 cron_package: cron
 utilities_packages:
   - dnsutils    # collection of utilities for querying DNS servers - useful for troubleshooting and network diagnostics
-  - fastfetch   # command-line tool for displaying system information
   - iotop       # display I/O usage information for processes
   - lsof        # list open files - shows which processes currently have files open
   - mosh        # mobile shell - allows you to connect to a remote machine over SSH
   - ncdu        # Ncurses Disk Usage - a disk usage analyzer for terminal
+  - neofetch    # system information tool - displays system information in a visually appealing way
   - nmap        # network exploration tool and security scanner - useful for discovering hosts and services on a network
   - ranger      # terminal file manager - provides a text-based interface for navigating and managing files
   - rsync       # remote synchronization tool - useful for backups and file transfers
