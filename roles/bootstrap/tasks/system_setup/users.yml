@@ -51,7 +51,7 @@
     state: directory
     owner: "{{ main_usr }}"
     group: "{{ usr_group }}"
-    mode: 0700
+    mode: '0700'
   loop:
     - { dir: '.bash' }
     - { dir: '.config' }
@@ -74,4 +74,17 @@
     dest: "{{ usr_home }}/.tmux.conf"
     owner: "{{ main_usr }}"
     group: "{{ usr_group }}"
-    mode: 0600
+    mode: '0600'
+
+- name: system setup | users | copy config files
+  tags: system setup, dotfiles
+  ansible.builtin.copy:
+    src: "users/sandro/{{ item.src }}"
+    dest: "{{ usr_home }}/{{ item.dest }}"
+    owner: "{{ main_usr }}"
+    group: "{{ usr_group }}"
+    mode: '0600'
+  loop:
+    - { src: 'git/gitconfig', dest: '.gitconfig' }
+    - { src: 'vim/vimrc', dest: '.vimrc' }
+    - { src: 'zsh/zshrc', dest: '.zshrc' }
