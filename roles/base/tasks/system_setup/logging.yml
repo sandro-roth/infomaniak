@@ -1,16 +1,27 @@
-- name: system setup | logging | configure journald retention
+- name: system setup | logging | ensure journald config directory exists
   tags: logging
-  lineinfile:
-    path: /etc/systemd/journald.conf
-    regexp: "^#?MaxRetentionSec="
-    line: "MaxRetentionSec=5day"
-    create: yes
+  ansible.builtin.file:
+    path: /etc/systemd/journald.conf.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  when: ansible_facts['service_mgr'] == "systemd"
+
+- name: system setup | logging | deploy journald limits
+  tags: logging
+  ansible.builtin.template:
+    src: journald.conf.j2
+    dest: /etc/systemd/journald.conf.d/99-vps-limits.conf
+    owner: root
+    group: root
+    mode: "0644"
   register: journald_config
   when: ansible_facts['service_mgr'] == "systemd"
 
 - name: system setup | logging | restart journald if config changed
   tags: logging
-  service:
+  ansible.builtin.service:
     name: systemd-journald
     state: restarted
   when:

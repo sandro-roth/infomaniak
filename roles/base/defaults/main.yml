@@ -18,5 +18,10 @@ base_sysctl_settings:
   net.ipv4.icmp_echo_ignore_broadcasts: "1"
   net.ipv4.icmp_ignore_bogus_error_responses: "1"
 
+# for loggging
+journald_system_max_use: "1G"
+journald_system_keep_free: "1G"
+journald_retention: "5day"
+
 base_common_packages:
   [ apt-transport-https, ca-certificates, curl, gnupg, htop, git, vim-nox, unzip, wget, bpytop, fwupd, acl ]
