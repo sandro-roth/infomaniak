@@ -15,6 +15,9 @@
   - name: system setup | sysctl
     import_tasks: system_setup/sysctl.yml
 
+  - name: system setup | cron
+    import_tasks: system_setup/cron.yml
+
   - name: software | apt | update cache
     ansible.builtin.apt:
       update_cache: true
