@@ -11,6 +11,7 @@
 
 - hosts: infomaniak
   gather_facts: true
+  become: true
 
   roles:
     - role: docker
