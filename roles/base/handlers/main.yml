@@ -26,6 +26,7 @@
         daemon_reload: true
 
 - name: update_tmux_plugin_perms
+  become: true #change permissions as root to ensure all files are owned by the main user
   ansible.builtin.file:
     path: "{{ usr_home }}/.tmux/plugins"
     owner: "{{ main_usr }}"
@@ -33,7 +34,8 @@
     recurse: true
 
 - name: update_vim_bundle_perms
-  file:
+  become: true #change permissions as root to ensure all files are owned by the main user
+  ansible.builtin.file:
     path: "{{ usr_home }}/.vim/bundle"
     owner: "{{ main_usr }}"
     group: "{{ main_usr }}"
