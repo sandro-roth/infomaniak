@@ -24,3 +24,17 @@
         name: fail2ban
         state: started
         daemon_reload: true
+
+- name: update_tmux_plugin_perms
+  ansible.builtin.file:
+    path: "{{ usr_home }}/.tmux/plugins"
+    owner: "{{ main_usr }}"
+    group: "{{ main_usr }}"
+    recurse: true
+
+- name: update_vim_bundle_perms
+  file:
+    path: "{{ usr_home }}/.vim/bundle"
+    owner: "{{ main_usr }}"
+    group: "{{ main_usr }}"
+    recurse: true
