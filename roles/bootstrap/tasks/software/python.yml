@@ -5,4 +5,6 @@
       - "{{ py_package }}"
       - "{{ py_package_mngr }}"
       - "{{ py_venv_package }}"
+      - "{{ py_setuptools_package }}"
+      - "{{ py_psutil_package }}"
     state: present
