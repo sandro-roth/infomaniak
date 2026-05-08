@@ -88,3 +88,39 @@
     - { src: 'git/gitconfig', dest: '.gitconfig' }
     - { src: 'vim/vimrc', dest: '.vimrc' }
     - { src: 'zsh/zshrc', dest: '.zshrc' }
+
+- name: system setup | user | copy vim ftype files
+  tags: system setup, vim
+  ansible.builtin.copy:
+    src: "vim/{{ item.src }}"
+    dest: "{{ usr_home }}/.vim/ftplugin/{{ item.src }}"
+    owner: "{{ main_usr }}"
+    group: "{{ usr_group }}"
+    mode: '0600'
+  loop:
+    - { src: 'html.vim' }
+    - { src: 'python.vim' }
+    - { src: 'sql.vim' }
+    - { src: 'xml.vim' }
+
+- name: system setup | user | copy vim color files
+  tags: system setup, vim
+  ansible.builtin.copy:
+    src: "vim/{{ item.src }}"
+    dest: "{{ usr_home }}/.vim/colors/{{ item.src }}"
+    owner: "{{ main_usr }}"
+    group: "{{ usr_group }}"
+    mode: '0600'
+  loop:
+    - { src: 'xoria256.vim' }
+
+- name: system setup | user | install pathogen
+  tags: system setup, vim
+  ansible.builtin.copy:
+    src: "vim/{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ main_usr }}"
+    group: "{{ usr_group }}"
+    mode: '0700'
+  loop:
+    - { src: 'pathogen.vim', dest: '{{ usr_home }}/.vim/autoload/pathogen.vim' }
