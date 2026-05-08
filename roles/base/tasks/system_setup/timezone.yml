@@ -1,3 +1,16 @@
+- name: system setup | timezone | install systemd-timesyncd
+  tags: timezone
+  ansible.builtin.package:
+    name: "{{ timesyncd_package }}"
+    state: present
+
+- name: system setup | timezone | start and enable systemd-timesyncd
+  tags: timezone
+  ansible.builtin.service:
+    name: "{{ timesyncd_package }}"
+    state: started
+    enabled: true
+
 - name: system setup | timezone | set timezone
   tags: timezone
   community.general.timezone:
