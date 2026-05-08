@@ -79,7 +79,7 @@
 - name: system setup | users | copy config files
   tags: system setup, dotfiles
   ansible.builtin.copy:
-    src: "users/sandro/{{ item.src }}"
+    src: "{{ item.src }}"
     dest: "{{ usr_home }}/{{ item.dest }}"
     owner: "{{ main_usr }}"
     group: "{{ usr_group }}"
