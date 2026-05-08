@@ -16,4 +16,4 @@
     loop:
       - 10periodic
       - 50unattended-upgrades
-  when: ansible_facts['family'] == 'Debian'
+  when: ansible_facts.os_family in ['Debian']
