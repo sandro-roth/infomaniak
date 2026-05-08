@@ -3,6 +3,17 @@
 
 - block:
 
+  - name: create ansible temp directories
+    ansible.builtin.file:
+      path: "{{ item }}"
+      state: directory
+      owner: root
+      group: root
+      mode: '1777'
+    loop:
+      - /tmp/.ansible-root
+      - "/tmp/.ansible-{{ main_usr }}"
+
   - import_tasks: system_setup/apt.yml
   - import_tasks: software/autoupdate_OS.yml
   - import_tasks: software/sudo.yml
