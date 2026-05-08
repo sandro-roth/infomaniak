@@ -3,6 +3,7 @@
 
 - name: Install Debian settings
   include_tasks: setup-Debian.yml
+  changed_when: false
   when: ansible_facts.os_family in ['Debian']
 
 - name: Install Docker packages (with downgrade option)
