@@ -66,3 +66,12 @@
     - { dir: '.vim/colors' }
     - { dir: '.vim/ftplugin' }
     - { dir: '.zsh' }
+
+- name: system setup | users | copy tmux.conf
+  tags: users, tmux
+  ansible.builtin.copy:
+    src: tmux/tmux.conf.server
+    dest: "{{ usr_home }}/.tmux.conf"
+    owner: "{{ main_usr }}"
+    group: "{{ usr_group }}"
+    mode: 0600
