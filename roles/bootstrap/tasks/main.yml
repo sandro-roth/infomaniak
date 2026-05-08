@@ -3,23 +3,13 @@
 
 - block:
 
-  - name: system setup | apt
-    import_tasks: system_setup/apt.yml
-    
-  - name: software | sudo
-    import_tasks: software/sudo.yml
-
-  - name: software | python
-    import_tasks: software/python.yml
-
-  - name: system setup | users
-    import_tasks: system_setup/users.yml
-
-  - name: system setup | ssh
-    import_tasks: system_setup/ssh.yml
-
-  - name: system setup | firewall
-    import_tasks: system_setup/firewall.yml
+  - import_tasks: system_setup/apt.yml
+  - import_tasks: software/autoupdate_OS.yml
+  - import_tasks: software/sudo.yml
+  - import_tasks: software/python.yml
+  - import_tasks: system_setup/users.yml
+  - import_tasks: system_setup/ssh.yml
+  - import_tasks: system_setup/firewall.yml
 
   when: ansible_facts["distribution"] in ["Debian", "Ubuntu"]
   become: true
