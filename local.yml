@@ -1,8 +1,17 @@
 # Initialize client machine with Ansible
 - hosts: all
-  tags: always
   gather_facts: true
 
   roles:
-    - bootstrap
-    - base
+    - role: bootstrap
+      tags: bootstrap
+
+    - role: base
+      tags: base
+
+- hosts: infomaniak
+  gather_facts: true
+
+  roles:
+    - role: docker
+      tags: docker
