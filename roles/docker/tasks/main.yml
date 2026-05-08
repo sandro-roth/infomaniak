@@ -78,7 +78,8 @@
 - name: Ensure handlers are notified now to avoid firewall conflicts.
   meta: flush_handlers
 
-- include_tasks: docker-compose.yml
+- name: Include task docker-compose.yml
+  include_tasks: docker-compose.yml
   when: docker_install_compose | bool
 
 - name: Get docker group info using getent
@@ -96,5 +97,6 @@
     - item not in ansible_facts.getent_group["docker"][2]
   with_items: "{{ docker_users }}"
 
-- include_tasks: docker-users.yml
+- name: Include task docker-users.yml
+  include_tasks: docker-users.yml
   when: at_least_one_user_to_modify is defined
