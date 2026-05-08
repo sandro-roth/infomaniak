@@ -28,3 +28,5 @@ base_common_packages:
   - vim
   - unzip
   - wget
+  - bpytop
+  - fwupd
