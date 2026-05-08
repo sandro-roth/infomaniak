@@ -8,4 +8,4 @@
 - name: apt update
   ansible.builtin.apt:
     update_cache: yes
-    apt_cache_valid_time: 7200
+    cache_valid_time: 7200
