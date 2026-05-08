@@ -6,7 +6,7 @@
     line: "MaxRetentionSec=5day"
     create: yes
   register: journald_config
-  when: ansible_service_mgr == "systemd"
+  when: ansible_facts['service_mgr'] == "systemd"
 
 - name: system setup | logging | restart journald if config changed
   tags: logging
@@ -14,5 +14,5 @@
     name: systemd-journald
     state: restarted
   when:
-    - ansible_service_mgr == "systemd"
+    - ansible_facts['service_mgr'] == "systemd"
     - journald_config.changed
