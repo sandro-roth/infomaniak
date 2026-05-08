@@ -19,4 +19,4 @@ base_sysctl_settings:
   net.ipv4.icmp_ignore_bogus_error_responses: "1"
 
 base_common_packages:
-  [ apt-transport-https, ca-certificates, curl, gnupg, htop, git, vim, unzip, wget, bpytop, fwupd ]
+  [ apt-transport-https, ca-certificates, curl, gnupg, htop, git, vim-nox, unzip, wget, bpytop, fwupd ]
