@@ -1,2 +1,3 @@
 locale_packages: [locales, language-pack-en, language-pack-de]
 timesyncd_package: systemd-timesyncd
+cron_package: cron
