@@ -79,3 +79,23 @@
 - name: Ensure handlers are notified now to avoid firewall conflicts.
   meta: flush_handlers
 
+- include_tasks: docker-compose.yml
+  when: docker_install_compose | bool
+
+- name: Get docker group info using getent
+  ansible.builtin.getent:
+    database: group
+    key: docker
+    split: ':'
+  when: docker_users | length > 0
+
+- name: Check if there are any users to add to the docker group.
+  set_fact:
+    at_least_one_user_to_modify: true
+  when:
+    - docker_users | length > 0
+    - item not in ansible_facts.getent_group["docker"][2]
+  with_items: "{{ docker_users }}"
+
+- include_tasks: docker-users.yml
+  when: at_least_one_user_to_modify is defined
