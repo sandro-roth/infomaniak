@@ -112,7 +112,11 @@
     group: "{{ usr_group }}"
     mode: '0600'
   loop:
+    - { src: 'bubblegum-256-dark.vim' }
+    - { src: 'darktango.vim' }
+    - { src: 'jellybeans.vim' }
     - { src: 'xoria256.vim' }
+    - { src: 'zenburn.vim' }
 
 - name: system setup | user | install pathogen
   tags: system setup, vim
