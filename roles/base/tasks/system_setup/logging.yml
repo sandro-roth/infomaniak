@@ -1,15 +1,15 @@
-- name: system setup | logging | adjust retention period
-  tags: systemd, journal, journald, sysctl, system setup
+- name: system setup | logging | configure journald retention
+  tags: logging
   lineinfile:
     path: /etc/systemd/journald.conf
-    regexp: "^#?MaxFileSec="
-    line: "MaxFileSec=5day"
+    regexp: "^#?MaxRetentionSec="
+    line: "MaxRetentionSec=5day"
     create: yes
   register: journald_config
   when: ansible_service_mgr == "systemd"
 
-- name: system setup | logging | restart journald if config change
-  tags: systemd, journal, journald, system setup
+- name: system setup | logging | restart journald if config changed
+  tags: logging
   service:
     name: systemd-journald
     state: restarted
