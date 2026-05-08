@@ -15,7 +15,7 @@
     comment: "Admin user created by Ansible"
     home: "{{ usr_home }}"
     create_home: true
-    shell: /bin/bash
+    shell: "{{ main_shell }}"
 
 - name: system setup | users | add sudoers from template
   tags: users, sudoers
