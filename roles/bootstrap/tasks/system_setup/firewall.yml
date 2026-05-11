@@ -58,3 +58,13 @@
 # --------------------------------------------------------------------------
 # PORTS CONFIGURATION
 # --------------------------------------------------------------------------
+
+- name: system setup | wireguard | allow wireguard port
+  tags: firewall
+  community.general.ufw:
+    rule: allow
+    port: "{{ wireguard_port }}"
+    proto: udp
+  when:
+    - wireguard_enabled | bool
+    - wireguard_role == "server"
