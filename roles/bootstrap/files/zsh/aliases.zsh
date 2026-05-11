@@ -67,7 +67,6 @@ alias ll='ls'
 # df
 if [ "$(uname)" = "Linux" ]; then
   alias df='df -h -x squashfs -x tmpfs -x devtmpfs'
-  alias ls='ls -lsa'
 else
   alias df='df -h'
 fi
