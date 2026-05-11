@@ -1,0 +1,22 @@
+- name: system setup | memory | configure swappiness
+  tags: memory
+  ansible.posix.sysctl:
+    name: vm.swappiness
+    value: "{{ swappiness_value }}"
+    state: present
+    reload: true
+
+- name: system setup | memory | install earlyoom package
+  tags: memory
+  ansible.builtin.package:
+    name: earlyoom
+    state: present
+
+- name: system setup | memory | enable and start earlyoom
+  tags: memory
+  ansible.builtin.service:
+    name: earlyoom
+    enabled: true
+    state: started
+  when:
+    - ansible_service_mgr == "systemd"
