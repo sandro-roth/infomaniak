@@ -1,0 +1,23 @@
+- name: system_setup | node_exporter | Install package
+  tags: node_exporter
+  ansible.builtin.apt:
+    name: prometheus-node-exporter
+    state: present
+    update_cache: true
+    cache_valid_time: 7200
+
+- name: system_setup | node_exporter | Configure args
+  tags: node_exporter
+  ansible.builtin.copy:
+    dest: /etc/default/prometheus-node-exporter
+    mode: "0644"
+    content: |
+      ARGS="--web.listen-address={{ node_exporter_listen_address | default('127.0.0.1:9100') }}"
+  notify: restart_node_exporter
+
+- name: system_setup | node_exporter | Enable service
+  tags: node_exporter
+  ansible.builtin.systemd:
+    name: prometheus-node-exporter
+    enabled: true
+    state: started
