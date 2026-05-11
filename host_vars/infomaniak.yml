@@ -28,3 +28,7 @@ install_node_exporter: true # host metricts
 node_exporter_listen_address: '127.0.0.1:9100'
 install_cAdvisor: true # docker metrics
 cadvisor_listen_address: "127.0.0.1:8080"
+
+# Backup settings
+backup_dir: /opt/backups
+backup_script: /usr/local/bin/server-backup.sh
