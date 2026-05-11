@@ -21,6 +21,7 @@
   - import_tasks: system_setup/users.yml
   - import_tasks: system_setup/ssh.yml
   - import_tasks: system_setup/firewall.yml
+  - import_tasks: system_setup/memory.yml
 
   when: ansible_facts["distribution"] in ["Debian", "Ubuntu"]
   become: true
