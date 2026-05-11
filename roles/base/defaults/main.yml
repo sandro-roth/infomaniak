@@ -3,7 +3,7 @@ base_locale: 'en_US.UTF-8'
 base_hostname: "{{ inventory_hostname }}"
 
 base_sysctl_settings:
-  net.ipv4.ip_forward: "0"
+  net.ipv4.ip_forward: "0" # deactivate for routing with docker
   net.ipv4.conf.all.accept_redirects: "0"
   net.ipv4.conf.default.accept_redirects: "0"
   net.ipv6.conf.all.accept_redirects: "0"
@@ -17,6 +17,8 @@ base_sysctl_settings:
   net.ipv4.tcp_syncookies: "1"
   net.ipv4.icmp_echo_ignore_broadcasts: "1"
   net.ipv4.icmp_ignore_bogus_error_responses: "1"
+  net.ipv4.conf.all.log_martians: "1"
+  net.ipv4.conf.default.log_martians: "1"
 
 # for loggging
 journald_system_max_use: "1G"
