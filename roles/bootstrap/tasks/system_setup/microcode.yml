@@ -1,0 +1,15 @@
+- name: system setup | microcode | install AMD microcode
+  ansible.builtin.apt:
+    name: amd64-microcode
+    state: present
+  when:
+    - ansible_facts['distribution'] in ['Debian', 'Ubuntu']
+    - ansible_facts['processor'] | join(' ') is search('AuthenticAMD')
+
+- name: system setup | microcode | install Intel microcode
+  ansible.builtin.apt:
+    name: intel-microcode
+    state: present
+  when:
+    - ansible_facts['distribution'] in ['Debian', 'Ubuntu']
+    - ansible_facts['processor'] | join(' ') is search('GenuineIntel')
