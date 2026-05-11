@@ -4,12 +4,14 @@
     name: procps
     state: present
     update_cache: true
+    cache_valid_time: 7200
 
 - name: system_setup | sysctl | Apply sysctl settings
   tags: sysctl
   ansible.posix.sysctl:
     name: "{{ item.key }}"
     value: "{{ item.value }}"
-    state: present
+    state: false
     reload: true
   loop: "{{ base_sysctl_settings | dict2items }}"
+  notify: reload_sysctl
