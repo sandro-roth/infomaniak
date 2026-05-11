@@ -1,0 +1,26 @@
+---
+- name: security | apparmor | install packages
+  ansible.builtin.apt:
+    name:
+      - apparmor
+      - apparmor-utils
+      - apparmor-profiles
+      - apparmor-profiles-extra
+    state: present
+    update_cache: true
+    cache_valid_time: 7200
+
+- name: security | apparmor | enable service
+  ansible.builtin.systemd:
+    name: apparmor
+    enabled: true
+    state: started
+
+- name: security | apparmor | verify apparmor enabled in kernel
+  ansible.builtin.command: aa-status
+  register: apparmor_status
+  changed_when: false
+
+- name: security | apparmor | show status
+  ansible.builtin.debug:
+    var: apparmor_status.stdout_lines
