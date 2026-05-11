@@ -64,4 +64,4 @@ docker_daemon_options:
   log-driver: 'json-file'
   log-opts:
     max-size: '50m'
-    maxfile: '5'
+    max-file: '5'
