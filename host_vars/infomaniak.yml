@@ -22,3 +22,9 @@ security_autoupdate_reboot_time: "02:00"
 security_autoupdate_mail_to: "sandro.roth@hotmail.de"
 security_autoupdate_mail_on_error: true
 security_autoupdate_blacklist: [] # List of packages to exclude from automatic updates
+
+# Visual host and docker level metrics
+install_node_exporter: true # host metricts
+node_exporter_listen_address: '127.0.0.1:9100'
+install_cAdvisor: true # docker metrics
+cadvisor_listen_address: "127.0.0.1:8080"
