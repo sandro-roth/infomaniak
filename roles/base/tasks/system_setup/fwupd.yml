@@ -1,0 +1,15 @@
+- name: system setup | fwupd | install package
+  ansible.builtin.apt:
+    name: fwupd
+    state: present
+    update_cache: true
+
+- name: system setup | fwupd | enable service
+  ansible.builtin.systemd:
+    name: fwupd
+    enabled: true
+    state: started
+
+- name: system setup | fwupd | refresh metadata
+  ansible.builtin.command: fwupdmgr refresh --force
+  changed_when: false
