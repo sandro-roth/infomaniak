@@ -100,3 +100,6 @@
 - name: Include task docker-users.yml
   include_tasks: docker-users.yml
   when: at_least_one_user_to_modify is defined
+
+- name: Include task cadvisor
+  include_tasks: cadvisor.yml
