@@ -19,4 +19,4 @@
     enabled: true
     state: started
   when:
-    - ansible_service_mgr == "systemd"
+    - ansible_facts['service_mgr'] == "systemd"
