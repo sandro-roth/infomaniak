@@ -32,3 +32,7 @@ cadvisor_listen_address: "127.0.0.1:8080"
 # Backup settings
 backup_dir: /opt/backups
 backup_script: /usr/local/bin/server-backup.sh
+
+# microcode setup
+amd_microcode_package: amd64-microcode
+intel_microcode_package: intel-microcode
