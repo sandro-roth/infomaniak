@@ -32,6 +32,7 @@
 
 - name: Restart Node Exporter
   listen: restart_node_exporter
+  become: true
   ansible.builtin.systemd:
     name: prometheus-node-exporter
     state: restarted
