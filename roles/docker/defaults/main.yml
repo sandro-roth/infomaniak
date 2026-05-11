@@ -59,4 +59,9 @@ docker_apt_filename: "docker"
 docker_users: [sandro, ubuntu]
 
 # Docker daemon options as a dict
-docker_daemon_options: {}
+docker_daemon_options:
+  live-restore: true
+  log-driver: 'json-file'
+  log-opts:
+    max-size: '50m'
+    maxfile: '5'
