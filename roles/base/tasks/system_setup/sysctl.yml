@@ -11,7 +11,7 @@
   ansible.posix.sysctl:
     name: "{{ item.key }}"
     value: "{{ item.value }}"
-    state: false
+    state: present
     reload: true
   loop: "{{ base_sysctl_settings | dict2items }}"
   notify: reload_sysctl
