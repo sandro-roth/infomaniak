@@ -1,0 +1,27 @@
+- name: system setup | backup | create directory
+  tags: backup
+  ansible.builtin.file:
+    path: "{{ backup_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+
+- name: system setup | backup | install backup script
+  tags: backup
+  ansible.builtin.template:
+    src: backup-script.sh.j2
+    dest: "{{ backup_script }}"
+    owner: root
+    group: root
+    mode: '0750'
+
+- name: system setup | backup | weekly cron job
+  tags: backup
+  ansible.builtin.cron:
+    name: "Weekly server backup"
+    minute: "0"
+    hour: "3"
+    weekday: "2"
+    job: "{{ backup_script }}"
+    user: root
