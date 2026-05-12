@@ -24,7 +24,7 @@ wireguard_server_address: "10.8.0.1/24"
 
 wireguard_peers:
   - name: macbook
-    public_key: "MACBOOK_PUBLIC_KEY_HERE"
+    public_key: "{{ hostvars['macbook']['wireguard_public_key_value'] }}"
     allowed_ips:
       - "10.8.0.2/32"
 
