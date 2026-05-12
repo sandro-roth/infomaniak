@@ -15,7 +15,12 @@
 
   roles:
     - role: wireguard
+      tags: wireguard_keys
+      wireguard_phase: keys
+
+    - role: wireguard
       tags: wireguard
+      wireguard_phase: config
 
 - hosts: infomaniak
   gather_facts: true
