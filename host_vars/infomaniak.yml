@@ -18,6 +18,7 @@ swappiness_value: 10
 install_fwupd: false
 
 # wireguard specifics
+wireguard_enabled: true
 wireguard_role: server # or client
 wireguard_interface: wg0
 wireguard_port: 51820
