@@ -1,0 +1,39 @@
+- name: wireguard | read private key
+  tags: wireguard
+  ansible.builtin.slurp:
+    src: "{{ wireguard_private_key_path }}"
+  register: wireguard_private_key_slurp
+  no_log: true
+  when: wireguard_enabled | bool
+
+- name: wireguard | create config
+  tags: wireguard
+  ansible.builtin.template:
+    src: "wg0.conf.j2"
+    dest: "/etc/wireguard/{{ wireguard_interface }}.conf"
+    owner: root
+    group: "{{ root_group }}"
+    mode: "0600"
+  notify: restart wireguard
+  when: wireguard_enabled | bool
+
+- name: wireguard | enable service
+  tags: wireguard
+  ansible.builtin.systemd:
+    name: "wg-quick@{{ wireguard_interface }}"
+    enabled: true
+    state: started
+  when: 
+    - wireguard_enabled | bool
+    - ansible_facts['distribution'] in ['Ubuntu', 'Debian']
+
+- name: wireguard | enable ipv4 forwarding
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    state: present
+    reload: true
+  when:
+    - wireguard_enabled | bool
+    - wireguard_role == "server"
+    - ansible_facts['distribution'] in ['Ubuntu', 'Debian']
