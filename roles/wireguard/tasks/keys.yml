@@ -1,0 +1,49 @@
+- name: wireguard | check private key
+  tags: wireguard
+  ansible.builtin.stat:
+    path: "{{ wireguard_private_key_path }}"
+  register: wireguard_private_key_file
+  when: wireguard_enabled | bool
+
+- name: wireguard | generate private key
+  tags: wireguard
+  ansible.builtin.command: wg genkey
+  register: wireguard_generated_private_key
+  changed_when: true
+  no_log: true
+  when:
+    - wireguard_enabled | bool
+    - not wireguard_private_key_file.stat.exists
+
+- name: wireguard | save private key
+  tags: wireguard
+  ansible.builtin.copy:
+    content: "{{ wireguard_generated_private_key.stdout }}"
+    dest: "{{ wireguard_private_key_path }}"
+    owner: root
+    group: "{{ root_group }}"
+    mode: "0600"
+  no_log: true
+  when:
+    - wireguard_enabled | bool
+    - not wireguard_private_key_file.stat.exists
+
+- name: wireguard | generate public key
+  tags: wireguard
+  ansible.builtin.shell: "cat {{ wireguard_private_key_path }} | wg pubkey > {{ wireguard_public_key_path }}"
+  args:
+    creates: "{{ wireguard_public_key_path }}"
+  when: wireguard_enabled | bool
+
+- name: wireguard | read public key
+  tags: wireguard
+  ansible.builtin.command: "cat {{ wireguard_public_key_path }}"
+  register: wireguard_public_key_result
+  changed_when: false
+  when: wireguard_enabled | bool
+
+- name: wireguard | set public key fact
+  tags: wireguard
+  ansible.builtin.set_fact:
+    wireguard_public_key_value: "{{ wireguard_public_key_result.stdout }}"
+  when: wireguard_enabled | bool
