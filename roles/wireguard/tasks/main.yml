@@ -57,6 +57,19 @@
     creates: "{{ wireguard_public_key_path }}"
   when: wireguard_enabled | bool
 
+- name: wireguard | read public key
+  tags: wireguard
+  ansible.builtin.command: "cat {{ wireguard_public_key_path }}"
+  register: wireguard_public_key_result
+  changed_when: false
+  when: wireguard_enabled | bool
+
+- name: wireguard | set public key fact
+  tags: wireguard
+  ansible.builtin.set_fact:
+    wireguard_public_key_value: "{{ wireguard_public_key_result.stdout }}"
+  when: wireguard_enabled | bool
+
 - name: wireguard | read private key
   tags: wireguard
   ansible.builtin.slurp:
@@ -82,20 +95,9 @@
     name: "wg-quick@{{ wireguard_interface }}"
     enabled: true
     state: started
-  when: wireguard_enabled | bool
-
-- name: wireguard | show public key
-  tags: wireguard
-  ansible.builtin.command: "cat {{ wireguard_public_key_path }}"
-  register: wireguard_public_key
-  changed_when: false
-  when: wireguard_enabled | bool
-
-- name: wireguard | print public key
-  tags: wireguard
-  ansible.builtin.debug:
-    msg: "WireGuard public key for {{ inventory_hostname }}: {{ wireguard_public_key.stdout }}"
-  when: wireguard_enabled | bool
+  when: 
+    - wireguard_enabled | bool
+    - ansible_facts['distribution'] in ['Ubuntu', 'Debian']
 
 - name: wireguard | enable ipv4 forwarding
   ansible.posix.sysctl:
@@ -103,3 +105,7 @@
     value: "1"
     state: present
     reload: true
+  when:
+    - wireguard_enabled | bool
+    - wireguard_role == "server"
+    - ansible_facts['distribution'] in ['Ubuntu', 'Debian']
