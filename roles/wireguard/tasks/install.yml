@@ -1,0 +1,21 @@
+- name: wireguard | install packages
+  tags: wireguard
+  ansible.builtin.apt:
+    name:
+      - wireguard
+      - wireguard-tools
+    state: present
+    update_cache: true
+  when:
+    - wireguard_enabled | bool
+    - ansible_facts['distribution'] in ['Ubuntu', 'Debian']
+
+- name: wireguard | ensure config directory exists
+  tags: wireguard
+  ansible.builtin.file:
+    path: /etc/wireguard
+    state: directory
+    owner: root
+    group: "{{ root_group }}"
+    mode: "0700"
+  when: wireguard_enabled | bool
