@@ -9,6 +9,14 @@
     - role: base
       tags: base
 
+- hosts: infomaniak:macbook
+  gather_facts: true
+  become: true
+
+  roles:
+    - role: wireguard
+      tags: wireguard
+
 - hosts: infomaniak
   gather_facts: true
   become: true
@@ -16,13 +24,3 @@
   roles:
     - role: docker
       tags: docker
-    - role: wireguard
-      tags: wireguard
-
-- hosts: macbook
-  gather_facts: true
-  become: true
-
-  roles:
-    - role: wireguard
-      tags: wireguard
