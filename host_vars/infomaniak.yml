@@ -15,6 +15,7 @@ microcode_amd_install: true
 microcode_intel_install: false
 swappiness_value: 10
 install_fwupd: false
+wireguard_enabled: true
 
 # Audoupdate (Debian/Ubuntu)
 security_autoupdate_enable: true

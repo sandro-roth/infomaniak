@@ -1,7 +1,6 @@
 # platform specific
 root_group: wheel
 
-wireguard_enabled: true
 wireguard_role: client
 wireguard_interface: wg0
 wireguard_client_address: "10.8.0.2/24"
