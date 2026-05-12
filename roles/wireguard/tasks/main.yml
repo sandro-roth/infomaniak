@@ -2,8 +2,12 @@
 - block:
     - import_tasks: install.yml
     - import_tasks: keys.yml
-  when: wireguard_phase == 'keys'
+  when: 
+    - wireguard_phase == 'keys'
+    - wireguard_enabled | default(false) | bool
 
 - block:
     - import_tasks: config.yml
-  when: wireguard_phase == 'config'
+  when: 
+    - wireguard_phase == 'config'
+    - wireguard_enabled | default(false) | bool
