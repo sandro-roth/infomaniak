@@ -3,10 +3,8 @@ root_group: wheel
 
 wireguard_enabled: true
 wireguard_role: client
-
 wireguard_interface: wg0
 wireguard_client_address: "10.8.0.2/24"
-
 wireguard_server_public_key: "{{ hostvars['infomaniak']['wireguard_public_key_value'] }}"
 wireguard_endpoint: "{{ hostvars['infomaniak']['ansible_host'] }}:51820"
 

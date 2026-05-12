@@ -1,3 +1,5 @@
+root_group: root
+
 wireguard_enabled: true
 wireguard_role: server # or client
 wireguard_interface: wg0
