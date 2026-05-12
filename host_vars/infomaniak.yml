@@ -4,6 +4,7 @@ branch: main
 main_usr: sandro
 admin_group: sudo
 usr_group: sandro
+root_group: root
 main_shell: /bin/zsh
 ansible_python_interpreter: /usr/bin/python3
 
@@ -15,7 +16,18 @@ microcode_amd_install: true
 microcode_intel_install: false
 swappiness_value: 10
 install_fwupd: false
-wireguard_enabled: true
+
+# wireguard specifics
+wireguard_role: server # or client
+wireguard_interface: wg0
+wireguard_port: 51820
+wireguard_server_address: "10.8.0.1/24"
+
+wireguard_peers:
+  - name: macbook
+    public_key: "{{ hostvars['macbook']['wireguard_public_key_value'] | default('') }}"
+    allowed_ips:
+      - "10.8.0.2/32"
 
 # Audoupdate (Debian/Ubuntu)
 security_autoupdate_enable: true
