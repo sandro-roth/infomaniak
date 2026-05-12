@@ -96,3 +96,10 @@
   ansible.builtin.debug:
     msg: "WireGuard public key for {{ inventory_hostname }}: {{ wireguard_public_key.stdout }}"
   when: wireguard_enabled | bool
+
+- name: wireguard | enable ipv4 forwarding
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    state: present
+    reload: true
