@@ -4,6 +4,7 @@ branch: main
 main_usr: sandro
 admin_group: sudo
 usr_group: sandro
+root_group: root
 main_shell: /bin/zsh
 ansible_python_interpreter: /usr/bin/python3
 
@@ -24,7 +25,7 @@ wireguard_server_address: "10.8.0.1/24"
 
 wireguard_peers:
   - name: macbook
-    public_key: "{{ hostvars['macbook']['wireguard_public_key_value'] }}"
+    public_key: "{{ hostvars['macbook']['wireguard_public_key_value'] | default('') }}"
     allowed_ips:
       - "10.8.0.2/32"
 

@@ -1,3 +1,6 @@
+# platform specific
+root_group: wheel
+
 wireguard_enabled: true
 wireguard_role: client
 
