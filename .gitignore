@@ -1,2 +1,3 @@
 ansible.log
 fact_cache/
+hosts
