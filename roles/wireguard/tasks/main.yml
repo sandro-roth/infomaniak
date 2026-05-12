@@ -1,0 +1,98 @@
+- name: wireguard | install packages
+  tags: wireguard
+  ansible.builtin.apt:
+    name:
+      - wireguard
+      - wireguard-tools
+    state: present
+    update_cache: true
+  when:
+    - wireguard_enabled | bool
+    - ansible_facts['distribution'] in ['Ubuntu', 'Debian']
+
+- name: wireguard | ensure config directory exists
+  tags: wireguard
+  ansible.builtin.file:
+    path: /etc/wireguard
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+  when: wireguard_enabled | bool
+
+- name: wireguard | check private key
+  tags: wireguard
+  ansible.builtin.stat:
+    path: "{{ wireguard_private_key_path }}"
+  register: wireguard_private_key_file
+  when: wireguard_enabled | bool
+
+- name: wireguard | generate private key
+  tags: wireguard
+  ansible.builtin.command: wg genkey
+  register: wireguard_generated_private_key
+  changed_when: true
+  no_log: true
+  when:
+    - wireguard_enabled | bool
+    - not wireguard_private_key_file.stat.exists
+
+- name: wireguard | save private key
+  tags: wireguard
+  ansible.builtin.copy:
+    content: "{{ wireguard_generated_private_key.stdout }}"
+    dest: "{{ wireguard_private_key_path }}"
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+  when:
+    - wireguard_enabled | bool
+    - not wireguard_private_key_file.stat.exists
+
+- name: wireguard | generate public key
+  tags: wireguard
+  ansible.builtin.shell: "cat {{ wireguard_private_key_path }} | wg pubkey > {{ wireguard_public_key_path }}"
+  args:
+    creates: "{{ wireguard_public_key_path }}"
+  when: wireguard_enabled | bool
+
+- name: wireguard | read private key
+  tags: wireguard
+  ansible.builtin.slurp:
+    src: "{{ wireguard_private_key_path }}"
+  register: wireguard_private_key_slurp
+  no_log: true
+  when: wireguard_enabled | bool
+
+- name: wireguard | create config
+  tags: wireguard
+  ansible.builtin.template:
+    src: "wg0.conf.j2"
+    dest: "/etc/wireguard/{{ wireguard_interface }}.conf"
+    owner: root
+    group: root
+    mode: "0600"
+  notify: restart wireguard
+  when: wireguard_enabled | bool
+
+- name: wireguard | enable service
+  tags: wireguard
+  ansible.builtin.systemd:
+    name: "wg-quick@{{ wireguard_interface }}"
+    enabled: true
+    state: started
+  when: wireguard_enabled | bool
+
+- name: wireguard | show public key
+  tags: wireguard
+  ansible.builtin.command: "cat {{ wireguard_public_key_path }}"
+  register: wireguard_public_key
+  changed_when: false
+  when: wireguard_enabled | bool
+
+- name: wireguard | print public key
+  tags: wireguard
+  ansible.builtin.debug:
+    msg: "WireGuard public key for {{ inventory_hostname }}: {{ wireguard_public_key.stdout }}"
+  when: wireguard_enabled | bool
