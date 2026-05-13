@@ -19,3 +19,11 @@
     group: "{{ root_group }}"
     mode: "0700"
   when: wireguard_enabled | bool
+
+- name: wireguard | install packages on MacOS #Assure homebrew is installed already!
+  community.general.homebrew:
+    name: wireguard-tools
+    state: present
+  when:
+    - wireguard_enabled | bool
+    - ansible_facts['os.family'] == 'Darwin'
