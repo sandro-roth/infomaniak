@@ -47,3 +47,15 @@
   ansible.builtin.set_fact:
     wireguard_public_key_value: "{{ wireguard_public_key_result.stdout }}"
   when: wireguard_enabled | bool
+
+- name: wireguard | fail if duplicate public keys exist
+  ansible.builtin.fail:
+    msg: "Duplicate WireGuard public key detected. Each host needs its own keypair."
+  when:
+    - wireguard_enabled | bool
+    - wireguard_public_key_value in (
+        groups['all']
+        | map('extract', hostvars, 'wireguard_public_key_value')
+        | list
+        | difference([wireguard_public_key_value])
+      )
