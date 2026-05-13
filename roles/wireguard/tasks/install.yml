@@ -26,4 +26,4 @@
     state: present
   when:
     - wireguard_enabled | bool
-    - ansible_facts['os.family'] == 'Darwin'
+    - ansible_facts['os_family'] == 'Darwin'
