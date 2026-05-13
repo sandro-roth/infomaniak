@@ -48,14 +48,24 @@
     wireguard_public_key_value: "{{ wireguard_public_key_result.stdout }}"
   when: wireguard_enabled | bool
 
+- name: wireguard | debug public keys
+  ansible.builtin.debug:
+    msg: "{{ inventory_hostname }} = {{ wireguard_public_key_value }}"
+
 - name: wireguard | fail if duplicate public keys exist
   ansible.builtin.fail:
     msg: "Duplicate WireGuard public key detected. Each host needs its own keypair."
   when:
     - wireguard_enabled | bool
-    - wireguard_public_key_value in (
-        groups['all']
-        | map('extract', hostvars, 'wireguard_public_key_value')
-        | list
-        | difference([wireguard_public_key_value])
-      )
+    - >
+      {{
+        (
+          ansible_play_hosts
+          | map('extract', hostvars, 'wireguard_public_key_value')
+          | select('defined')
+          | list
+          | select('equalto', wireguard_public_key_value)
+          | list
+          | length
+        ) > 1
+      }}
