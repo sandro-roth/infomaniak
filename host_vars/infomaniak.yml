@@ -20,15 +20,7 @@ install_fwupd: false
 # wireguard specifics
 wireguard_enabled: true
 wireguard_role: server # or client
-wireguard_interface: wg0
-wireguard_port: 51820
-wireguard_server_address: "10.8.0.1/24"
-
-wireguard_peers:
-  - name: macbook
-    public_key: "{{ hostvars['macbook']['wireguard_public_key_value'] | default('') }}"
-    allowed_ips:
-      - "10.8.0.2/32"
+wireguard_address: "10.8.0.1/24"
 
 # Audoupdate (Debian/Ubuntu)
 security_autoupdate_enable: true
