@@ -9,7 +9,7 @@
     - role: base
       tags: base
 
-- hosts: infomaniak:macbook
+- hosts: wireguard
   gather_facts: true
   become: true
 
