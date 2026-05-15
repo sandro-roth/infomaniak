@@ -21,6 +21,8 @@
   when: wireguard_enabled | bool
 
 - name: wireguard | install packages on MacOS #Assure homebrew is installed already!
+  tags: wireguard
+  become: false
   community.general.homebrew:
     name: wireguard-tools
     state: present
