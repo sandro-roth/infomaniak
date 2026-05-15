@@ -4,4 +4,4 @@ root_group: wheel
 # Wireguard specifics
 wireguard_enabled: true
 wireguard_role: client
-wireguard_client_address: "10.8.0.2/24"
+wireguard_address: "10.8.0.2/24"
