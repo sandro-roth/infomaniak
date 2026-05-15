@@ -7,6 +7,7 @@ wireguard_private_key_path: "/etc/wireguard/privatekey"
 wireguard_public_key_path: "/etc/wireguard/publickey"
 
 wireguard_server_host: infomaniak
+wireguard_endpoint: "{{ hostvars[wireguard_server_host]['ansible_host'] }}:{{ wireguard_port }}"
 wireguard_network: "10.8.0.0/24"
 wireguard_allowed_ips:
   - "10.8.0.0/24"
