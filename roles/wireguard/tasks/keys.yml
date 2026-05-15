@@ -50,7 +50,7 @@
 
 - name: wireguard | debug public keys
   ansible.builtin.debug:
-    msg: "{{ inventory_hostname }} = {{ wireguard_public_key_value }}"
+    msg: "{{ inventory_hostname }} = {{ wireguard_public_key_value | default('UNDEFINED') }}"
 
 - name: wireguard | fail if duplicate public keys exist
   ansible.builtin.fail:
