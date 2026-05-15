@@ -3,15 +3,11 @@ wireguard_enabled: false
 wireguard_interface: wg0
 wireguard_port: 51820
 
-wireguard_server_address: "10.8.0.1/24"
-wireguard_client_address: "10.8.0.2/24"
-
 wireguard_private_key_path: "/etc/wireguard/privatekey"
 wireguard_public_key_path: "/etc/wireguard/publickey"
 
-wireguard_peers: []
-
-wireguard_endpoint: ""
+wireguard_server_host: infomaniak
+wireguard_network: "10.8.0.0/24"
 wireguard_allowed_ips:
   - "10.8.0.0/24"
 
