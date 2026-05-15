@@ -57,15 +57,12 @@
     msg: "Duplicate WireGuard public key detected. Each host needs its own keypair."
   when:
     - wireguard_enabled | bool
-    - >
-      {{
-        (
-          ansible_play_hosts
-          | map('extract', hostvars, 'wireguard_public_key_value')
-          | select('defined')
-          | list
-          | select('equalto', wireguard_public_key_value)
-          | list
-          | length
-        ) > 1
-      }}
+    - (
+        ansible_play_hosts
+        | map('extract', hostvars, 'wireguard_public_key_value')
+        | select('defined')
+        | list
+        | select('equalto', wireguard_public_key_value)
+        | list
+        | length
+      ) > 1
