@@ -1,22 +1,22 @@
 [Interface]
-PrivateKey = {{ wireguard_private_key_slurp.content | b64decode | trim }}
-{% if wireguard_role == "server" %}
-Address = {{ wireguard_server_address }}
+Address = {{ wireguard_address }}
 ListenPort = {{ wireguard_port }}
-{% else %}
-Address = {{ wireguard_client_address }}
+PrivateKey = {{ wireguard_private_key_slurp.content | b64decode | trim }}
+
+{% if wireguard_role == 'server' %}
+{% for peer in groups['wireguard_clients'] %}
+{% if hostvars[peer].wireguard_enabled | default(false) | bool %}
+[Peer]
+PublicKey = {{ hostvars[peer].wireguard_public_key_value }}
+AllowedIPs = {{ hostvars[peer].wireguard_address | ansible.utils.ipaddr('address') }}/32
+
+{% endif %}
+{% endfor %}
 {% endif %}
 
-{% if wireguard_role == "server" %}
-{% for peer in wireguard_peers %}
+{% if wireguard_role == 'client' %}
 [Peer]
-PublicKey = {{ peer.public_key }}
-AllowedIPs = {{ peer.allowed_ips | join(', ') }}
-
-{% endfor %}
-{% else %}
-[Peer]
-PublicKey = {{ wireguard_server_public_key }}
+PublicKey = {{ hostvars[wireguard_server_host].wireguard_public_key_value }}
 Endpoint = {{ wireguard_endpoint }}
 AllowedIPs = {{ wireguard_allowed_ips | join(', ') }}
 PersistentKeepalive = {{ wireguard_persistent_keepalive }}
