@@ -63,7 +63,7 @@
   tags: firewall
   community.general.ufw:
     rule: allow
-    port: "{{ wireguard_port }}"
+    port: "{{ wireguard_port | default(51820)}}"
     proto: udp
   when:
     - wireguard_enabled | bool
