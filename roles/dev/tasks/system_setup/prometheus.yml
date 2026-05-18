@@ -1,0 +1,8 @@
+- name: dev | write prometheus config
+  ansible.builtin.template:
+    src: prometheus.yml.j2
+    dest: "{{ dev_dir }}/prometheus.yml"
+    owner: root
+    group: "{{ root_group | default('root') }}"
+    mode: "0644"
+  when: dev_enabled | bool

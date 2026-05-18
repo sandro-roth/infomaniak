@@ -1,0 +1,8 @@
+- name: dev | ensure directory exists
+  ansible.builtin.file:
+    path: "{{ dev_dir }}"
+    state: directory
+    owner: root
+    group: "{{ root_group | default('root') }}"
+    mode: "0755"
+  when: dev_enabled | bool
