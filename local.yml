@@ -29,3 +29,6 @@
   roles:
     - role: docker
       tags: docker
+
+    - role: dev
+      tags: dev
