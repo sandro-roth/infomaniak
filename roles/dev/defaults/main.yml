@@ -1,3 +1,4 @@
+dev_enabled: false
 dev_dir: /opt/dev
 
 dev_bind_ip: "10.8.0.1"

@@ -16,6 +16,7 @@ microcode_amd_install: true
 microcode_intel_install: false
 swappiness_value: 10
 install_fwupd: false
+dev_enabled: true
 
 # wireguard specifics
 wireguard_enabled: true

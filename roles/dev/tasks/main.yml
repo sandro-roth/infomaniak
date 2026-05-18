@@ -2,6 +2,6 @@
 
   - import_tasks: system_setup/system.yml
   - import_tasks: system_setup/prometheus.yml
-  - import_tasks: system_setup/docker-compose.yml
+  - import_tasks: system_setup/docker_compose.yml
 
   when: dev_enabled | bool
