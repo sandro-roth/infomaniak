@@ -4,4 +4,5 @@ root_group: wheel
 # Wireguard specifics
 wireguard_enabled: true
 wireguard_role: client
+wireguard_port: 51820
 wireguard_address: "10.8.0.2/24"
