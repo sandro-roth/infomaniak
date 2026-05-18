@@ -4,4 +4,4 @@
   - import_tasks: system_setup/prometheus.yml
   - import_tasks: system_setup/docker-compose.yml
 
-  when: dev_enalbed | bool
+  when: dev_enabled | bool
