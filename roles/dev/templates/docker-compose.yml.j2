@@ -7,7 +7,7 @@ services:
     ports:
       - "{{ dev_bind_ip }}:{{ jupyter_port }}:8888"
     volumes:
-      - jupyter_data:/home/jovyan/work
+      - jupyter_data:/home/sandro/work
 {% endif %}
 
   prometheus:
