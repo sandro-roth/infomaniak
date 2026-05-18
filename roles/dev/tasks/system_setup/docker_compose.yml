@@ -5,10 +5,8 @@
     owner: root
     group: "{{ root_group | default('root') }}"
     mode: "0644"
-  when: dev_enabled | bool
 
 - name: dev | start stack
   community.docker.docker_compose_v2:
     project_src: "{{ dev_dir }}"
     state: present
-  when: dev_enabled | bool

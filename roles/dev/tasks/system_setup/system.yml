@@ -5,4 +5,3 @@
     owner: root
     group: "{{ root_group | default('root') }}"
     mode: "0755"
-  when: dev_enabled | bool
