@@ -25,8 +25,6 @@
     owner: root
     group: root
     mode: '0644'
-  when:
-    - ansible_facts["distribution"] in ["Debian", "Ubuntu"]
 
 - name: system setup | apt | Disable cloud-init apt override
   tags: apt
@@ -50,5 +48,20 @@
   ansible.builtin.apt:
     update_cache: yes
     cache_valid_time: 7200
+
+- name: system setup | apt | upgrade packages
+  ansible.builtin.apt:
+    upgrade: dist
+    update_cache: true
+    cache_valid_time: 7200
+
+- name: software | apt | check reboot required
+  ansible.builtin.stat:
+    path: /var/run/reboot-required
+  register: reboot_required_file
+
+- name: software | apt | show reboot required
+  ansible.builtin.debug:
+    msg: "Reboot required"
   when:
-    - ansible_facts["distribution"] in ["Debian", "Ubuntu"]
+    - reboot_required_file.stat.exists
