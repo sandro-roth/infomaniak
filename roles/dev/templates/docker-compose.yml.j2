@@ -32,6 +32,7 @@ services:
       - grafana_data:/var/lib/grafana
 {% endif %}
 
+  {% if dev_node_exporter_port_free %}
   node-exporter:
     image: prom/node-exporter:latest
     restart: unless-stopped
@@ -41,7 +42,9 @@ services:
       - "--path.rootfs=/host"
     volumes:
       - "/:/host:ro,rslave"
+  {% endif %}
 
+  {% if dev_cadvisor_port_free %}
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
     restart: unless-stopped
@@ -54,6 +57,7 @@ services:
       - "/sys:/sys:ro"
       - "/var/lib/docker/:/var/lib/docker:ro"
       - "/dev/disk/:/dev/disk:ro"
+  {% endif %}
 
 volumes:
   jupyter_data:

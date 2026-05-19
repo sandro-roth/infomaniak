@@ -1,3 +1,17 @@
+- name: dev | check used ports
+  ansible.builtin.shell: "ss -tulpn | grep -q ':{{ item }} '"
+  register: dev_port_checks
+  changed_when: false
+  failed_when: false
+  loop:
+    - "{{ node_exporter_port }}"
+    - "{{ cadvisor_port }}"
+
+- name: dev | set exporter availability facts
+  ansible.builtin.set_fact:
+    dev_node_exporter_port_free: "{{ dev_port_checks.results[0].rc != 0 }}"
+    dev_cadvisor_port_free: "{{ dev_port_checks.results[1].rc != 0 }}"
+
 - name: dev | write docker compose
   ansible.builtin.template:
     src: docker-compose.yml.j2
