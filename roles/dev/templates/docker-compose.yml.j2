@@ -30,6 +30,8 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: "{{ grafana_admin_password }}"
     volumes:
       - grafana_data:/var/lib/grafana
+      - "{{ dev_dir }}/grafana/provisioning:/etc/grafana/provisioning:ro"
+      - "{{ dev_dir }}/grafana/dashboards:/var/lib/grafana/dashboards:ro"
 {% endif %}
 
   {% if dev_node_exporter_port_free %}

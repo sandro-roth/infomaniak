@@ -20,6 +20,42 @@
     group: "{{ root_group | default('root') }}"
     mode: "0644"
 
+- name: dev | create grafana provisioning dirs
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: "{{ root_group | default('root') }}"
+    mode: "0755"
+  loop:
+    - "{{ dev_dir }}/grafana/provisioning/datasources"
+    - "{{ dev_dir }}/grafana/provisioning/dashboards"
+    - "{{ dev_dir }}/grafana/dashboards"
+
+- name: dev | write grafana datasource
+  ansible.builtin.template:
+    src: grafana/provisioning/datasources/prometheus.yml.j2
+    dest: "{{ dev_dir }}/grafana/provisioning/datasources/prometheus.yml"
+    owner: root
+    group: "{{ root_group | default('root') }}"
+    mode: "0644"
+
+- name: dev | write grafana dashboard provider
+  ansible.builtin.template:
+    src: grafana/provisioning/dashboards/dashboards.yml.j2
+    dest: "{{ dev_dir }}/grafana/provisioning/dashboards/dashboards.yml"
+    owner: root
+    group: "{{ root_group | default('root') }}"
+    mode: "0644"
+
+- name: dev | write docker dashboard
+  ansible.builtin.template:
+    src: grafana/dashboards/docker-overview.json.j2
+    dest: "{{ dev_dir }}/grafana/dashboards/docker-overview.json"
+    owner: root
+    group: "{{ root_group | default('root') }}"
+    mode: "0644"
+
 - name: dev | start stack
   community.docker.docker_compose_v2:
     project_src: "{{ dev_dir }}"
