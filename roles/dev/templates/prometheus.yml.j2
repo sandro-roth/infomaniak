@@ -4,8 +4,8 @@ global:
 scrape_configs:
   - job_name: "node-exporter"
     static_configs:
-      - targets: ["host.docker.internal:9100"]
+      - targets: ["{{ dev_bind_ip }}:9100"]
 
   - job_name: "cadvisor"
     static_configs:
-      - targets: ["host.docker.internal:8080"]
+      - targets: ["{{ dev_bind_ip }}:8080"]
