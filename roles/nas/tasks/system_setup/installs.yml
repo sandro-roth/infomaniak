@@ -1,0 +1,75 @@
+---
+- name: Nas | system setup | mergerfs - set default value for update_needed
+  ansible.builtin.set_fact:
+    update_needed: false
+
+- name: Nas | system setup | mergerfs - Check if installed
+  ansible.builtin.command: mergerfs --version
+  register: installed_mergerfs_version
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Nas | system setup | mergerfs - Set update_needed to true if not installed
+  ansible.builtin.set_fact:
+    update_needed: true
+  when: installed_mergerfs_version.rc != 0
+
+- name: Nas | system setup | mergerfs - Get latest release information from GitHub
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/trapexit/mergerfs/releases/latest
+    return_content: true
+  register: mergerfs_github_release_page
+  check_mode: false
+
+- name: Nas | system setup | mergerfs - Set latest version fact
+  ansible.builtin.set_fact:
+    mergerfs_latest_version: "{{ mergerfs_github_release_page.json.tag_name | regex_replace('^v', '') }}"
+
+- name: Nas | system setup | mergerfs - Extract version number
+  ansible.builtin.set_fact:
+    installed_mergerfs_version_number: "{{ installed_mergerfs_version.stdout.split()[1] | regex_replace('^v', '') }}"
+  when: installed_mergerfs_version.rc == 0
+
+- name: Nas | system setup | mergerfs - Compare installed version with the latest version
+  ansible.builtin.set_fact:
+    update_needed: "{{ mergerfs_latest_version != (installed_mergerfs_version_number | default('0')) }}"
+
+- name: Nas | system setup | mergerfs - Debug installed_mergerfs_version_number
+  ansible.builtin.debug:
+    var: installed_mergerfs_version_number
+
+- name: Nas | system setup | mergerfs - Debug mergerfs_latest_version
+  ansible.builtin.debug:
+    var: mergerfs_latest_version
+
+- name: Nas | system setup | mergerfs - Install/update
+  when:
+    - ansible_facts.pkg_mgr == 'apt'
+    - update_needed
+  block:
+    - name: Nas | system setup | mergerfs - Install xz-utils package
+      ansible.builtin.apt:
+        name: xz-utils
+        state: present
+        update_cache: true
+
+    - name: Nas | system setup | mergerfs - Install package with apt
+      ansible.builtin.apt:
+        deb: >-
+          https://github.com/trapexit/mergerfs/releases/download/{{
+            mergerfs_latest_version + '/' + mergerfs_pkg_prefix + mergerfs_latest_version + mergerfs_pkg_suffix }}
+        state: present
+
+# ----------------------------------------------------------------------------------------------------------------
+# ----------------------------------------  SNAPRAID INSTALLATION ------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+# ----------------------------------------------------------------------------------------------------------------
+# -----------------------------------------  BTRFS INSTALLATION --------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------
