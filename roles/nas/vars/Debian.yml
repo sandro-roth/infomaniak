@@ -12,6 +12,8 @@ configure_snapraid: true
 configure_mergerfs: true
 configure_cache_mover: true
 configure_scrutiny: true
+configure_hdidle: false
+install_rclone: true
 
 # Generic
 media_group: media
@@ -50,7 +52,6 @@ data_directories:
   - movies
   - tv
   - music
-  - youtube
 
 # Users and groups for NAS access
 users:
