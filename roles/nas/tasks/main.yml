@@ -4,6 +4,9 @@
 - block:
 
   - import_tasks: system_setup/disk_wipe.yml
+  - include_role:
+      name: stefangweichinger.ansible_rclone
+    when: install_rclone
 
 
   when: ansible_facts.os_family in ['Debian']
