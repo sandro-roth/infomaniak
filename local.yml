@@ -32,3 +32,14 @@
 
     - role: dev
       tags: dev
+
+- hosts: Nas
+  gather_facts: true
+  become: true
+
+  roles:
+    - role: docker
+      tags: docker
+    
+    - role: nas
+      tags: nas
