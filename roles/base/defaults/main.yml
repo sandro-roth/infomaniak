@@ -26,4 +26,4 @@ journald_system_keep_free: "1G"
 journald_retention: "5day"
 
 base_common_packages:
-  [ apt-transport-https, ca-certificates, curl, gnupg, htop, git, vim-nox, unzip, wget, bpytop, fwupd, acl ]
+  [ apt-transport-https, ca-certificates, curl, gnupg, htop, git, vim-nox, unzip, wget, bpytop, fwupd, acl, sudo ]
