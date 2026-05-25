@@ -159,3 +159,57 @@
 # ----------------------------------------------------------------------------------------------------------------
 # -----------------------------------------  BTRFS INSTALLATION --------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------
+
+- name: Nas | system setup | btrfs-progs
+  when: ansible_facts.pkg_mgr == 'apt'
+  block:
+
+    - name: Set default update state
+      ansible.builtin.set_fact:
+        btrfs_update_needed: false
+
+    - name: Check installed btrfs-progs version
+      ansible.builtin.command: btrfs --version
+      register: btrfs_installed
+      changed_when: false
+      failed_when: false
+      check_mode: false
+
+    - name: Get latest btrfs-progs release from GitHub
+      ansible.builtin.uri:
+        url: https://api.github.com/repos/kdave/btrfs-progs/releases/latest
+        return_content: true
+      register: btrfs_release
+      check_mode: false
+
+    - name: Set btrfs-progs version facts
+      ansible.builtin.set_fact:
+        btrfs_latest_version: >-
+          {{ btrfs_release.json.tag_name | regex_replace('^v', '') }}
+        btrfs_installed_version: >-
+          {{
+            btrfs_installed.stdout.split()[1]
+            | regex_replace('^v', '')
+            if btrfs_installed.rc == 0
+            else '0'
+          }}
+
+    - name: Determine whether btrfs-progs update is required
+      ansible.builtin.set_fact:
+        btrfs_update_needed: >-
+          {{
+            btrfs_latest_version
+            is version(btrfs_installed_version, '>')
+          }}
+
+    - name: Show btrfs-progs version status
+      ansible.builtin.debug:
+        msg:
+          - "Installed version: {{ btrfs_installed_version }}"
+          - "Latest version: {{ btrfs_latest_version }}"
+          - "Update required: {{ btrfs_update_needed }}"
+
+    - name: Include btrfs-progs installation tasks
+      ansible.builtin.include_tasks:
+        file: btrfs.yml
+      when: btrfs_update_needed
