@@ -12,12 +12,27 @@
     regexp: '^IPV6='
     line: 'IPV6={{ ipv6_firewall_enabled | ternary("yes", "no") }}'
 
+- name: system setup | firewall | collect service facts
+  tags: firewall
+  ansible.builtin.service_facts:
+
+- name: system setup | firewall | remember docker state
+  tags: firewall
+  ansible.builtin.set_fact:
+    docker_was_running: >-
+      {{
+        'docker.service' in ansible_facts.services
+        and ansible_facts.services['docker.service'].state == 'running'
+      }}
+
 - name: system setup | firewall | stop docker before firewall reset
   tags: firewall
   ansible.builtin.systemd:
     name: docker
     state: stopped
-  when: firewall_reset | default(true)
+  when:
+    - firewall_reset | default(false)
+    - docker_was_running
 
 - name: system setup | firewall | reset ufw
   tags: firewall
@@ -30,7 +45,9 @@
   ansible.builtin.systemd:
     name: docker
     state: started
-  when: firewall_reset | default(true)
+  when:
+    - firewall_reset | default(false)
+    - docker_was_running
 
 - name: system setup | firewall | default deny incoming
   tags: firewall
