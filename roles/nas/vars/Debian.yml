@@ -1,0 +1,144 @@
+---
+# Core user mapping
+nas_user: "{{ main_usr }}"
+nas_group: "{{ usr_group }}"
+nas_admin_group: "{{ admin_group }}"
+nas_home: "{{ usr_home }}"
+nas_shell: "{{ main_shell }}"
+
+# NAS feature toggles
+configure_samba: true
+configure_snapraid: true
+configure_mergerfs: true
+configure_cache_mover: true
+configure_scrutiny: true
+
+# Generic
+media_group: media
+smb_media_share_name: media-share
+
+# Mount paths
+media_cached: /mnt/media
+media_noncached: /mnt/media
+media_cold: /mnt/media-cold
+data_mount_path: /mnt/data-disks
+parity_mount_path: /mnt/parity-disks
+cache_mount_path: /mnt/cache-disks
+cache_pool: /mnt/cache-pool
+
+# MergerFS
+cache_pool_policy: epmfs
+pool_policy: epmfs
+configure_mergerfs_cache_minfreespace: 50G
+configure_mergerfs_minfreespace: 100G
+
+# SnapRAID
+configure_snapraid_snapraid_deletethreshold: 150
+split_parity_files: 3
+split_parity_migrate: true
+snapraid_excludes: []
+
+content_files:
+  - /var/snapraid/snapraid.content
+  - /mnt/parity-disks/parity01/snapraid/snapraid.content
+  - /mnt/cache-disks/cache01/snapraid/cache/snapraid.content
+
+dir_snapraid_btfs_runner: /var/snapraid-btrfs-runner
+
+# Directories inside the media pool
+data_directories:
+  - movies
+  - tv
+  - music
+  - youtube
+
+# Users and groups for NAS access
+users:
+  - name: "{{ nas_user }}"
+    groups:
+      - media
+      - "{{ nas_admin_group }}"
+  - name: media
+    groups:
+      - media
+    create_home: false
+    shell: /sbin/nologin
+
+# Samba
+samba_users:
+  - name: media
+    password: CHANGE_ME
+
+samba_global_config_extras: |
+  socket options = TCP_NODELAY IPTOS_LOWDELAY SO_RCVBUF=262144 SO_SNDBUF=262144
+  read raw = yes
+  write raw = yes
+  max xmit = 65536
+  dead time = 15
+  getwd cache = yes
+  strict allocate = yes
+  allocation roundup size = 4096
+  aio read size = 65536
+  aio write size = 65536
+  use sendfile = yes
+  server multi channel support = yes
+
+samba_shares:
+  - name: "{{ smb_media_share_name }}"
+    path: "{{ media_cached }}"
+    guest_ok: false
+    writable: true
+    force_group: "{{ media_group }}"
+    create_mode: "0770"
+    directory_mode: "0770"
+    force_create_mode: "0770"
+    force_directory_mode: "0770"
+    write_list: "{{ media_group }}, {{ nas_user }}"
+    owner: "{{ media_group }}"
+    group: "{{ media_group }}"
+
+# Disk setup
+# IMPORTANT: replace these with real /dev/disk/by-id values
+wipe_and_setup: false
+
+data_disks:
+  - /dev/disk/by-id/REPLACE_ME_DATA_01
+  - /dev/disk/by-id/REPLACE_ME_DATA_02
+
+cache_disks:
+  - /dev/disk/by-id/REPLACE_ME_CACHE_01
+
+parity_disks:
+  - device: /dev/disk/by-id/REPLACE_ME_PARITY_01
+    mode: dedicated
+    level: 1
+
+# Cache mover
+cache_mover_autoupdate: true
+cache_mover_update_branch: main
+cache_mover_dir: /opt/mergerfs-cache-mover
+cache_mover_log_path: /var/log/cache-mover.log
+cache_mover_threshold_percentage: 70
+cache_mover_target_percentage: 30
+cache_mover_max_workers: 8
+cache_mover_max_log_size_mb: 100
+cache_mover_log_backup_count: 5
+cache_mover_excluded_dirs: []
+on_calendar_schedule: "*-*-* 03:00:00"
+
+cache_mover_notif_enabled: false
+cache_mover_notif_urls: []
+cache_mover_notif_threshold: true
+
+# Scrutiny
+scrutiny_mode: omnibus
+scrutiny_master_url: "http://scrutiny-master:8080"
+scrutiny_webui_port: 8080
+
+scrutiny_discord_enabled: false
+scrutiny_telegram_enabled: false
+scrutiny_pushover_enabled: false
+scrutiny_slack_enabled: false
+scrutiny_gotify_enabled: false
+scrutiny_ntfy_enabled: false
+scrutiny_pushbullet_enabled: false
