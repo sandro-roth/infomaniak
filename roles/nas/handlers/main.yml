@@ -2,3 +2,8 @@
   ansible.builtin.file:
     path: /tmp/snapraid-{{ snapraid_latest_version }}
     state: absent
+
+- name: Cleanup cloned repository
+  ansible.builtin.file:
+    path: /tmp/btrfs-progs
+    state: absent

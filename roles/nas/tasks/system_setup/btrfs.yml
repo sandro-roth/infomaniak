@@ -1,0 +1,57 @@
+- name: Nas | system setup | btrfs-progs
+  when: ansible_facts.pkg_mgr == 'apt'
+  block:
+
+    - name: Install btrfs-progs build dependencies
+      ansible.builtin.package:
+        name:
+          - autoconf
+          - automake
+          - e2fslibs-dev
+          - git
+          - libacl1-dev
+          - libattr1-dev
+          - libblkid-dev
+          - liblzo2-dev
+          - libudev-dev
+          - libzstd-dev
+          - pkg-config
+          - uuid-dev
+          - zlib1g-dev
+        state: present
+
+    - name: Remove legacy btrfs-tools package
+      ansible.builtin.package:
+        name: btrfs-tools
+        state: absent
+
+    - name: Clone btrfs-progs repository
+      ansible.builtin.git:
+        repo: git://git.kernel.org/pub/scm/linux/kernel/git/kdave/btrfs-progs.git
+        dest: /tmp/btrfs-progs
+        depth: 1
+      notify: Cleanup cloned repository
+
+    - name: Generate build configuration files
+      ansible.builtin.command:
+        cmd: ./autogen.sh
+        chdir: /tmp/btrfs-progs
+      changed_when: true
+
+    - name: Configure btrfs-progs build
+      ansible.builtin.command:
+        cmd: ./configure --disable-documentation
+        chdir: /tmp/btrfs-progs
+      changed_when: true
+
+    - name: Compile btrfs-progs
+      ansible.builtin.command:
+        cmd: make
+        chdir: /tmp/btrfs-progs
+      changed_when: true
+
+    - name: Install btrfs-progs
+      ansible.builtin.command:
+        cmd: make install
+        chdir: /tmp/btrfs-progs
+      changed_when: true
