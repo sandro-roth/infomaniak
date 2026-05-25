@@ -69,10 +69,92 @@
 # ----------------------------------------  SNAPRAID INSTALLATION ------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------
 
+- name: Nas | system setup | SnapRAID
+  when: ansible_facts.pkg_mgr == 'apt'
+  block:
 
+    - name: Set default update state
+      ansible.builtin.set_fact:
+        snapraid_update_needed: false
 
+    - name: Check installed SnapRAID version
+      ansible.builtin.command: snapraid --version
+      register: snapraid_installed
+      changed_when: false
+      failed_when: false
+      check_mode: false
 
+    - name: Get latest SnapRAID release from GitHub
+      ansible.builtin.uri:
+        url: https://api.github.com/repos/amadvance/snapraid/releases/latest
+        return_content: true
+      register: snapraid_release
+      check_mode: false
 
+    - name: Set SnapRAID version facts
+      ansible.builtin.set_fact:
+        snapraid_latest_version: >-
+          {{ snapraid_release.json.tag_name | regex_replace('^v', '') }}
+        snapraid_installed_version: >-
+          {{
+            snapraid_installed.stdout
+            | regex_search('v?(\\d[\\d.]*)', '\\1')
+            | first
+            if snapraid_installed.rc == 0
+            else '0'
+          }}
+
+    - name: Determine whether SnapRAID update is required
+      ansible.builtin.set_fact:
+        snapraid_update_needed: >-
+          {{ snapraid_latest_version != snapraid_installed_version }}
+
+    - name: Show SnapRAID version status
+      ansible.builtin.debug:
+        msg:
+          - "Installed version: {{ snapraid_installed_version }}"
+          - "Latest version: {{ snapraid_latest_version }}"
+          - "Update required: {{ snapraid_update_needed }}"
+
+    - name: Install or update SnapRAID
+      when: snapraid_update_needed
+      block:
+
+        - name: Install SnapRAID build dependencies
+          ansible.builtin.apt:
+            name:
+              - build-essential
+              - libz-dev
+            state: present
+            update_cache: true
+
+        - name: Extract SnapRAID source archive
+          ansible.builtin.unarchive:
+            src: >-
+              https://github.com/amadvance/snapraid/releases/download/v{{
+                snapraid_latest_version
+              }}/snapraid-{{ snapraid_latest_version }}.tar.gz
+            dest: /tmp/
+            remote_src: true
+          notify: Cleanup SnapRAID download
+
+        - name: Configure SnapRAID build
+          ansible.builtin.command:
+            cmd: ./configure
+            chdir: "/tmp/snapraid-{{ snapraid_latest_version }}"
+          changed_when: true
+
+        - name: Compile SnapRAID
+          ansible.builtin.command:
+            cmd: make
+            chdir: "/tmp/snapraid-{{ snapraid_latest_version }}"
+          changed_when: true
+
+        - name: Install SnapRAID
+          ansible.builtin.command:
+            cmd: make install
+            chdir: "/tmp/snapraid-{{ snapraid_latest_version }}"
+          changed_when: true
 
 # ----------------------------------------------------------------------------------------------------------------
 # -----------------------------------------  BTRFS INSTALLATION --------------------------------------------------
