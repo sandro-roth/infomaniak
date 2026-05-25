@@ -14,7 +14,7 @@
 - name: system setup | apt | Remove default sources.list backup
   tags: apt
   file:
-    path: /etc/apt/sourcesllist
+    path: /etc/apt/sources.list
     state: absent
 
 - name: system setup | apt | Fix APT sources
@@ -26,12 +26,22 @@
     group: root
     mode: '0644'
 
+- name: system setup | apt | Check if cloud-init config directory exists
+  tags: apt
+  ansible.builtin.stat:
+    path: /etc/cloud/cloud.cfg.d
+  register: cloud_init_cfg_dir
+
 - name: system setup | apt | Disable cloud-init apt override
   tags: apt
-  copy:
+  ansible.builtin.copy:
     dest: /etc/cloud/cloud.cfg.d/99-disable-apt-config.cfg
     content: |
       apt_preserve_sources_list: true
+    owner: root
+    group: root
+    mode: '0644'
+  when: cloud_init_cfg_dir.stat.exists
 
 - name: system setup | apt | Network hardening for APT
   tags: apt
@@ -39,7 +49,7 @@
     dest: /etc/apt/apt.conf.d/99-network-hardening
     content: |
       Acquire::ForceIPv4 "true";
-      Acuire::Retries "2";
+      Acquire::Retries "2";
       Acquire::http::Timeout "10";
       Acquire::https::Timeout "10";
 
