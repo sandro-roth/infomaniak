@@ -33,7 +33,7 @@
     - role: dev
       tags: dev
 
-- hosts: Nas
+- hosts: homeserver
   gather_facts: true
   become: true
 
