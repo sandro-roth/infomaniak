@@ -12,10 +12,25 @@
     regexp: '^IPV6='
     line: 'IPV6={{ ipv6_firewall_enabled | ternary("yes", "no") }}'
 
+- name: system setup | firewall | stop docker before firewall reset
+  tags: firewall
+  ansible.builtin.systemd:
+    name: docker
+    state: stopped
+  when: firewall_reset | default(true)
+
 - name: system setup | firewall | reset ufw
   tags: firewall
   community.general.ufw:
     state: reset
+  when: firewall_reset | default(true)
+
+- name: system setup | firewall | start docker after firewall reset
+  tags: firewall
+  ansible.builtin.systemd:
+    name: docker
+    state: started
+  when: firewall_reset | default(true)
 
 - name: system setup | firewall | default deny incoming
   tags: firewall
