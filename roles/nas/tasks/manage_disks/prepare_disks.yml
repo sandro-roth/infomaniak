@@ -1,0 +1,206 @@
+---
+- name: Nas | disk setup | collect parity disk devices
+  ansible.builtin.set_fact:
+    parity_disk_devices: "{{ parity_disks | map(attribute='device') | list }}"
+
+- name: Nas | disk setup | classify disks and paths
+  ansible.builtin.set_fact:
+    cache_disks_only: "{{ cache_disks | select('match', '^/dev/') | list }}"
+    cache_paths_only: "{{ cache_disks | reject('match', '^/dev/') | list }}"
+    block_devices: >-
+      {{
+        (
+          data_disks
+          + (parity_disks | map(attribute='device') | list)
+          + (cache_disks | select('match', '^/dev/') | list)
+        )
+      }}
+
+- name: Nas | disk setup | show detected storage layout
+  ansible.builtin.debug:
+    msg:
+      - "Data disks: {{ data_disks }}"
+      - "Cache disks: {{ cache_disks_only }}"
+      - "Cache paths: {{ cache_paths_only }}"
+      - "Parity disks: {{ parity_disk_devices }}"
+      - "Block devices: {{ block_devices }}"
+
+- name: Nas | disk setup | inspect partition layout
+  ansible.builtin.command:
+    cmd: "lsblk -nlo NAME,TYPE {{ item }}"
+  loop: "{{ block_devices }}"
+  register: partition_info
+  changed_when: false
+  check_mode: false
+
+- name: Nas | disk setup | identify partitioned disks
+  ansible.builtin.set_fact:
+    partitioned_disks: >-
+      {{
+        partition_info.results
+        | selectattr('stdout', 'search', 'part')
+        | map(attribute='item')
+        | list
+      }}
+    non_partitioned_disks: >-
+      {{
+        partition_info.results
+        | rejectattr('stdout', 'search', 'part')
+        | map(attribute='item')
+        | list
+      }}
+
+- name: Nas | disk setup | check filesystem type on data disks
+  ansible.builtin.command:
+    cmd: "lsblk -f {{ item }} -n -o FSTYPE"
+  loop: "{{ data_disks }}"
+  register: data_disk_filesystems
+  changed_when: false
+  check_mode: false
+
+- name: Nas | disk setup | identify data disks without btrfs
+  ansible.builtin.set_fact:
+    non_btrfs_disks: "{{ non_btrfs_disks | default([]) + [item.item] }}"
+  loop: "{{ data_disk_filesystems.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  when: "'btrfs' not in item.stdout"
+
+- name: Nas | disk setup | check filesystem type on cache and parity disks
+  ansible.builtin.command:
+    cmd: "lsblk -f {{ item }} -n -o FSTYPE"
+  loop: "{{ cache_disks_only + parity_disk_devices }}"
+  register: cache_parity_filesystems
+  changed_when: false
+  check_mode: false
+
+- name: Nas | disk setup | identify cache and parity disks without ext4
+  ansible.builtin.set_fact:
+    non_ext4_disks: "{{ non_ext4_disks | default([]) + [item.item] }}"
+  loop: "{{ cache_parity_filesystems.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  when: "'ext4' not in item.stdout"
+
+- name: Nas | disk setup | collect disks requiring wipe
+  ansible.builtin.set_fact:
+    disks_to_wipe: "{{ (non_btrfs_disks | default([])) + (non_ext4_disks | default([])) }}"
+
+- name: Nas | disk setup | show wipe plan
+  ansible.builtin.debug:
+    msg:
+      - "Partitioned disks: {{ partitioned_disks | default([]) }}"
+      - "Non partitioned disks: {{ non_partitioned_disks | default([]) }}"
+      - "Non btrfs disks: {{ non_btrfs_disks | default([]) }}"
+      - "Non ext4 disks: {{ non_ext4_disks | default([]) }}"
+      - "Disks to wipe: {{ disks_to_wipe | default([]) }}"
+
+- name: Nas | disk setup | stop if disks need wiping but wiping is disabled
+  ansible.builtin.fail:
+    msg: |
+      Disks require wiping, but wipe_and_setup is false.
+
+      Disks to wipe:
+      {% for disk in disks_to_wipe | default([]) %}
+      - {{ disk }}
+      {% endfor %}
+
+      Set wipe_and_setup: true if you really want to wipe and format these disks.
+  when:
+    - disks_to_wipe | default([]) | length > 0
+    - not wipe_and_setup | default(false)
+
+- name: Nas | disk setup | confirm destructive disk formatting
+  ansible.builtin.pause:
+    prompt: |
+      WARNING: This will destroy data.
+
+      The following disks will be wiped:
+      {% for disk in disks_to_wipe | default([]) %}
+      - {{ disk }}
+      {% endfor %}
+
+      BTRFS will be created on:
+      {% for disk in non_btrfs_disks | default([]) %}
+      - {{ disk }}
+      {% endfor %}
+
+      EXT4 will be created on:
+      {% for disk in non_ext4_disks | default([]) %}
+      - {{ disk }}
+      {% endfor %}
+
+      Existing cache paths:
+      {% for path in cache_paths_only | default([]) %}
+      - {{ path }}
+      {% endfor %}
+
+      Continue? [y/N]:
+  register: disk_wipe_confirmation
+  when:
+    - disks_to_wipe | default([]) | length > 0
+    - wipe_and_setup | default(false)
+
+- name: Nas | disk setup | stop if destructive action was not confirmed
+  ansible.builtin.fail:
+    msg: "Disk wiping was not confirmed. Stopping playbook."
+  when:
+    - disks_to_wipe | default([]) | length > 0
+    - wipe_and_setup | default(false)
+    - disk_wipe_confirmation.user_input | default('n') | lower != 'y'
+
+- name: Nas | disk setup | unmount disks before wiping
+  ansible.builtin.command:
+    cmd: "umount {{ item }}"
+  loop: "{{ disks_to_wipe | default([]) }}"
+  changed_when: true
+  failed_when: false
+  when:
+    - disks_to_wipe | default([]) | length > 0
+    - wipe_and_setup | default(false)
+    - disk_wipe_confirmation.user_input | default('n') | lower == 'y'
+
+- name: Nas | disk setup | wipe disk signatures
+  ansible.builtin.command:
+    cmd: "wipefs -a {{ item }}"
+  loop: "{{ disks_to_wipe | default([]) }}"
+  changed_when: true
+  when:
+    - disks_to_wipe | default([]) | length > 0
+    - wipe_and_setup | default(false)
+    - disk_wipe_confirmation.user_input | default('n') | lower == 'y'
+
+- name: Nas | disk setup | create btrfs filesystems on data disks
+  community.general.filesystem:
+    fstype: btrfs
+    dev: "{{ item }}"
+  loop: "{{ non_btrfs_disks | default([]) }}"
+  when:
+    - non_btrfs_disks | default([]) | length > 0
+    - wipe_and_setup | default(false)
+    - disk_wipe_confirmation.user_input | default('n') | lower == 'y'
+
+- name: Nas | disk setup | create ext4 filesystems on cache and parity disks
+  community.general.filesystem:
+    fstype: ext4
+    dev: "{{ item }}"
+  loop: "{{ non_ext4_disks | default([]) }}"
+  when:
+    - non_ext4_disks | default([]) | length > 0
+    - wipe_and_setup | default(false)
+    - disk_wipe_confirmation.user_input | default('n') | lower == 'y'
+
+- name: Nas | disk setup | show final filesystem layout
+  ansible.builtin.command:
+    cmd: "lsblk -f {{ item }}"
+  loop: "{{ data_disks + cache_disks_only + parity_disk_devices }}"
+  register: final_filesystem_layout
+  changed_when: false
+  check_mode: false
+
+- name: Nas | disk setup | print final filesystem layout
+  ansible.builtin.debug:
+    msg: "{{ item.stdout_lines }}"
+  loop: "{{ final_filesystem_layout.results }}"
+  loop_control:
+    label: "{{ item.item }}"
