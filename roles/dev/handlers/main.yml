@@ -1,0 +1,4 @@
+- name: restart dev stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ dev_dir }}"
+    state: restarted
