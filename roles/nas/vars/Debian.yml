@@ -12,7 +12,7 @@ configure_snapraid: true
 configure_mergerfs: true
 configure_cache_mover: true
 configure_scrutiny: true
-configure_hdidle: false
+configure_hdidle: true
 install_rclone: true
 
 # Generic
