@@ -1,0 +1,6 @@
+- name: system setup | users | remove default ubuntu user
+  ansible.builtin.user:
+    name: ubuntu
+    state: absent
+    remove: true
+  when: main_usr != 'ubuntu'

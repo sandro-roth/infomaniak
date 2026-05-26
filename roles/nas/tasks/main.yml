@@ -3,6 +3,7 @@
 
 - block:
 
+  - import_tasks: system_setup/remove_users.yml
   - import_tasks: system_setup/disk_wipe.yml
   - include_role:
       name: stefangweichinger.ansible_rclone
