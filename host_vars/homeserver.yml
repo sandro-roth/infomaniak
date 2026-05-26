@@ -18,6 +18,9 @@ swappiness_value: 10
 install_fwupd: true
 dev_enabled: false
 
+# wireguard specifics
+wireguard_enabled: false
+
 # Audoupdate (Debian/Ubuntu)
 security_autoupdate_enable: true
 security_autoupdate_reboot: false
