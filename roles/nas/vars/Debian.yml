@@ -12,7 +12,7 @@ configure_snapraid: true
 configure_mergerfs: true
 configure_cache_mover: true
 configure_scrutiny: true
-configure_hdidle: true
+configure_hdidle: false
 install_rclone: true
 
 # Generic
@@ -108,20 +108,18 @@ samba_shares:
     group: "{{ media_group }}"
 
 # Disk setup
-# IMPORTANT: replace these with real /dev/disk/by-id values
-wipe_and_setup: false
+wipe_and_setup: true
 
 data_disks:
-  - /dev/disk/by-id/REPLACE_ME_DATA_01
-  - /dev/disk/by-id/REPLACE_ME_DATA_02
+  - /dev/disk/by-id/ata-WDC_WD80EFZZ-68BTXN0_WD-CA2A8SSK  #8TB
+  - /dev/disk/by-id/ata-WDC_WD80EFZZ-68BTXN0_WD-CA2AY9ZK  #8TB
+  - /dev/disk/by-id/ata-WDC_WD120EFBX-68B0EN0_5QKSZBYB    #12TB
 
 cache_disks:
-  - /dev/disk/by-id/REPLACE_ME_CACHE_01
+  - /dev/disk/by-id/ata-WDC_WD120EFBX-68B0EN0_5QKRGGZB    #12TB
 
 parity_disks:
-  - device: /dev/disk/by-id/REPLACE_ME_PARITY_01
-    mode: dedicated
-    level: 1
+  - /opt/mergerfs-cache                                   #create folder on the OS-NvME
 
 # Cache mover
 cache_mover_autoupdate: true
