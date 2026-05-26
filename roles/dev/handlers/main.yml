@@ -2,3 +2,8 @@
   community.docker.docker_compose_v2:
     project_src: "{{ dev_dir }}"
     state: restarted
+
+- name: restart_node_exporter
+  ansible.builtin.systemd:
+    name: prometheus-node-exporter
+    state: restarted

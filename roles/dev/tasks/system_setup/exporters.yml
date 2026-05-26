@@ -1,0 +1,23 @@
+- name: dev | reconfigure node_exporter to WireGuard IP
+  ansible.builtin.copy:
+    dest: /etc/default/prometheus-node-exporter
+    mode: "0644"
+    content: |
+      ARGS="--web.listen-address={{ dev_bind_ip }}:{{ node_exporter_port }}"
+  notify: restart_node_exporter
+
+- name: dev | reconfigure cadvisor to WireGuard IP
+  community.docker.docker_container:
+    name: cadvisor
+    image: gcr.io/cadvisor/cadvisor:latest
+    restart_policy: unless-stopped
+    recreate: true
+    ports:
+      - "{{ dev_bind_ip }}:{{ cadvisor_port }}:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    privileged: true

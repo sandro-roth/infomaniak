@@ -1,6 +1,7 @@
 - block:
 
   - import_tasks: system_setup/system.yml
+  - import_tasks: system_setup/exporters.yml
   - import_tasks: system_setup/prometheus.yml
   - import_tasks: system_setup/docker_compose.yml
 
