@@ -12,6 +12,6 @@
     name: "{{ item.key }}"
     value: "{{ item.value }}"
     state: present
-    reload: true
+    reload: false
   loop: "{{ base_sysctl_settings | dict2items }}"
   notify: reload_sysctl
