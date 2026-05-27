@@ -1,5 +1,5 @@
 ---
-- name: Nas | system setup | mergerfs
+- name: system_setup | disk_wipe | mergerfs
   when: ansible_facts.pkg_mgr == 'apt'
   block:
 
@@ -69,7 +69,7 @@
 # ----------------------------------------  SNAPRAID INSTALLATION ------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------
 
-- name: Nas | system setup | SnapRAID
+- name: system_setup | disk_wipe | SnapRAID
   when: ansible_facts.pkg_mgr == 'apt'
   block:
 
@@ -159,7 +159,7 @@
 # -----------------------------------------  BTRFS INSTALLATION --------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------
 
-- name: Nas | system setup | btrfs-progs
+- name: system_setup | disk_wipe | btrfs-progs
   when: ansible_facts.pkg_mgr == 'apt'
   block:
 

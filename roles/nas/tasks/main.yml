@@ -11,6 +11,10 @@
   - import_tasks: system_setup/installs.yml
   - import_tasks: manage_disks/prepare_disks.yml
   - import_tasks: manage_disks/configure_subvolumes.yml
+  - import_tasks: manage_disks/configure_subvolume_mount.yml
+  - import_tasks: manage_disks/configure_parity_cache.yml
+  - import_tasks: manage_disks/configure_mount_perms.yml
+  - import_tasks: manage_disks/cleanup_orphaned_mounts.yml
 
 
   when: ansible_facts.os_family in ['Debian']

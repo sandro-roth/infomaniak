@@ -1,24 +1,24 @@
-- name: Nas | system setup | Confirm disk wiping
+- name: system_setup | disk_wipe | Confirm disk wiping
   when: wipe_and_setup
   block:
-    - name: Nas | system setup | Pause to confirm wipe and setup
+    - name: system_setup | disk_wipe | Pause to confirm wipe and setup
       ansible.builtin.pause:
         prompt: |
           You have set wipe_and_setup to true. This will wipe all non-compliant data/parity/cache disk vars.
           Are you sure you want to continue? (yes/no)
       register: wipe_confirmation
 
-    - name: Nas | system setup | Validate user input
+    - name: system_setup | disk_wipe | Validate user input
       ansible.builtin.fail:
         msg: Invalid input. Please enter 'yes' or 'no'.
       when: wipe_confirmation.user_input not in ['yes', 'no']
 
-    - name: Nas | system setup | Recap disk wiping confirmation
+    - name: system_setup | disk_wipe | Recap disk wiping confirmation
       ansible.builtin.debug:
         msg: You have confirmed to proceed with disk wiping. You will be prompted if/when disks need to be wiped.
       when: wipe_confirmation.user_input == 'yes'
 
-    - name: Nas | system setup | Abort playbook if user does not confirm
+    - name: system_setup | disk_wipe | Abort playbook if user does not confirm
       ansible.builtin.fail:
         msg: Disk wiping not confirmed. Aborting playbook execution.
       when: wipe_confirmation.user_input != 'yes'
