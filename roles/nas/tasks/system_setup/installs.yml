@@ -97,17 +97,19 @@
           {{ snapraid_release.json.tag_name | regex_replace('^v', '') }}
         snapraid_installed_version: >-
           {{
-            snapraid_installed.stdout
-            | regex_search('v?(\\d[\\d.]*)', '\\1')
+            (
+              snapraid_installed.stdout
+              | default('')
+              | regex_search('SnapRAID CLI v([0-9]+(?:\\.[0-9]+)*)', '\\1')
+              | default(['0'], true)
+            )
             | first
-            if snapraid_installed.rc == 0
-            else '0'
           }}
 
     - name: Determine whether SnapRAID update is required
       ansible.builtin.set_fact:
         snapraid_update_needed: >-
-          {{ snapraid_latest_version != snapraid_installed_version }}
+          {{ snapraid_latest_version is version(snapraid_installed_version, '>') }}
 
     - name: Show SnapRAID version status
       ansible.builtin.debug:
