@@ -8,7 +8,9 @@
   - include_role:
       name: stefangweichinger.ansible_rclone
     when: install_rclone
-  - include_tasks: system_setup/installs.yml
+  - import_tasks: system_setup/installs.yml
+  - import_tasks: manage_disks/prepare_disks.yml
+  
 
 
   when: ansible_facts.os_family in ['Debian']
