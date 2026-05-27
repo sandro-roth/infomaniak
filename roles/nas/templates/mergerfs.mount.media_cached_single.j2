@@ -1,0 +1,21 @@
+{{ ansible_managed | comment }}
+[Unit]
+Description=MergerFS mount for {{ media_cached }} (cache disk(s)/path(s))
+
+[Service]
+Type=simple
+KillMode=mixed
+ExecStart=/usr/bin/mergerfs \
+  -f \
+  -o cache.files=off \
+  -o dropcacheonclose=true \
+  -o category.create=ff \
+  -o allow_other \
+  -o fsname=mergerfs_cached \
+  {{ cache_mounts | map('regex_replace', '$', '=RW,' ~ configure_mergerfs_cache_minfreespace) | join(':') }}:{{ data_mounts | map('regex_replace', '$', '=RW,' ~ configure_mergerfs_minfreespace) | join(':') }} \
+  {{ media_cached }}
+ExecStop=/bin/fusermount -uz {{ media_cached }}
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

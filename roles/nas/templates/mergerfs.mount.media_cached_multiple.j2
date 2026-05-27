@@ -1,0 +1,23 @@
+{{ ansible_managed | comment }}
+[Unit]
+Description=MergerFS mount for {{ media_cached }} (multiple cache disks/paths)
+After=mergerfs-cache-disks.service mergerfs-media-cold.service
+Requires=mergerfs-cache-disks.service mergerfs-media-cold.service
+
+[Service]
+Type=simple
+KillMode=mixed
+ExecStart=/usr/bin/mergerfs \
+  -f \
+  -o cache.files=off \
+  -o dropcacheonclose=true \
+  -o category.create=ff \
+  -o allow_other \
+  -o fsname=mergerfs_cached \
+  {{ cache_pool }}=RW,{{ configure_mergerfs_cache_minfreespace }}:{{ media_cold }}=RW,{{ configure_mergerfs_minfreespace }} \
+  {{ media_cached }}
+ExecStop=/bin/fusermount -uz {{ media_cached }}
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,22 @@
+{{ ansible_managed | comment }}
+[Unit]
+Description=MergerFS mount for cache disks/paths (multiple cache disks/paths)
+
+[Service]
+Type=simple
+KillMode=mixed
+ExecStart=/usr/bin/mergerfs \
+  -f \
+  -o cache.files=off \
+  -o dropcacheonclose=true \
+  -o category.create={{ cache_pool_policy }} \
+  -o allow_other \
+  -o minfreespace={{ configure_mergerfs_cache_minfreespace }} \
+  -o fsname=mergerfs_cache_pool \
+  {% for index in range(1, cache_disks_only | length + 1) %}{{ cache_mount_path }}/cache{{ '%02d' % index }}{% if not loop.last %}:{% endif %}{% endfor %}{% if cache_paths_only %}{% if cache_disks_only %}:{% endif %}{% for path in cache_paths_only %}{{ path }}{% if not loop.last %}:{% endif %}{% endfor %}{% endif %} \
+  {{ cache_pool }}
+ExecStop=/bin/fusermount -uz {{ cache_pool }}
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
