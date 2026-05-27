@@ -7,3 +7,31 @@
   ansible.builtin.file:
     path: /tmp/btrfs-progs
     state: absent
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Restart mergerfs_media_cache
+  ansible.builtin.systemd:
+    name: mergerfs-media-cache.service
+    enabled: true
+    state: restarted
+
+- name: Restart mergerfs_media_cold
+  ansible.builtin.systemd:
+    name: mergerfs-media-cold.service
+    enabled: true
+    state: restarted
+
+- name: Restart mergerfs_cache_disks
+  ansible.builtin.systemd:
+    name: mergerfs-cache-disks.service
+    enabled: true
+    state: restarted
+
+- name: Restart mergerfs_media_noncached
+  ansible.builtin.systemd:
+    name: mergerfs-media-noncached.service
+    enabled: true
+    state: restarted
