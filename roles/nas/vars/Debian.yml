@@ -12,7 +12,7 @@ configure_snapraid: true
 configure_mergerfs: true
 configure_cache_mover: true
 configure_scrutiny: true
-configure_hdidle: false
+configure_hdidle: false # problematic on btrfs partition!
 install_rclone: true
 
 # Generic
@@ -77,7 +77,7 @@ users:
 # Samba
 samba_users:
   - name: media
-    password: CHANGE_ME
+    password: "{{ lookup('password', 'credentials/samba_password length=32 chars=ascii_letters,digits') }}"
 
 samba_global_config_extras: |
   socket options = TCP_NODELAY IPTOS_LOWDELAY SO_RCVBUF=262144 SO_SNDBUF=262144
