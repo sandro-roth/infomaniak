@@ -10,7 +10,7 @@
     when: install_rclone
   - import_tasks: system_setup/installs.yml
   - import_tasks: manage_disks/prepare_disks.yml
-  
+  - import_tasks: manage_disks/configure_subvolumes.yml
 
 
   when: ansible_facts.os_family in ['Debian']
