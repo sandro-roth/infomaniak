@@ -1,3 +1,4 @@
+- import_tasks: precondition.yml
 
 - block:
     - import_tasks: install.yml
@@ -5,9 +6,13 @@
   when: 
     - wireguard_phase == 'keys'
     - wireguard_enabled | default(false) | bool
+    - wireguard_has_server | bool
+    - wireguard_has_client | bool
 
 - block:
     - import_tasks: config.yml
   when: 
     - wireguard_phase == 'config'
     - wireguard_enabled | default(false) | bool
+    - wireguard_has_server | bool
+    - wireguard_has_client | bool

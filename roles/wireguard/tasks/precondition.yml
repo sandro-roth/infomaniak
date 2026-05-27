@@ -1,0 +1,21 @@
+- name: wireguard | check if current play has server and client
+  ansible.builtin.set_fact:
+    wireguard_has_server: >-
+      {{
+        ansible_play_hosts
+        | map('extract', hostvars, 'wireguard_role')
+        | select('defined')
+        | select('equalto', 'server')
+        | list
+        | length > 0
+      }}
+    wireguard_has_client: >-
+      {{
+        ansible_play_hosts
+        | map('extract', hostvars, 'wireguard_role')
+        | select('defined')
+        | select('equalto', 'client')
+        | list
+        | length > 0
+      }}
+  tags: always
