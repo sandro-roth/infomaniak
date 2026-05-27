@@ -1,0 +1,9 @@
+- include_vars: "{{ ansible_facts.os_family }}.yml"
+  tags: always
+
+- block:
+
+    - import_tasks: system_setup/llama_install
+
+  when: ansible_facts.os_family == 'Darwin'
+  become: false

@@ -1,0 +1,6 @@
+- name: local_llm | system setup | install llama.cpp
+  tags: llama
+  community.general.homebrew:
+    name: llama.cpp
+    state: present
+  

@@ -43,3 +43,11 @@
     
     - role: nas
       tags: nas
+
+- hosts: macbook
+  gather_facts: true
+  become: false
+  
+  roles:
+    - role: local_llm
+      tags: llm
