@@ -1,0 +1,106 @@
+- name: manage_disks | parity_cache | ensure media group exists
+  ansible.builtin.group:
+    name: "{{ media_group }}"
+    state: present
+
+- name: manage_disks | parity_cache | ensure NAS user is member of media group
+  ansible.builtin.user:
+    name: "{{ nas_user }}"
+    groups: "{{ media_group }}"
+    append: true
+
+# Parity Disks
+- name: manage_disks | parity_cache | ensure parity mounts are present in fstab
+  ansible.builtin.blockinfile:
+    path: /etc/fstab
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - PARITY DISK MOUNTS"
+    create: true
+    state: present
+    block: |
+      {% for disk in parity_disks %}
+      {% if disk.device in partitioned_disks %}
+      {{ disk.device }}-part1  {{ parity_mount_path }}/parity{{ '%02d' % loop.index }}  ext4  {{ manage_disks_nas_ext4_mount_opts }}  0  0
+      {% else %}
+      {{ disk.device }}  {{ parity_mount_path }}/parity{{ '%02d' % loop.index }}  ext4  {{ manage_disks_nas_ext4_mount_opts }}  0  0
+      {% endif %}
+      {% endfor %}
+
+- name: manage_disks | parity_cache | mount parity disks
+  ansible.posix.mount:
+    path: "{{ parity_mount_path }}/parity{{ '%02d' % (index + 1) }}"
+    src: "{{ item.device if item.device not in partitioned_disks else item.device + '-part1' }}"
+    fstype: ext4
+    opts: "{{ manage_disks_nas_ext4_mount_opts }}"
+    state: mounted
+  loop: "{{ parity_disks }}"
+  loop_control:
+    index_var: index
+    label: "parity{{ '%02d' % (index + 1) }} - {{ item.device }}"
+
+- name: manage_disks | parity_cache | set permissions on parity mount points
+  ansible.builtin.file:
+    path: "{{ parity_mount_path }}/parity{{ '%02d' % (index + 1) }}"
+    state: directory
+    owner: "{{ nas_user }}"
+    group: "{{ media_group }}"
+    mode: "0770"
+  loop: "{{ parity_disks }}"
+  loop_control:
+    index_var: index
+    label: "{{ parity_mount_path }}/parity{{ '%02d' % (index + 1) }}"
+
+# Cache Disks
+- name: manage_disks | parity_cache | configure cache disks
+  when: cache_disks_only | length > 0
+  block:
+    - name: manage_disks | parity_cache | ensure cache mounts are present in fstab
+      ansible.builtin.blockinfile:
+        path: /etc/fstab
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - CACHE DISK MOUNTS"
+        create: true
+        state: present
+        block: |
+          {% for disk in cache_disks_only %}
+          {% if disk in partitioned_disks %}
+          {{ disk }}-part1  {{ cache_mount_path }}/cache{{ '%02d' % loop.index }}  ext4  {{ manage_disks_nas_ext4_mount_opts }}  0  0
+          {% else %}
+          {{ disk }}  {{ cache_mount_path }}/cache{{ '%02d' % loop.index }}  ext4  {{ manage_disks_nas_ext4_mount_opts }}  0  0
+          {% endif %}
+          {% endfor %}
+
+    - name: manage_disks | parity_cache | mount cache disks
+      ansible.posix.mount:
+        path: "{{ cache_mount_path }}/cache{{ '%02d' % (index + 1) }}"
+        src: "{{ item if item not in partitioned_disks else item + '-part1' }}"
+        fstype: ext4
+        opts: "{{ manage_disks_nas_ext4_mount_opts }}"
+        state: mounted
+      loop: "{{ cache_disks_only }}"
+      loop_control:
+        index_var: index
+        label: "cache{{ '%02d' % (index + 1) }} - {{ item }}"
+
+    - name: manage_disks | parity_cache | set permissions on cache mount points
+      ansible.builtin.file:
+        path: "{{ cache_mount_path }}/cache{{ '%02d' % (index + 1) }}"
+        state: directory
+        owner: "{{ nas_user }}"
+        group: "{{ media_group }}"
+        mode: "0770"
+      loop: "{{ cache_disks_only }}"
+      loop_control:
+        index_var: index
+        label: "{{ cache_mount_path }}/cache{{ '%02d' % (index + 1) }}"
+
+# Cache Paths
+- name: manage_disks | parity_cache | ensure cache paths exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ nas_user }}"
+    group: "{{ media_group }}"
+    mode: "0770"
+  loop: "{{ cache_paths_only }}"
+  loop_control:
+    label: "{{ item }}"
+  when: cache_paths_only | length > 0

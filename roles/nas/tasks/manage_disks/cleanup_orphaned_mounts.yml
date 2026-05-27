@@ -1,0 +1,76 @@
+- name: manage_disks | cleanup_orphaned_mounts | get current mount points from fstab
+  ansible.builtin.command: grep -A 100 "BEGIN ANSIBLE MANAGED BLOCK" /etc/fstab
+  register: fstab_mounts
+  changed_when: false
+  failed_when: false
+
+- name: manage_disks | cleanup_orphaned_mounts | parse mount points from fstab
+  ansible.builtin.set_fact:
+    valid_mounts: >-
+      {{
+        fstab_mounts.stdout
+        | regex_findall('/mnt/(?:parity|cache|data)-disks/\\w+')
+      }}
+
+- name: manage_disks | cleanup_orphaned_mounts | find existing mount point directories
+  ansible.builtin.find:
+    paths:
+      - "{{ parity_mount_path }}"
+      - "{{ cache_mount_path }}"
+      - "{{ data_mount_path }}"
+    file_type: directory
+    recurse: false
+  register: existing_mounts
+
+- name: manage_disks | cleanup_orphaned_mounts | refresh mount facts
+  ansible.builtin.setup:
+    gather_subset:
+      - mounts
+
+- name: manage_disks | cleanup_orphaned_mounts | get currently mounted paths
+  ansible.builtin.set_fact:
+    mounted_paths: "{{ ansible_facts.mounts | map(attribute='mount') | list }}"
+
+- name: manage_disks | cleanup_orphaned_mounts | identify orphaned mount points
+  ansible.builtin.set_fact:
+    orphaned_mounts: >-
+      {{
+        existing_mounts.files
+        | map(attribute='path')
+        | select('match', '.*/(?:parity|cache|data)\\d+$')
+        | difference(valid_mounts)
+        | difference(mounted_paths)
+        | list
+      }}
+
+- name: manage_disks | cleanup_orphaned_mounts | show mount cleanup details
+  ansible.builtin.debug:
+    msg:
+      - "Valid mounts from fstab: {{ valid_mounts }}"
+      - "Existing mount points: {{ existing_mounts.files | map(attribute='path') | list }}"
+      - "Currently mounted: {{ mounted_paths }}"
+      - "Orphaned mount points: {{ orphaned_mounts }}"
+    verbosity: 1
+
+- name: manage_disks | cleanup_orphaned_mounts | remove orphaned mount points
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop: "{{ orphaned_mounts }}"
+  loop_control:
+    label: "{{ item }}"
+  when:
+    - orphaned_mounts | length > 0
+    - item not in mounted_paths
+  register: mount_removal
+
+- name: manage_disks | cleanup_orphaned_mounts | set cleanup message
+  ansible.builtin.set_fact:
+    mount_cleanup_message: >-
+      {{
+        ['The following orphaned mount points were removed:', '']
+        + (orphaned_mounts | map('regex_replace', '^(.*)$', '• \\1') | list)
+      }}
+  when:
+    - orphaned_mounts | length > 0
+    - mount_removal.changed | default(false)

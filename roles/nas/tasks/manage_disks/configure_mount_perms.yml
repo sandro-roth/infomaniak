@@ -1,0 +1,42 @@
+- name: manage_disks | mount_perms | set permissions on mount root directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ nas_user }}"
+    group: "{{ media_group }}"
+    mode: "0770"
+  loop:
+    - "{{ data_mount_path }}"
+    - "{{ parity_mount_path }}"
+  loop_control:
+    label: "{{ item }}"
+
+- name: manage_disks | mount_perms | set permissions on cache mount root directory
+  ansible.builtin.file:
+    path: "{{ cache_mount_path }}"
+    state: directory
+    owner: "{{ nas_user }}"
+    group: "{{ media_group }}"
+    mode: "0770"
+  when: cache_disks_only | length > 0
+
+- name: manage_disks | mount_perms | discover snapshot directories
+  ansible.builtin.stat:
+    path: "{{ data_mount_path }}/data{{ '%02d' | format(item) }}/.snapshots"
+  loop: "{{ range(1, data_disks_count | int + 1) | list }}"
+  loop_control:
+    loop_var: item
+    label: "data{{ '%02d' % item }}"
+  register: snapshot_directory_check
+
+- name: manage_disks | mount_perms | set permissions on existing snapshot directories
+  ansible.builtin.file:
+    path: "{{ item.stat.path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0770"
+  loop: "{{ snapshot_directory_check.results }}"
+  loop_control:
+    label: "{{ item.invocation.module_args.path }}"
+  when: item.stat.exists
