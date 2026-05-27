@@ -116,10 +116,11 @@ data_disks:
   - /dev/disk/by-id/ata-WDC_WD120EFBX-68B0EN0_5QKSZBYB    #12TB
 
 cache_disks:
-  - /dev/disk/by-id/ata-WDC_WD120EFBX-68B0EN0_5QKRGGZB    #12TB
+  - /opt/mergerfs-cache                                   #create folder on the OS-NvME
 
 parity_disks:
-  - /opt/mergerfs-cache                                   #create folder on the OS-NvME
+  - /dev/disk/by-id/ata-WDC_WD120EFBX-68B0EN0_5QKRGGZB    #12TB
+  
 
 # Cache mover
 cache_mover_autoupdate: true
