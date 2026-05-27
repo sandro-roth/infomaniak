@@ -119,7 +119,9 @@ cache_disks:
   - /opt/mergerfs-cache                                   #create folder on the OS-NvME
 
 parity_disks:
-  - /dev/disk/by-id/ata-WDC_WD120EFBX-68B0EN0_5QKRGGZB    #12TB
+  - device: /dev/disk/by-id/ata-WDC_WD120EFBX-68B0EN0_5QKRGGZB    #12TB
+    mode: dedicated
+    level: 1
   
 
 # Cache mover
