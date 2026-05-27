@@ -1,0 +1,68 @@
+- name: Nas | btrfs | Ensure temporary root mount point exists
+  ansible.builtin.file:
+    path: /mnt/btrfs-root
+    state: directory
+    mode: "0770"
+
+- name: Nas | btrfs | Ensure temporary disk mount points exist
+  ansible.builtin.file:
+    path: "/mnt/btrfs-root/{{ item | basename }}"
+    state: directory
+    mode: "0770"
+  loop: "{{ data_disks }}"
+  loop_control:
+    label: "{{ item }}"
+
+- name: Nas | btrfs | Unmount existing temporary mounts
+  ansible.posix.mount:
+    path: "/mnt/btrfs-root/{{ item | basename }}"
+    state: unmounted
+  loop: "{{ data_disks }}"
+  loop_control:
+    label: "{{ item }}"
+  failed_when: false
+  changed_when: false
+
+- name: Nas | btrfs | Mount data disks temporarily
+  ansible.posix.mount:
+    path: "/mnt/btrfs-root/{{ item | basename }}"
+    src: "{{ item }}"
+    fstype: btrfs
+    state: ephemeral
+  loop: "{{ data_disks }}"
+  loop_control:
+    label: "{{ item }}"
+
+- name: Nas | btrfs | Check whether data subvolume exists
+  ansible.builtin.command: >
+    btrfs subvolume show /mnt/btrfs-root/{{ item | basename }}/data
+  loop: "{{ data_disks }}"
+  loop_control:
+    label: "{{ item }}"
+  register: btrfs_data_subvolume_check
+  changed_when: false
+  failed_when: false
+
+- name: Nas | btrfs | Create data subvolume
+  ansible.builtin.command: >
+    btrfs subvolume create /mnt/btrfs-root/{{ item.item | basename }}/data
+  loop: "{{ btrfs_data_subvolume_check.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  when: item.rc != 0
+
+- name: Nas | btrfs | Unmount temporary data disk mounts
+  ansible.posix.mount:
+    path: "/mnt/btrfs-root/{{ item | basename }}"
+    state: unmounted
+  loop: "{{ data_disks }}"
+  loop_control:
+    label: "{{ item }}"
+
+- name: Nas | btrfs | Remove temporary disk mount points
+  ansible.builtin.file:
+    path: "/mnt/btrfs-root/{{ item | basename }}"
+    state: absent
+  loop: "{{ data_disks }}"
+  loop_control:
+    label: "{{ item }}"
