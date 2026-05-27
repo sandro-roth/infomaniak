@@ -97,13 +97,10 @@
           {{ snapraid_release.json.tag_name | regex_replace('^v', '') }}
         snapraid_installed_version: >-
           {{
-            (
-              snapraid_installed.stdout
-              | default('')
-              | regex_search('SnapRAID CLI v([0-9]+(?:\\.[0-9]+)*)', '\\1')
-              | default(['0'], true)
-            )
-            | first
+            snapraid_installed.stdout.split()[2]
+            | regex_replace('^v', '')
+            if snapraid_installed.rc == 0
+            else '0'
           }}
 
     - name: Determine whether SnapRAID update is required
