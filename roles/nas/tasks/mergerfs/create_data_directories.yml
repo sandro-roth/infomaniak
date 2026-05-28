@@ -36,3 +36,33 @@
   loop_control:
     label: "{{ item.0 | realpath }}/{{ item.1.name if item.1.name is defined else item.1 }}"
   when: cache_paths_only | length > 0
+
+- name: mergerfs | uploads | create upload directories for upload users
+  ansible.builtin.file:
+    path: "{{ media_cached }}/uploads/{{ item.name }}"
+    state: directory
+    owner: "{{ item.name }}"
+    group: "{{ media_admin_group }}"
+    mode: "0770"
+  loop: "{{ users }}"
+  when:
+    - upload_group in item.groups
+    - item.name != nas_user
+
+- name: mergerfs | uploads | install ACL support
+  ansible.builtin.package:
+    name: acl
+    state: present
+
+- name: mergerfs | uploads | give NAS user access to all user upload folders
+  ansible.posix.acl:
+    path: "{{ media_cached }}/uploads/{{ item.name }}"
+    entity: "{{ nas_user }}"
+    etype: user
+    permissions: rwx
+    state: present
+    default: true
+  loop: "{{ users }}"
+  when:
+    - upload_group in item.groups
+    - item.name != nas_user
