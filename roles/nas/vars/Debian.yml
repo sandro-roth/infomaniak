@@ -16,8 +16,10 @@ configure_hdidle: false # problematic on btrfs partition!
 install_rclone: true
 
 # Generic
-media_group: media
-smb_media_share_name: media-share
+media_admin_group: media-admin
+media_read_group: media-read
+upload_group: upload-users
+#media_group: media
 
 # Mount paths
 media_cached: /mnt/media
@@ -67,24 +69,45 @@ data_directories:
   - podcasts
   - fotos
   - documents
-  - uploads
+
+upload_root_directory: uploads
+
+upload_users:
+  - kesslers
 
 # Users and groups for NAS access
 users:
   - name: "{{ nas_user }}"
     groups:
-      - media
+      - "{{ media_admin_group }}"
+      - "{{ media_read_group }}"
+      - "{{ upload_group }}"
       - "{{ nas_admin_group }}"
-  - name: media
+
+  - name: jellyfin
     groups:
-      - media
+      - "{{ media_read_group }}"
     create_home: false
     shell: /sbin/nologin
 
+  - name: media
+    groups:
+      - "{{ media_admin_group }}"
+    create_home: false
+    shell: /sbin/nologin
+
+  - name: kesslers
+    groups:
+      - "{{ upload_group }}"
+      - "{{ media_read_group }}"
+
 # Samba
 samba_users:
-  - name: media
-    password: "{{ lookup('password', 'credentials/samba_password length=32 chars=ascii_letters,digits') }}"
+  - name: "{{ nas_user }}"
+    password: "{{ lookup('password', 'credentials/samba_{{ nas_user }}_password length=32 chars=ascii_letters,digits') }}"
+
+  - name: kesslers
+    password: "{{ lookup('password', 'credentials/samba_kesslers_password length=32 chars=ascii_letters,digits') }}"
 
 samba_global_config_extras: |
   socket options = TCP_NODELAY IPTOS_LOWDELAY SO_RCVBUF=262144 SO_SNDBUF=262144
@@ -101,18 +124,33 @@ samba_global_config_extras: |
   server multi channel support = yes
 
 samba_shares:
-  - name: "{{ smb_media_share_name }}"
-    path: "{{ media_cached }}"
+  - name: movies
+    path: "{{ media_cached }}/movies"
+    guest_ok: false
+    writable: false
+    read_only: true
+    valid_users: "@{{ media_read_group }}, {{ nas_user }}"
+    force_group: "{{ media_read_group }}"
+
+  - name: tv
+    path: "{{ media_cached }}/tv"
+    guets_ok: false
+    writable: false
+    read_only: true
+    valid_users: "@{{ media_read_group }}, {{ nas_user }}"
+    force_group: "{{ media_read_group }}"
+
+  - name: uploads
+    path: "{{ media_cached }}/{{ upload_root_directory }}/%U"
     guest_ok: false
     writable: true
-    force_group: "{{ media_group }}"
+    read_only: false
+    valid_users: "@{{ upload_group }}, {{ nas_user }}"
+    force_group: "{{ upload_group }}"
     create_mode: "0770"
     directory_mode: "0770"
     force_create_mode: "0770"
     force_directory_mode: "0770"
-    write_list: "{{ media_group }}, {{ nas_user }}"
-    owner: "{{ media_group }}"
-    group: "{{ media_group }}"
 
 # Disk setup
 wipe_and_setup: true
