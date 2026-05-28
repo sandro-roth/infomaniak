@@ -13,3 +13,15 @@ scrutiny_config_path: "{{ scrutiny_base_path }}/config"
 scrutiny_data_path: "{{ scrutiny_base_path }}/data"
 scrutiny_influxdb_path: "{{ scrutiny_base_path }}/influxdb2"
 scrutiny_config_file: "{{ scrutiny_config_path }}/scrutiny.yaml"
+
+scrutiny_ports:
+  - "{{ scrutiny_webui_port }}:8080"
+  - "8086:8086"
+
+scrutiny_volumes:
+  - "{{ scrutiny_config_path }}:/opt/scrutiny/config"
+  - "{{ scrutiny_data_path }}:/opt/scrutiny/data"
+  - "{{ scrutiny_influxdb_path }}:/opt/scrutiny/influxdb"
+  - "{{ scrutiny_config_file }}:/opt/scrutiny/config/scrutiny.yaml"
+  - "/run/udev:/run/udev:ro"
+  - "/dev:/dev:ro"

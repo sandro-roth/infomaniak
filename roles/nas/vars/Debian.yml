@@ -211,7 +211,7 @@ cache_mover_notif_threshold: true
 # Scrutiny
 scrutiny_mode: omnibus
 scrutiny_master_url: "http://scrutiny-master:8080"
-scrutiny_webui_port: 8080
+scrutiny_webui_port: 8081
 
 scrutiny_discord_enabled: false
 scrutiny_telegram_enabled: false
