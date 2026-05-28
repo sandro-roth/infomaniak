@@ -102,7 +102,7 @@ users:
 # Samba
 samba_users:
   - name: "{{ nas_user }}"
-    password: "{{ lookup('password', 'credentials/samba_{{ nas_user }}_password length=32 chars=ascii_letters,digits') }}"
+    password: "{{ lookup('password', 'credentials/samba_' ~ nas_user ~ '_password length=32 chars=ascii_letters,digits') }}"
 
   - name: kesslers
     password: "{{ lookup('password', 'credentials/samba_kesslers_password length=32 chars=ascii_letters,digits') }}"
