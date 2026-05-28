@@ -1,3 +1,24 @@
+- name: snapraid | permissions | ensure snapraid admin group exists
+  ansible.builtin.group:
+    name: "{{ snapraid_admin_group }}"
+    state: present
+
+- name: snapraid | permissions | ensure NAS user is member of snapraid admin group
+  ansible.builtin.user:
+    name: "{{ nas_user }}"
+    groups: "{{ snapraid_admin_group }}"
+    append: true
+
+- name: snapraid | permissions | restrict snapraid binaries
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: root
+    group: "{{ snapraid_admin_group }}"
+    mode: "0750"
+  loop:
+    - /usr/local/bin/snapraid-btrfs
+    - "{{ configure_snapraid_snapraid_executable }}"
+
 - name: snapraid | btrfs_runner | add repository to git safe directories # noqa command-instead-of-module
   ansible.builtin.command:
     cmd: git config --global --add safe.directory "{{ dir_snapraid_btfs_runner }}"
@@ -11,13 +32,30 @@
     update: true
     force: true
 
+- name: snapraid | btrfs_runner | restrict repository permissions
+  ansible.builtin.file:
+    path: "{{ dir_snapraid_btfs_runner }}"
+    state: directory
+    recurse: true
+    owner: "{{ nas_user }}"
+    group: "{{ snapraid_admin_group }}"
+    mode: "0750"
+
 - name: snapraid | btrfs_runner | configure runner
   ansible.builtin.template:
     src: snapraid-btrfs-runner.j2
     dest: "{{ dir_snapraid_btfs_runner }}/snapraid-btrfs-runner.conf"
     owner: "{{ nas_user }}"
-    group: root
-    mode: "0644"
+    group: "{{ snapraid_admin_group }}"
+    mode: "0640"
+
+- name: snapraid | logging | ensure runner log exists
+  ansible.builtin.file:
+    path: "{{ configure_snapraid_logging_file }}"
+    state: touch
+    owner: "{{ nas_user }}"
+    group: "{{ snapraid_admin_group }}"
+    mode: "0640"
 
 - name: snapraid | btrfs_runner | create systemd service
   ansible.builtin.copy:
@@ -28,6 +66,8 @@
 
       [Service]
       Type=oneshot
+      User=root
+      Group=root
       ExecStart=/usr/bin/python3 {{ dir_snapraid_btfs_runner }}/snapraid-btrfs-runner.py -c {{ dir_snapraid_btfs_runner }}/snapraid-btrfs-runner.conf
     owner: root
     group: root

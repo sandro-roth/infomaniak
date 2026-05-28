@@ -19,7 +19,6 @@ install_rclone: true
 media_admin_group: media-admin
 media_read_group: media-read
 upload_group: upload-users
-#media_group: media
 
 # Mount paths
 media_cached: /mnt/media

@@ -10,7 +10,7 @@
         dest: /etc/snapper/configs/default
         owner: root
         group: root
-        mode: "0644"
+        mode: "0600"
         remote_src: true
 
     - name: snapraid | snapper_config | disable timeline snapshots in default config
@@ -18,6 +18,19 @@
         path: /etc/snapper/configs/default
         regexp: '^TIMELINE_CREATE='
         line: 'TIMELINE_CREATE="no"'
+
+    - name: snapraid | snapper_config | restrict data snapper config permissions
+      ansible.builtin.file:
+        path: /etc/snapper/configs/data{{ '%02d' % item }}
+        owner: root
+        group: root
+        mode: "0600"
+      loop: "{{ data_disk_indexes }}"
+      loop_control:
+        label: "data{{ '%02d' % item }}"
+      when:
+        - data_disks is defined
+        - data_disks | length > 0
 
     - name: snapraid | snapper_config | list existing snapper configs
       ansible.builtin.command:

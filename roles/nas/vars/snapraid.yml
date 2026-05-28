@@ -1,3 +1,6 @@
+# gerneral
+snapraid_admin_group: snapraid-admin
+
 # snapraid-btrfs-runner default variables
 snapraid_btrfs_runner_repo: https://github.com/fmoledina/snapraid-btrfs-runner.git
 
