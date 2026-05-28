@@ -132,7 +132,7 @@ samba_shares:
 
   - name: tv
     path: "{{ media_cached }}/tv"
-    guets_ok: false
+    guest_ok: false
     writable: false
     read_only: true
     valid_users: "@{{ media_read_group }}, {{ nas_user }}"
@@ -145,6 +145,18 @@ samba_shares:
     read_only: false
     valid_users: "@{{ upload_group }}, {{ nas_user }}"
     force_group: "{{ upload_group }}"
+    create_mode: "0770"
+    directory_mode: "0770"
+    force_create_mode: "0770"
+    force_directory_mode: "0770"
+  
+  - name: uploads-admin
+    path: "{{ media_cached }}/{{ upload_root_directory }}"
+    guest_ok: false
+    writable: true
+    read_only: false
+    valid_users: "{{ nas_user }}"
+    force_group: "{{ media_admin_group }}"
     create_mode: "0770"
     directory_mode: "0770"
     force_create_mode: "0770"
