@@ -1,0 +1,15 @@
+scrutiny_image: >-
+  {{
+    'ghcr.io/starosdev/scrutiny:latest-collector'
+    if scrutiny_mode == 'collector'
+    else 'ghcr.io/starosdev/scrutiny:latest-omnibus'
+  }}
+
+scrutiny_user: "{{ nas_user }}"
+scrutiny_group: "{{ media_admin_group }}"
+
+scrutiny_base_path: /opt/docker/scrutiny
+scrutiny_config_path: "{{ scrutiny_base_path }}/config"
+scrutiny_data_path: "{{ scrutiny_base_path }}/data"
+scrutiny_influxdb_path: "{{ scrutiny_base_path }}/influxdb2"
+scrutiny_config_file: "{{ scrutiny_config_path }}/scrutiny.yaml"

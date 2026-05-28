@@ -82,3 +82,15 @@
 
   when: ansible_facts.os_family == "Debian"
   become: true
+
+- name: nas | scrutiny
+  tasg: scrutiny
+  block:
+
+    - import_tasks: scrutiny/stage.yml
+    - import_tasks: scrutiny/notify.yml
+      when: scrutiny_mode != 'collector'
+    - import_tasks: scrutiny/deploy.yml
+
+  when: ansible_facts.os_family == "Debian"
+  become: true

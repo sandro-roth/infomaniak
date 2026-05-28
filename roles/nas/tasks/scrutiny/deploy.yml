@@ -1,0 +1,21 @@
+- name: scrutiny | deploy | deploy scrutiny container
+  community.docker.docker_container:
+    name: scrutiny
+    image: "{{ scrutiny_image }}"
+    state: started
+    pull: true
+    recreate: true
+    restart_policy: unless-stopped
+    privileged: true
+    ports: "{{ scrutiny_ports if scrutiny_mode != 'collector' else omit }}"
+    volumes: "{{ scrutiny_volumes }}"
+    env:
+      COLLECTOR_API_ENDPOINT: "{{ scrutiny_master_url if scrutiny_mode == 'collector' else omit }}"
+
+- name: scrutiny | deploy | display privileged mode warning
+  ansible.builtin.debug:
+    msg:
+      - "WARNING: Scrutiny is running in privileged mode."
+      - "This gives the container low level host and disk access."
+      - "This is required for SMART and device monitoring."
+      - "Review the container configuration manually if this is a concern."
