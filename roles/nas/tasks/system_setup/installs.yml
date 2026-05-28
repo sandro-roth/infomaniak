@@ -1,6 +1,7 @@
 ---
 - name: system_setup | disk_wipe | mergerfs
   when: ansible_facts.pkg_mgr == 'apt'
+  tags: mergerfs
   block:
 
     - name: Set default update state
@@ -71,6 +72,7 @@
 
 - name: system_setup | disk_wipe | SnapRAID
   when: ansible_facts.pkg_mgr == 'apt'
+  tags: snapraid
   block:
 
     - name: Set default update state
@@ -161,6 +163,7 @@
 
 - name: system_setup | disk_wipe | btrfs-progs
   when: ansible_facts.pkg_mgr == 'apt'
+  tags: btrfs
   block:
 
     - name: Set default update state
@@ -212,3 +215,4 @@
       ansible.builtin.include_tasks:
         file: btrfs.yml
       when: btrfs_update_needed
+      tags: btrfs

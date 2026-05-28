@@ -1,5 +1,6 @@
 - name: system_setup | btrfs | btrfs-progs
   when: ansible_facts.pkg_mgr == 'apt'
+  tags: btrfs
   block:
 
     - name: Install btrfs-progs build dependencies

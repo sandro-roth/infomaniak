@@ -1,21 +1,30 @@
 - include_vars: "{{ ansible_facts.os_family }}.yml"
   tags: always
 
-- block:
+- names: nas | system_setup
+  tags: nas_system
+  block:
+    - import_tasks: system_setup/remove_users.yml
+    - import_tasks: system_setup/disk_wipe.yml
+    - include_role:
+        name: stefangweichinger.ansible_rclone
+      when: install_rclone
+    - import_tasks: system_setup/installs.yml
 
-  - import_tasks: system_setup/remove_users.yml
-  - import_tasks: system_setup/disk_wipe.yml
-  - include_role:
-      name: stefangweichinger.ansible_rclone
-    when: install_rclone
-  - import_tasks: system_setup/installs.yml
-  - import_tasks: manage_disks/prepare_disks.yml
-  - import_tasks: manage_disks/configure_subvolumes.yml
-  - import_tasks: manage_disks/configure_subvolume_mount.yml
-  - import_tasks: manage_disks/configure_parity_cache.yml
-  - import_tasks: manage_disks/configure_mount_perms.yml
-  - import_tasks: manage_disks/cleanup_orphaned_mounts.yml
-
-
-  when: ansible_facts.os_family in ['Debian']
+  when: ansible_facts.os_family == "Debian"
   become: true
+
+- name: nas | manage_disks
+  tags: disks
+  block:
+
+    - import_tasks: manage_disks/prepare_disks.yml
+    - import_tasks: manage_disks/configure_subvolumes.yml
+    - import_tasks: manage_disks/configure_subvolume_mount.yml
+    - import_tasks: manage_disks/configure_parity_cache.yml
+    - import_tasks: manage_disks/configure_mount_perms.yml
+    - import_tasks: manage_disks/cleanup_orphaned_mounts.yml
+
+  when: ansible_facts.os_family == "Debian"
+  become: true
+  
