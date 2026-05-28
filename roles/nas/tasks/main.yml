@@ -1,7 +1,7 @@
 - include_vars: "{{ ansible_facts.os_family }}.yml"
   tags: always
 
-- names: nas | system_setup
+- name: nas | system_setup
   tags: nas_system, disks, mergerfs, snapraid, btrfs
   block:
 
@@ -38,7 +38,7 @@
       when: cache_disks_exist
     - import_tasks: mergerfs/media_cold.yml
       when: cache_disks_exist
-    - import_tasks: mergerfs/medica_noncached.yml
+    - import_tasks: mergerfs/media_noncached.yml
       when: not cache_disks_exist
     - import_tasks: mergerfs/create_data_directories.yml
     - import_tasks: mergerfs/configure_fuse.yml
@@ -60,5 +60,5 @@
     - import_tasks: snapraid/snapper_config.yml
     - import_tasks: snapraid/configure_snapraid-btrfs-runner.yml
 
-  when: ansible_facts.os_family =="Debian"
+  when: ansible_facts.os_family == "Debian"
   become: true
