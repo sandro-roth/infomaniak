@@ -63,3 +63,12 @@
 
   when: ansible_facts.os_family == "Debian"
   become: true
+
+- name: nas | samba
+  tags: samba
+  block:
+  
+    - include_role: vladgh.samba.server
+  
+  when: ansible_facts.os_family == "Debian"
+  become: true
