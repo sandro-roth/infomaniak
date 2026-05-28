@@ -35,3 +35,12 @@
     name: mergerfs-media-noncached.service
     enabled: true
     state: restarted
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Restart snapraid-btrfs-runner timer
+  ansible.builtin.systemd:
+    name: snapraid-btrfs-runner.timer
+    state: restarted
