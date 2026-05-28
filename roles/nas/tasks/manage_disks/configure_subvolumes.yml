@@ -2,13 +2,13 @@
   ansible.builtin.file:
     path: /mnt/btrfs-root
     state: directory
-    mode: "0770"
+    mode: "0755"
 
 - name: manage_disks | subvolumes | ensure temporary disk mount points exist
   ansible.builtin.file:
     path: "/mnt/btrfs-root/{{ item | basename }}"
     state: directory
-    mode: "0770"
+    mode: "0755"
   loop: "{{ data_disks }}"
   loop_control:
     label: "{{ item }}"

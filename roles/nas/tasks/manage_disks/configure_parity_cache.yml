@@ -1,12 +1,12 @@
 - name: manage_disks | parity_cache | ensure media group exists
   ansible.builtin.group:
-    name: "{{ media_group }}"
+    name: "{{ media_admin_group }}"
     state: present
 
 - name: manage_disks | parity_cache | ensure NAS user is member of media group
   ansible.builtin.user:
     name: "{{ nas_user }}"
-    groups: "{{ media_group }}"
+    groups: "{{ media_admin_group }}"
     append: true
 
 # Parity Disks
@@ -42,7 +42,7 @@
     path: "{{ parity_mount_path }}/parity{{ '%02d' % (index + 1) }}"
     state: directory
     owner: "{{ nas_user }}"
-    group: "{{ media_group }}"
+    group: "{{ media_admin_group }}"
     mode: "0770"
   loop: "{{ parity_disks }}"
   loop_control:
@@ -85,7 +85,7 @@
         path: "{{ cache_mount_path }}/cache{{ '%02d' % (index + 1) }}"
         state: directory
         owner: "{{ nas_user }}"
-        group: "{{ media_group }}"
+        group: "{{ media_admin_group }}"
         mode: "0770"
       loop: "{{ cache_disks_only }}"
       loop_control:
@@ -98,7 +98,7 @@
     path: "{{ item }}"
     state: directory
     owner: "{{ nas_user }}"
-    group: "{{ media_group }}"
+    group: "{{ media_admin_group }}"
     mode: "0770"
   loop: "{{ cache_paths_only }}"
   loop_control:

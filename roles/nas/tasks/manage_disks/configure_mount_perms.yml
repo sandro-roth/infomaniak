@@ -3,7 +3,7 @@
     path: "{{ item }}"
     state: directory
     owner: "{{ nas_user }}"
-    group: "{{ media_group }}"
+    group: "{{ media_admin_group }}"
     mode: "0770"
   loop:
     - "{{ data_mount_path }}"
@@ -16,7 +16,7 @@
     path: "{{ cache_mount_path }}"
     state: directory
     owner: "{{ nas_user }}"
-    group: "{{ media_group }}"
+    group: "{{ media_admin_group }}"
     mode: "0770"
   when: cache_disks_only | length > 0
 

@@ -9,7 +9,7 @@
     valid_mounts: >-
       {{
         fstab_mounts.stdout
-        | regex_findall('/mnt/(?:parity|cache|data)-disks/\\w+')
+        | regex_findall('/mnt/(?:parity|cache|data)-disks/(?:parity|cache|data)\\d+')
       }}
 
 - name: manage_disks | cleanup_orphaned_mounts | find existing mount point directories

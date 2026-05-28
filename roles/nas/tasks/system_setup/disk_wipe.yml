@@ -1,5 +1,5 @@
 - name: system_setup | disk_wipe | Confirm disk wiping
-  when: wipe_and_setup
+  when: wipe_and_setup | bool
   block:
     - name: system_setup | disk_wipe | Pause to confirm wipe and setup
       ansible.builtin.pause:

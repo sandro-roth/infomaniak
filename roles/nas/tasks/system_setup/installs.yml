@@ -1,5 +1,19 @@
----
-- name: system_setup | disk_wipe | mergerfs
+- name: system_setup | install | base packages
+  ansible.builtin.apt:
+    name:
+      - acl
+      - samba
+      - fuse3
+      - cifs-utils
+      - xz-utils
+    state: present
+    update_cache: true
+
+# ----------------------------------------------------------------------------------------------------------------
+# ----------------------------------------  MERGERFS INSTALLATION ------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------
+
+- name: system_setup | installs | mergerfs
   when: ansible_facts.pkg_mgr == 'apt'
   tags: mergerfs
   block:
@@ -70,7 +84,7 @@
 # ----------------------------------------  SNAPRAID INSTALLATION ------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------
 
-- name: system_setup | disk_wipe | SnapRAID
+- name: system_setup | installs | SnapRAID
   when: ansible_facts.pkg_mgr == 'apt'
   tags: snapraid
   block:
@@ -161,7 +175,7 @@
 # -----------------------------------------  BTRFS INSTALLATION --------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------
 
-- name: system_setup | disk_wipe | btrfs-progs
+- name: system_setup | installs | btrfs-progs
   when: ansible_facts.pkg_mgr == 'apt'
   tags: btrfs
   block:

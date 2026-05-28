@@ -1,4 +1,3 @@
----
 - name: manage_disks | prepare_disks | collect parity disk devices
   ansible.builtin.set_fact:
     parity_disk_devices: "{{ parity_disks | map(attribute='device') | list }}"
@@ -108,7 +107,7 @@
       Set wipe_and_setup: true if you really want to wipe and format these disks.
   when:
     - disks_to_wipe | default([]) | length > 0
-    - not wipe_and_setup | default(false)
+    - not wipe_and_setup | default(false) | bool
 
 - name: manage_disks | prepare_disks | confirm destructive disk formatting
   ansible.builtin.pause:
@@ -139,14 +138,14 @@
   register: disk_wipe_confirmation
   when:
     - disks_to_wipe | default([]) | length > 0
-    - wipe_and_setup | default(false)
+    - wipe_and_setup | default(false) | bool
 
 - name: manage_disks | prepare_disks | stop if destructive action was not confirmed
   ansible.builtin.fail:
     msg: "Disk wiping was not confirmed. Stopping playbook."
   when:
     - disks_to_wipe | default([]) | length > 0
-    - wipe_and_setup | default(false)
+    - wipe_and_setup | default(false) | bool
     - disk_wipe_confirmation.user_input | default('n') | lower != 'y'
 
 - name: manage_disks | prepare_disks | unmount disks before wiping
@@ -157,7 +156,7 @@
   failed_when: false
   when:
     - disks_to_wipe | default([]) | length > 0
-    - wipe_and_setup | default(false)
+    - wipe_and_setup | default(false) | bool
     - disk_wipe_confirmation.user_input | default('n') | lower == 'y'
 
 - name: manage_disks | prepare_disks | wipe disk signatures
@@ -167,7 +166,7 @@
   changed_when: true
   when:
     - disks_to_wipe | default([]) | length > 0
-    - wipe_and_setup | default(false)
+    - wipe_and_setup | default(false) | bool
     - disk_wipe_confirmation.user_input | default('n') | lower == 'y'
 
 - name: manage_disks | prepare_disks | create btrfs filesystems on data disks
@@ -177,7 +176,7 @@
   loop: "{{ non_btrfs_disks | default([]) }}"
   when:
     - non_btrfs_disks | default([]) | length > 0
-    - wipe_and_setup | default(false)
+    - wipe_and_setup | default(false) | bool
     - disk_wipe_confirmation.user_input | default('n') | lower == 'y'
 
 - name: manage_disks | prepare_disks | create ext4 filesystems on cache and parity disks
@@ -187,7 +186,7 @@
   loop: "{{ non_ext4_disks | default([]) }}"
   when:
     - non_ext4_disks | default([]) | length > 0
-    - wipe_and_setup | default(false)
+    - wipe_and_setup | default(false) | bool
     - disk_wipe_confirmation.user_input | default('n') | lower == 'y'
 
 - name: manage_disks | prepare_disks | show final filesystem layout
