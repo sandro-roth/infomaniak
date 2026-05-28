@@ -83,4 +83,4 @@
         owner: root
         group: root
         mode: "0644"
-      notify: Start and enable cache mover timer
+      notify: start_enable_cache_mover_timer
