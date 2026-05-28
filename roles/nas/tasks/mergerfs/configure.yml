@@ -1,0 +1,25 @@
+- name: mergerfs | configure | set cache disk facts
+  ansible.builtin.set_fact:
+    cache_disks: "{{ cache_disks | default([]) }}"
+    cache_disks_only: "{{ cache_disks | select('match', '^/dev/') | list }}"
+    cache_paths_only: "{{ cache_disks | reject('match', '^/dev/') | list }}"
+
+- name: mergerfs | configure | set cache_disks_exist fact
+  ansible.builtin.set_fact:
+    cache_disks_exist: "{{ (cache_disks_only + cache_paths_only) | length > 0 }}"
+
+- name: mergerfs | configure | count the number of cache disks and paths
+  ansible.builtin.set_fact:
+    cache_disks_count: "{{ (cache_disks_only + cache_paths_only) | length }}"
+  when: cache_disks_exist
+
+- name: mergerfs | configure | count the number of data_disks
+  ansible.builtin.set_fact:
+    data_disks_count: "{{ data_disks | length }}"
+
+- name: mergerfs | configure | generate data_mounts list
+  ansible.builtin.set_fact:
+    data_mounts: "{{ data_mounts | default([]) + ['/mnt/data-disks/data%02d' % (index + 1)] }}"
+  loop: "{{ data_disks }}"
+  loop_control:
+    index_var: index

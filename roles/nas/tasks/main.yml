@@ -2,8 +2,9 @@
   tags: always
 
 - names: nas | system_setup
-  tags: nas_system
+  tags: nas_system, disks, mergerfs, snapraid, btrfs
   block:
+
     - import_tasks: system_setup/remove_users.yml
     - import_tasks: system_setup/disk_wipe.yml
     - include_role:
@@ -28,3 +29,11 @@
   when: ansible_facts.os_family == "Debian"
   become: true
   
+- name: nas | mergerfs
+  tags: mergerfs
+  block:
+    
+    - import_tasks: mergerfs/configure.yml
+
+  when: ansible_facts.os_family == "Debian"
+  become: true
