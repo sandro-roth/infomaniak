@@ -1,0 +1,57 @@
+---
+- name: snapraid | install_snapper | configure apt pinning
+  ansible.builtin.copy:
+    content: |
+      Package: snapper libsnapper
+      Pin: origin download.opensuse.org
+      Pin-Priority: 1001
+    dest: /etc/apt/preferences.d/snapper
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: snapraid | install_snapper | ensure apt keyring directory exists
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: snapraid | install_snapper | add openSUSE repository key
+  ansible.builtin.get_url:
+    url: >-
+      https://download.opensuse.org/repositories/filesystems:/snapper/
+      {{ ansible_facts.distribution }}_{{ ansible_facts.distribution_major_version }}/Release.key
+    dest: /etc/apt/keyrings/opensuse-snapper.asc
+    owner: root
+    group: root
+    mode: "0644"
+    force: true
+
+- name: snapraid | install_snapper | add openSUSE repository
+  ansible.builtin.apt_repository:
+    repo: >-
+      deb [signed-by=/etc/apt/keyrings/opensuse-snapper.asc]
+      https://download.opensuse.org/repositories/filesystems:/snapper/
+      {{ ansible_facts.distribution }}_{{ ansible_facts.distribution_major_version }}/ /
+    filename: opensuse_snapper
+    state: present
+    update_cache: true
+
+- name: snapraid | install_snapper | install snapper packages
+  ansible.builtin.apt:
+    name:
+      - snapper
+      - libsnapper
+    state: present
+
+- name: snapraid | install_snapper | check snapper version
+  ansible.builtin.command: snapper --version
+  register: snapper_version
+  changed_when: false
+  check_mode: false
+
+- name: snapraid | install_snapper | show snapper version
+  ansible.builtin.debug:
+    var: snapper_version.stdout

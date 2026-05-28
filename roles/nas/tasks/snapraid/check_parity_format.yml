@@ -1,0 +1,66 @@
+- name: snapraid | parity | verify parity mount paths exist
+  ansible.builtin.stat:
+    path: "{{ parity_mount_path }}/parity{{ '%02d' % item }}"
+  register: parity_paths
+  loop: "{{ range(1, parity_disks | length + 1) | list }}"
+  loop_control:
+    label: "parity{{ '%02d' % item }}"
+  failed_when: false
+
+- name: snapraid | parity | check for legacy single parity files
+  ansible.builtin.stat:
+    path: "{{ parity_mount_path }}/parity{{ '%02d' % item }}/snapraid.parity"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: parity_checks
+  loop: "{{ range(1, parity_disks | length + 1) | list }}"
+  loop_control:
+    label: "parity{{ '%02d' % item }}"
+  when: parity_paths.results[item - 1].stat.exists | default(false)
+  failed_when: false
+
+- name: snapraid | parity | detect legacy single parity configuration
+  ansible.builtin.set_fact:
+    single_parity_detected: >-
+      {{
+        parity_checks.results
+        | default([])
+        | rejectattr('skipped', 'defined')
+        | selectattr('stat.exists', 'true')
+        | list
+        | length > 0
+      }}
+
+- name: snapraid | parity | set single parity warning message
+  ansible.builtin.set_fact:
+    snapraid_warning_message:
+      - "WARNING: Legacy single parity configuration detected."
+      - ""
+      - "• Single parity files are limited to 16TB"
+      - "• Future MANS versions may remove support for this format"
+      - "• Set split_parity_migrate: true to migrate automatically"
+      - "• Migration requires manual snapraid sync --force commands"
+      - "• Documentation:"
+      - "  https://github.com/monstermuffin/muffins-awesome-nas-stack#split-parity-migration"
+  when:
+    - single_parity_detected
+    - not split_parity_migrate
+
+- name: snapraid | parity | set split parity migration notice
+  ansible.builtin.set_fact:
+    snapraid_warning_message:
+      - "NOTICE: Split parity migration has been enabled."
+      - ""
+      - "• Manual snapraid sync --force commands are still required"
+      - "• Review the documentation before continuing"
+      - "• Documentation:"
+      - "  https://github.com/monstermuffin/muffins-awesome-nas-stack#split-parity-migration"
+  when:
+    - single_parity_detected
+    - split_parity_migrate
+
+- name: snapraid | parity | display parity configuration warning
+  ansible.builtin.debug:
+    msg: "{{ snapraid_warning_message }}"
+  when: snapraid_warning_message is defined

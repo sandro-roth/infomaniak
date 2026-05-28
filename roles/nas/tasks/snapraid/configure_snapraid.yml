@@ -1,0 +1,58 @@
+- name: snapraid | config | ensure content file directories exist
+  ansible.builtin.file:
+    path: "{{ item | dirname }}"
+    state: directory
+    owner: "{{ nas_user }}"
+    group: root
+    mode: "0755"
+  loop: "{{ content_files }}"
+  loop_control:
+    label: "{{ item | dirname }}"
+
+- name: snapraid | config | backup config before split parity migration
+  ansible.builtin.copy:
+    src: "{{ configure_snapraid_snapraid_config }}"
+    dest: "{{ configure_snapraid_snapraid_config }}.pre-splitfile.bak"
+    remote_src: true
+    mode: preserve
+  when:
+    - single_parity_detected
+    - split_parity_migrate
+
+- name: snapraid | config | initialize parity configuration
+  ansible.builtin.set_fact:
+    parity_config: []
+
+- name: snapraid | config | build parity configuration
+  ansible.builtin.set_fact:
+    parity_config: >-
+      {{
+        parity_config
+        + [{
+          'level': item,
+          'disks': parity_disks | selectattr('level', 'equalto', item) | list
+        }]
+      }}
+  loop: "{{ parity_disks | map(attribute='level') | unique | sort | list }}"
+  loop_control:
+    label: "level {{ item }}"
+
+- name: snapraid | config | generate legacy configuration
+  ansible.builtin.template:
+    src: snapraid_legacy.j2
+    dest: "{{ configure_snapraid_snapraid_config }}"
+    owner: "{{ nas_user }}"
+    group: root
+    mode: "0644"
+  when:
+    - single_parity_detected
+    - not split_parity_migrate
+
+- name: snapraid | config | generate split configuration
+  ansible.builtin.template:
+    src: snapraid_split.j2
+    dest: "{{ configure_snapraid_snapraid_config }}"
+    owner: "{{ nas_user }}"
+    group: root
+    mode: "0644"
+  when: not single_parity_detected or split_parity_migrate

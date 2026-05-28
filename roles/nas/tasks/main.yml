@@ -52,6 +52,13 @@
   tags: snapraid
   block:
 
+    - include_vars: "snapraid.yml"
+    - import_tasks: snapraid/install_snapper.yml
+    - import_tasks: snapraid/install_snapraid-btrfs.yml
+    - import_tasks: snapraid/check_parity_format.yml
+    - import_tasks: snapraid/configure_snapraid.yml
+    - import_tasks: snapraid/snapper_config.yml
+    - import_tasks: snapraid/configure_snapraid-btrfs-runner.yml
 
   when: ansible_facts.os_family =="Debian"
   become: true

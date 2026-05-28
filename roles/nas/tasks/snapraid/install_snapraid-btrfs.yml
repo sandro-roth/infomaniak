@@ -1,0 +1,28 @@
+- name: snapraid | install_snapraid_btrfs | clone or update repository # noqa latest
+  ansible.builtin.git:
+    repo: https://github.com/automorphism88/snapraid-btrfs.git
+    dest: /tmp/snapraid-btrfs
+    update: true
+    force: true
+  register: snapraid_btrfs_git
+  changed_when: snapraid_btrfs_git.before != snapraid_btrfs_git.after
+
+# TODO: Remove this once PR #34 is merged upstream
+- name: snapraid | install_snapraid_btrfs | patch unicode subvolume parsing
+  ansible.builtin.lineinfile:
+    path: /tmp/snapraid-btrfs/snapraid-btrfs
+    regexp: >-
+      ^(\s{8})sed -e '/\^SUBVOLUME /!d' -e 's/\^SUBVOLUME\[ ]\*\| //'\)\"$
+    line: >-
+      \1sed -e '/^SUBVOLUME /!d' -e 's/^SUBVOLUME[ ]*[|│] //')"
+    backrefs: true
+  changed_when: false
+
+- name: snapraid | install_snapraid_btrfs | install script
+  ansible.builtin.copy:
+    src: /tmp/snapraid-btrfs/snapraid-btrfs
+    dest: /usr/local/bin/snapraid-btrfs
+    owner: root
+    group: root
+    mode: "0755"
+    remote_src: true
