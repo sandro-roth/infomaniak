@@ -19,3 +19,10 @@
       - "This gives the container low level host and disk access."
       - "This is required for SMART and device monitoring."
       - "Review the container configuration manually if this is a concern."
+
+- name: scrutiny | deploy | allow scrutiny port
+  tags: firewall
+  community.general.ufw:
+    rule: allow
+    port: "{{ scrutiny_webui_port | default(8081)}}"
+    proto: tcp
