@@ -96,6 +96,8 @@ users:
     groups:
       - "{{ upload_group }}"
       - "{{ media_read_group }}"
+    create_home: false
+    shel: /sbin/nologin
 
 # Samba
 samba_users:
