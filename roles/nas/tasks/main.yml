@@ -74,7 +74,7 @@
   when: ansible_facts.os_family == "Debian"
   become: true
 
-- name: nas | cache mover
+- name: nas | cache_mover
   tags: cache_mover
   block:
 
@@ -84,7 +84,7 @@
   become: true
 
 - name: nas | scrutiny
-  tasg: scrutiny
+  tags: scrutiny
   block:
 
     - import_tasks: scrutiny/stage.yml
@@ -94,3 +94,21 @@
 
   when: ansible_facts.os_family == "Debian"
   become: true
+
+- name: nas | notices
+  tags: always
+  block:
+    - name: nas | notices | display snapraid configuration notices
+      ansible.builtin.debug:
+        msg: "{{ snapraid_warning_message }}"
+      when: snapraid_warning_message is defined
+      tags:
+        - snapraid
+
+    - name: nas | notices | display mount cleanup notices
+      ansible.builtin.debug:
+        msg: "{{ mount_cleanup_message }}"
+      when: mount_cleanup_message is defined
+      tags:
+        - disks
+        - btrfs
