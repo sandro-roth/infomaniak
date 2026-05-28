@@ -68,7 +68,8 @@
   tags: samba
   block:
   
-    - include_role: vladgh.samba.server
+    - include_role: 
+        name: vladgh.samba.server
   
   when: ansible_facts.os_family == "Debian"
   become: true
