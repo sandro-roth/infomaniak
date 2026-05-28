@@ -36,6 +36,8 @@
     - import_tasks: mergerfs/configure.yml
     - import_tasks: mergerfs/media_cached.yml
       when: cache_disks_exist
+    - import_tasks: mergerfs/media_cold.yml
+      when: cache_disks_exist
 
   when: ansible_facts.os_family == "Debian"
   become: true

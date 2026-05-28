@@ -1,0 +1,24 @@
+- name: mergerfs | media_cold | ensure media cold mountpoint exists
+  ansible.builtin.file:
+    path: "{{ media_cold }}"
+    state: directory
+    owner: "{{ nas_user }}"
+    group: "{{ media_group }}"
+    mode: "0770"
+
+- name: mergerfs | media_cold | deploy systemd service
+  ansible.builtin.template:
+    src: mergerfs.mount.media_cold.j2
+    dest: /etc/systemd/system/mergerfs-media-cold.service
+    mode: "0644"
+    force: true
+  notify:
+    - Reload systemd daemon
+    - Restart mergerfs_media_cold
+
+- name: mergerfs | media_cold | ensure service is enabled and running
+  ansible.builtin.systemd:
+    name: mergerfs-media-cold.service
+    enabled: true
+    state: started
+  when: not ansible_check_mode
