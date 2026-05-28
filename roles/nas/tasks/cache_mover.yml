@@ -1,0 +1,76 @@
+- name: cache_mover | configure | set cache disk facts
+  ansible.builtin.set_fact:
+    cache_disks_only: "{{ cache_disks | default([]) | select('match', '^/dev/') | list }}"
+    cache_paths_only: "{{ cache_disks | default([]) | reject('match', '^/dev/') | list }}"
+
+- name: cache_mover | configure | set cache disks exist fact
+  ansible.builtin.set_fact:
+    cache_disks_exist: "{{ (cache_disks_only + cache_paths_only) | length > 0 }}"
+
+- name: cache_mover | install | setup cache mover
+  when: cache_disks_exist | bool
+  block:
+    - name: cache_mover | configure | set cache path for single cache disk
+      ansible.builtin.set_fact:
+        mover_cache_path: "{{ cache_mount_path }}/cache01"
+      when: cache_disks_only | length == 1
+
+    - name: cache_mover | configure | set cache path for single cache path
+      ansible.builtin.set_fact:
+        mover_cache_path: "{{ cache_paths_only[0] }}"
+      when:
+        - cache_disks_only | length == 0
+        - cache_paths_only | length == 1
+
+    - name: cache_mover | configure | set cache path for multiple cache disks or paths
+      ansible.builtin.set_fact:
+        mover_cache_path: "{{ cache_pool }}"
+      when: (cache_disks_only + cache_paths_only) | length > 1
+
+    - name: cache_mover | install | clone repository
+      ansible.builtin.git:
+        repo: https://github.com/MonsterMuffin/mergerfs-cache-mover.git
+        dest: "{{ cache_mover_dir }}"
+        version: "{{ cache_mover_update_branch }}"
+        clone: true
+        update: true
+        force: true
+
+    - name: cache_mover | permissions | set cache mover directory permissions
+      ansible.builtin.file:
+        path: "{{ cache_mover_dir }}"
+        owner: "{{ nas_user }}"
+        group: "{{ media_admin_group }}"
+        mode: "0750"
+        recurse: true
+
+    - name: cache_mover | install | install python requirements
+      ansible.builtin.pip:
+        requirements: "{{ cache_mover_dir }}/requirements.txt"
+        extra_args: --break-system-packages
+
+    - name: cache_mover | configure | deploy configuration
+      ansible.builtin.template:
+        src: config.yml.j2
+        dest: "{{ cache_mover_dir }}/config.yml"
+        owner: "{{ nas_user }}"
+        group: "{{ media_admin_group }}"
+        mode: "0640"
+
+    - name: cache_mover | systemd | deploy service unit
+      ansible.builtin.template:
+        src: cache_mover.service.j2
+        dest: /etc/systemd/system/cache_mover.service
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Reload systemd
+
+    - name: cache_mover | systemd | deploy timer unit
+      ansible.builtin.template:
+        src: cache_mover.timer.j2
+        dest: /etc/systemd/system/cache_mover.timer
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Start and enable cache mover timer

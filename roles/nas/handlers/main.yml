@@ -44,3 +44,14 @@
   ansible.builtin.systemd:
     name: snapraid-btrfs-runner.timer
     state: restarted
+
+- name: cache_mover | systemd | reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: cache_mover | systemd | start and enable timer
+  ansible.builtin.systemd:
+    name: cache_mover.timer
+    state: started
+    enabled: true
+    daemon_reload: true

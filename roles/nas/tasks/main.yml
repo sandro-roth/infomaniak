@@ -73,3 +73,12 @@
   
   when: ansible_facts.os_family == "Debian"
   become: true
+
+- name: nas | cache mover
+  tags: cache_mover
+  block:
+
+    - import_tasks: cache_mover.yml
+
+  when: ansible_facts.os_family == "Debian"
+  become: true
