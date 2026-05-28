@@ -40,6 +40,7 @@
       when: cache_disks_exist
     - import_tasks: mergerfs/media_noncached.yml
       when: not cache_disks_exist
+    - import_tasks: mergerfs/upload.yml
     - import_tasks: mergerfs/create_data_directories.yml
     - import_tasks: mergerfs/configure_fuse.yml
     - import_tasks: mergerfs/configure_perms.yml

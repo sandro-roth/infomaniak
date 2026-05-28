@@ -6,7 +6,7 @@
   ansible.builtin.file:
     path: "{{ data_mount_path }}/data{{ '%02d' % item.0 }}/{{ item.1.name if item.1.name is defined else item.1 }}"
     owner: "{{ item.1.owner if item.1.owner is defined else nas_user }}"
-    group: "{{ item.1.group if item.1.group is defined else media_group }}"
+    group: "{{ item.1.group if item.1.group is defined else media_admin_group }}"
     state: directory
     mode: "{{ item.1.mode if item.1.mode is defined else '0770' }}"
   loop: "{{ range(1, data_disks_count | int + 1) | product(data_directories) | list }}"
@@ -17,7 +17,7 @@
   ansible.builtin.file:
     path: "{{ cache_mount_path }}/cache{{ '%02d' % item.0 }}/{{ item.1.name if item.1.name is defined else item.1 }}"
     owner: "{{ item.1.owner if item.1.owner is defined else nas_user }}"
-    group: "{{ item.1.group if item.1.group is defined else media_group }}"
+    group: "{{ item.1.group if item.1.group is defined else media_admin_group }}"
     state: directory
     mode: "{{ item.1.mode if item.1.mode is defined else '0770' }}"
   loop: "{{ range(1, cache_disks_only | length + 1) | product(data_directories) | list }}"
@@ -29,7 +29,7 @@
   ansible.builtin.file:
     path: "{{ item.0 | realpath }}/{{ item.1.name if item.1.name is defined else item.1 }}"
     owner: "{{ item.1.owner if item.1.owner is defined else nas_user }}"
-    group: "{{ item.1.group if item.1.group is defined else media_group }}"
+    group: "{{ item.1.group if item.1.group is defined else media_admin_group }}"
     state: directory
     mode: "{{ item.1.mode if item.1.mode is defined else '0770' }}"
   loop: "{{ cache_paths_only | product(data_directories) | list }}"
@@ -39,7 +39,7 @@
 
 - name: mergerfs | uploads | create upload directories for upload users
   ansible.builtin.file:
-    path: "{{ media_cached }}/uploads/{{ item.name }}"
+    path: "{{ media_cached }}/{{ upload_root_directory }}/{{ item.name }}"
     state: directory
     owner: "{{ item.name }}"
     group: "{{ media_admin_group }}"
@@ -49,14 +49,21 @@
     - upload_group in item.groups
     - item.name != nas_user
 
-- name: mergerfs | uploads | install ACL support
-  ansible.builtin.package:
-    name: acl
-    state: present
-
-- name: mergerfs | uploads | give NAS user access to all user upload folders
+- name: mergerfs | uploads | give NAS user access to upload folders
   ansible.posix.acl:
-    path: "{{ media_cached }}/uploads/{{ item.name }}"
+    path: "{{ media_cached }}/{{ upload_root_directory }}/{{ item.name }}"
+    entity: "{{ nas_user }}"
+    etype: user
+    permissions: rwx
+    state: present
+  loop: "{{ users }}"
+  when:
+    - upload_group in item.groups
+    - item.name != nas_user
+
+- name: mergerfs | uploads | give NAS user default access to new upload content
+  ansible.posix.acl:
+    path: "{{ media_cached }}/{{ upload_root_directory }}/{{ item.name }}"
     entity: "{{ nas_user }}"
     etype: user
     permissions: rwx

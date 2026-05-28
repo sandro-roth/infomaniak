@@ -3,7 +3,7 @@
     path: "{{ media_cold }}"
     state: directory
     owner: "{{ nas_user }}"
-    group: "{{ media_group }}"
+    group: "{{ media_admin_group }}"
     mode: "0770"
 
 - name: mergerfs | media_cold | deploy systemd service

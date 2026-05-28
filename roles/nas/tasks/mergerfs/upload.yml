@@ -1,0 +1,57 @@
+- name: mergerfs | uploads | ensure upload group exists
+  ansible.builtin.group:
+    name: "{{ upload_group }}"
+    state: present
+
+- name: mergerfs | uploads | ensure media read group exists
+  ansible.builtin.group:
+    name: "{{ media_read_group }}"
+    state: present
+
+- name: mergerfs | uploads | ensure media admin group exists
+  ansible.builtin.group:
+    name: "{{ media_admin_group }}"
+    state: present
+
+- name: mergerfs | uploads | ensure upload users exist
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    groups:
+      - "{{ upload_group }}"
+      - "{{ media_read_group }}"
+    append: true
+    shell: "{{ item.shell | default('/bin/bash') }}"
+    create_home: "{{ item.create_home | default(true) }}"
+  loop: "{{ users }}"
+  when:
+    - item.name != nas_user
+    - upload_group in item.groups
+
+- name: mergerfs | uploads | create upload root on data disks
+  ansible.builtin.file:
+    path: "{{ data_mount_path }}/data{{ '%02d' % item }}/{{ upload_root_directory }}"
+    state: directory
+    owner: "{{ nas_user }}"
+    group: "{{ upload_group }}"
+    mode: "0770"
+  loop: "{{ range(1, data_disks_count | int + 1) | list }}"
+
+- name: mergerfs | uploads | create upload root on cache paths
+  ansible.builtin.file:
+    path: "{{ item | realpath }}/{{ upload_root_directory }}"
+    state: directory
+    owner: "{{ nas_user }}"
+    group: "{{ upload_group }}"
+    mode: "0770"
+  loop: "{{ cache_paths_only }}"
+  when: cache_paths_only | length > 0
+
+- name: mergerfs | uploads | create upload root on cache disks
+  ansible.builtin.file:
+    path: "{{ cache_mount_path }}/cache{{ '%02d' % item }}/{{ upload_root_directory }}"
+    state: directory
+    owner: "{{ nas_user }}"
+    group: "{{ upload_group }}"
+    mode: "0770"
+  loop: "{{ range(1, cache_disks_only | length + 1) | list }}"
+  when: cache_disks_only | length > 0

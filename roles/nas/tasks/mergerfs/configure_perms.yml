@@ -2,7 +2,7 @@
   ansible.builtin.file:
     path: "{{ media_cached }}"
     owner: "{{ nas_user }}"
-    group: "{{ media_group }}"
+    group: "{{ media_admin_group }}"
     mode: "0770"
   when: not ansible_check_mode
 
@@ -10,7 +10,7 @@
   ansible.builtin.file:
     path: "{{ media_noncached }}"
     owner: "{{ nas_user }}"
-    group: "{{ media_group }}"
+    group: "{{ media_admin_group }}"
     mode: "0770"
   when:
     - not cache_disks_exist

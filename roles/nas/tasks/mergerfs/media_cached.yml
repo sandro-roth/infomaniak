@@ -3,7 +3,7 @@
     path: "{{ media_cached }}"
     state: directory
     owner: "{{ nas_user }}"
-    group: "{{ media_group }}"
+    group: "{{ media_admin_group }}"
     mode: "0770"
 
 - name: mergerfs | configure | ensure cache pool path exists
@@ -11,7 +11,7 @@
     path: "{{ cache_pool }}"
     state: directory
     owner: "{{ nas_user }}"
-    group: "{{ media_group }}"
+    group: "{{ media_admin_group }}"
     mode: "0770"
   when: cache_disks_count | int > 1
 
