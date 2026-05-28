@@ -64,6 +64,10 @@ data_directories:
   - movies
   - tv
   - music
+  - podcasts
+  - fotos
+  - documents
+  - uploads
 
 # Users and groups for NAS access
 users:
