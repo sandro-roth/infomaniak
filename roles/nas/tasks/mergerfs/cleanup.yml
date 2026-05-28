@@ -1,0 +1,125 @@
+- name: mergerfs | services | remove cached services when no cache exists
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: false
+    state: stopped
+  loop:
+    - mergerfs-media-cold.service
+    - mergerfs-media-cache.service
+    - mergerfs-cache-disks.service
+    - mergerfs-cache-pool.service
+  loop_control:
+    label: "{{ item }}"
+  failed_when: false
+  when:
+    - not ansible_check_mode
+    - cache_disks_exist is defined
+    - not cache_disks_exist
+
+- name: mergerfs | services | remove cached service files when no cache exists
+  ansible.builtin.file:
+    path: "/etc/systemd/system/{{ item }}"
+    state: absent
+  loop:
+    - mergerfs-media-cold.service
+    - mergerfs-media-cache.service
+    - mergerfs-cache-disks.service
+    - mergerfs-cache-pool.service
+  loop_control:
+    label: "{{ item }}"
+  notify:
+    - Reload systemd daemon
+  when:
+    - cache_disks_exist is defined
+    - not cache_disks_exist
+
+- name: mergerfs | services | remove multi cache services when single cache exists
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: false
+    state: stopped
+  loop:
+    - mergerfs-cache-disks.service
+    - mergerfs-cache-pool.service
+  loop_control:
+    label: "{{ item }}"
+  failed_when: false
+  when:
+    - not ansible_check_mode
+    - cache_disks_count | int == 1
+
+- name: mergerfs | services | remove multi cache service files when single cache exists
+  ansible.builtin.file:
+    path: "/etc/systemd/system/{{ item }}"
+    state: absent
+  loop:
+    - mergerfs-cache-disks.service
+    - mergerfs-cache-pool.service
+  loop_control:
+    label: "{{ item }}"
+  notify:
+    - Reload systemd daemon
+  when: cache_disks_count | int == 1
+
+- name: mergerfs | services | remove noncached service when cache exists
+  ansible.builtin.systemd:
+    name: mergerfs-media-noncached.service
+    enabled: false
+    state: stopped
+  failed_when: false
+  when:
+    - not ansible_check_mode
+    - cache_disks_exist is defined
+    - cache_disks_exist
+
+- name: mergerfs | services | remove noncached service file when cache exists
+  ansible.builtin.file:
+    path: /etc/systemd/system/mergerfs-media-noncached.service
+    state: absent
+  notify:
+    - Reload systemd daemon
+  when:
+    - cache_disks_exist is defined
+    - cache_disks_exist
+
+- name: mergerfs | services | flush systemd reload handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: mergerfs | services | ensure multiple cache services are enabled and started
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop:
+    - mergerfs-cache-disks.service
+    - mergerfs-media-cache.service
+    - mergerfs-media-cold.service
+  loop_control:
+    label: "{{ item }}"
+  when:
+    - not ansible_check_mode
+    - cache_disks_count | int > 1
+
+- name: mergerfs | services | ensure single cache services are enabled and started
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop:
+    - mergerfs-media-cache.service
+    - mergerfs-media-cold.service
+  loop_control:
+    label: "{{ item }}"
+  when:
+    - not ansible_check_mode
+    - cache_disks_count | int == 1
+
+- name: mergerfs | services | ensure noncached service is enabled and started
+  ansible.builtin.systemd:
+    name: mergerfs-media-noncached.service
+    enabled: true
+    state: started
+  when:
+    - not ansible_check_mode
+    - cache_disks_exist is defined
+    - not cache_disks_exist
