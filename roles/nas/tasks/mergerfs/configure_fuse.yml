@@ -1,0 +1,8 @@
+- name: mergerfs | fuse | enable user_allow_other
+  ansible.builtin.lineinfile:
+    path: /etc/fuse.conf
+    regexp: '^#?\s*user_allow_other'
+    line: user_allow_other
+    state: present
+  notify:
+    - Reload systemd daemon
