@@ -1,0 +1,68 @@
+- name: mergerfs | configure | ensure media mountpoint exists
+  ansible.builtin.file:
+    path: "{{ media_cached }}"
+    state: directory
+    owner: "{{ nas_user }}"
+    group: "{{ media_group }}"
+    mode: "0770"
+
+- name: mergerfs | configure | ensure cache pool path exists
+  ansible.builtin.file:
+    path: "{{ cache_pool }}"
+    state: directory
+    owner: "{{ nas_user }}"
+    group: "{{ media_group }}"
+    mode: "0770"
+  when: cache_disks_count | int > 1
+
+- name: mergerfs | configure | initialize cache mounts list
+  ansible.builtin.set_fact:
+    cache_mounts: []
+
+- name: mergerfs | configure | generate cache mounts list for cache disks
+  ansible.builtin.set_fact:
+    cache_mounts: "{{ cache_mounts + [cache_mount_path ~ '/cache%02d' % (index + 1)] }}"
+  loop: "{{ cache_disks_only }}"
+  loop_control:
+    index_var: index
+    label: "{{ cache_mount_path }}/cache{{ '%02d' % (index + 1) }}"
+  when: cache_disks_only | length > 0
+
+- name: mergerfs | configure | add cache paths to cache mounts list
+  ansible.builtin.set_fact:
+    cache_mounts: "{{ cache_mounts + cache_paths_only }}"
+  when: cache_paths_only | length > 0
+
+- name: mergerfs | configure | deploy media_cached service for single cache disk or path
+  ansible.builtin.template:
+    src: mergerfs.mount.media_cached_single.j2
+    dest: /etc/systemd/system/mergerfs-media-cache.service
+    mode: "0644"
+    force: true
+  notify:
+    - Reload systemd daemon
+    - Restart mergerfs_media_cache
+  when: cache_disks_count | int == 1
+
+- name: mergerfs | configure | configure multiple cache disks or paths
+  when: cache_disks_count | int > 1
+  block:
+    - name: mergerfs | configure | deploy cache_disks service
+      ansible.builtin.template:
+        src: mergerfs.mount.cache_disks.j2
+        dest: /etc/systemd/system/mergerfs-cache-disks.service
+        mode: "0644"
+        force: true
+      notify:
+        - Reload systemd daemon
+        - Restart mergerfs_cache_disks
+
+    - name: mergerfs | configure | deploy media_cached service for multiple cache disks or paths
+      ansible.builtin.template:
+        src: mergerfs.mount.media_cached_multiple.j2
+        dest: /etc/systemd/system/mergerfs-media-cache.service
+        mode: "0644"
+        force: true
+      notify:
+        - Reload systemd daemon
+        - Restart mergerfs_media_cache
