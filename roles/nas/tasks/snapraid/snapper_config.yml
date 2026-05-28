@@ -19,19 +19,6 @@
         regexp: '^TIMELINE_CREATE='
         line: 'TIMELINE_CREATE="no"'
 
-    - name: snapraid | snapper_config | restrict data snapper config permissions
-      ansible.builtin.file:
-        path: /etc/snapper/configs/data{{ '%02d' % item }}
-        owner: root
-        group: root
-        mode: "0600"
-      loop: "{{ data_disk_indexes }}"
-      loop_control:
-        label: "data{{ '%02d' % item }}"
-      when:
-        - data_disks is defined
-        - data_disks | length > 0
-
     - name: snapraid | snapper_config | list existing snapper configs
       ansible.builtin.command:
         cmd: snapper list-configs
@@ -123,6 +110,19 @@
         - data_disks is defined
         - data_disks | length > 0
       failed_when: false
+
+    - name: snapraid | snapper_config | restrict data snapper config permissions
+      ansible.builtin.file:
+        path: /etc/snapper/configs/data{{ '%02d' % item }}
+        owner: root
+        group: root
+        mode: "0600"
+      loop: "{{ data_disk_indexes }}"
+      loop_control:
+        label: "data{{ '%02d' % item }}"
+      when:
+        - data_disks is defined
+        - data_disks | length > 0
 
     - name: snapraid | snapper_config | verify snapper configs
       ansible.builtin.command:

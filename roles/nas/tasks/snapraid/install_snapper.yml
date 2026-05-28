@@ -20,9 +20,7 @@
 
 - name: snapraid | install_snapper | add openSUSE repository key
   ansible.builtin.get_url:
-    url: >-
-      https://download.opensuse.org/repositories/filesystems:/snapper/
-      {{ ansible_facts.distribution }}_{{ ansible_facts.distribution_major_version }}/Release.key
+    url: "https://download.opensuse.org/repositories/filesystems:/snapper/{{ ansible_facts.distribution }}_{{ ansible_facts.distribution_major_version }}/Release.key"
     dest: /etc/apt/keyrings/opensuse-snapper.asc
     owner: root
     group: root
@@ -31,10 +29,7 @@
 
 - name: snapraid | install_snapper | add openSUSE repository
   ansible.builtin.apt_repository:
-    repo: >-
-      deb [signed-by=/etc/apt/keyrings/opensuse-snapper.asc]
-      https://download.opensuse.org/repositories/filesystems:/snapper/
-      {{ ansible_facts.distribution }}_{{ ansible_facts.distribution_major_version }}/ /
+    repo: "deb [signed-by=/etc/apt/keyrings/opensuse-snapper.asc] https://download.opensuse.org/repositories/filesystems:/snapper/{{ ansible_facts.distribution }}_{{ ansible_facts.distribution_major_version }}/ /"
     filename: opensuse_snapper
     state: present
     update_cache: true
