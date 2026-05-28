@@ -40,6 +40,7 @@
       when: cache_disks_exist
     - import_tasks: mergerfs/medica_noncached.yml
       when: not cache_disks_exist
+    - import_tasks: mergerfs/create_data_directories.yml
 
   when: ansible_facts.os_family == "Debian"
   become: true
