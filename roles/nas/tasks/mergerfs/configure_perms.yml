@@ -1,0 +1,34 @@
+- name: mergerfs | permissions | set permissions on media_cached
+  ansible.builtin.file:
+    path: "{{ media_cached }}"
+    owner: "{{ nas_user }}"
+    group: "{{ media_group }}"
+    mode: "0770"
+  when: not ansible_check_mode
+
+- name: mergerfs | permissions | set permissions on media_noncached
+  ansible.builtin.file:
+    path: "{{ media_noncached }}"
+    owner: "{{ nas_user }}"
+    group: "{{ media_group }}"
+    mode: "0770"
+  when:
+    - not cache_disks_exist
+    - not ansible_check_mode
+
+- name: mergerfs | permissions | set snapshot directory permissions
+  ansible.builtin.file:
+    path: "{{ snapshot_path }}"
+    owner: root
+    group: root
+    mode: "0770"
+    recurse: true
+  vars:
+    snapshot_path: >-
+      {{
+        media_cached ~ '/.snapshots'
+        if cache_disks_exist
+        else media_noncached ~ '/.snapshots'
+      }}
+  failed_when: false
+  when: not ansible_check_mode

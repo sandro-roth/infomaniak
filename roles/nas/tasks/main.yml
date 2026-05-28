@@ -42,6 +42,7 @@
       when: not cache_disks_exist
     - import_tasks: mergerfs/create_data_directories.yml
     - import_tasks: mergerfs/configure_fuse.yml
+    - import_tasks: mergerfs/configure_perms.yml
 
   when: ansible_facts.os_family == "Debian"
   become: true
