@@ -43,9 +43,6 @@ mergerfs_arch_map:
 mergerfs_arch: "{{ mergerfs_arch_map[ansible_facts.userspace_architecture | default(ansible_facts.architecture)] }}"
 mergerfs_pkg_prefix: mergerfs_
 mergerfs_pkg_suffix: .{{ mergerfs_dist }}_{{ mergerfs_arch }}.deb
-configure_mergerfs_minfreespace: 100G
-configure_mergerfs_cache_minfreespace: 50G
-pool_policy: epmfs
 
 # SnapRAID
 configure_snapraid_snapraid_deletethreshold: 150
