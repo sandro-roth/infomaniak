@@ -1,0 +1,19 @@
+Glance: 8090
+Nginx Proxy Manager admin: 81
+Pi-hole admin: 8053
+File Browser: 8095
+Vaultwarden: 8096
+Portainer: 9000
+Jellyfin: 8097
+Jellystat: 8098
+Seerr: 5055
+Radarr: 7878
+Sonarr: 8989
+Prowlarr: 9696
+qBittorrent via Gluetun: 8099
+NZBGet: 6789
+Nextcloud: 8100
+Immich: 2283
+Grafana: 3000
+Prometheus: 9090
+InfluxDB: 8086

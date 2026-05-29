@@ -1,0 +1,28 @@
+homeserver_services:
+  core:
+    glance: true
+    nginx_proxy_manager: true
+    gluetun: true
+    pihole: true
+    filebrowser: true
+    vaultwarden: true
+    portainer: true
+
+  media:
+    jellyfin: true
+    jellystat: true
+    seerr: true
+    radarr: true
+    sonarr: true
+    prowlarr: true
+    qbittorrent: true
+    nzbget: true
+
+  files:
+    nextcloud: true
+    immich: true
+
+  monitoring:
+    grafana: true
+    influxdb: true
+    prometheus: true
