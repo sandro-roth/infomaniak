@@ -1,0 +1,61 @@
+samba_users:
+  - name: "{{ nas_user }}"
+    password: "{{ lookup('password', 'credentials/samba_' ~ nas_user ~ '_password length=32 chars=ascii_letters,digits') }}"
+
+  - name: kesslers
+    password: "{{ lookup('password', 'credentials/samba_kesslers_password length=32 chars=ascii_letters,digits') }}"
+
+samba_global_config_extras: |
+  socket options = TCP_NODELAY IPTOS_LOWDELAY SO_RCVBUF=262144 SO_SNDBUF=262144
+  read raw = yes
+  write raw = yes
+  max xmit = 65536
+  dead time = 15
+  getwd cache = yes
+  strict allocate = yes
+  allocation roundup size = 4096
+  aio read size = 65536
+  aio write size = 65536
+  use sendfile = yes
+  server multi channel support = yes
+
+samba_shares:
+  - name: movies
+    path: "{{ media_cached }}/movies"
+    guest_ok: false
+    writable: false
+    read_only: true
+    valid_users: "@{{ media_read_group }}, {{ nas_user }}"
+    force_group: "{{ media_read_group }}"
+
+  - name: tv
+    path: "{{ media_cached }}/tv"
+    guest_ok: false
+    writable: false
+    read_only: true
+    valid_users: "@{{ media_read_group }}, {{ nas_user }}"
+    force_group: "{{ media_read_group }}"
+
+  - name: uploads
+    path: "{{ media_cached }}/{{ upload_root_directory }}/%U"
+    guest_ok: false
+    writable: true
+    read_only: false
+    valid_users: "@{{ upload_group }}, {{ nas_user }}"
+    force_group: "{{ upload_group }}"
+    create_mode: "0770"
+    directory_mode: "0770"
+    force_create_mode: "0770"
+    force_directory_mode: "0770"
+  
+  - name: uploads-admin
+    path: "{{ media_cached }}/{{ upload_root_directory }}"
+    guest_ok: false
+    writable: true
+    read_only: false
+    valid_users: "{{ nas_user }}"
+    force_group: "{{ media_admin_group }}"
+    create_mode: "0770"
+    directory_mode: "0770"
+    force_create_mode: "0770"
+    force_directory_mode: "0770"

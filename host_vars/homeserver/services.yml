@@ -1,4 +1,4 @@
-homeserver_services:
+homelab_services:
   core:
     glance: true
     nginx_proxy_manager: true
@@ -18,7 +18,7 @@ homeserver_services:
     qbittorrent: true
     nzbget: true
 
-  files:
+  files_install:
     nextcloud: true
     immich: true
 

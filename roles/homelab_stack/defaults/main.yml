@@ -1,0 +1,4 @@
+homelab_stack_dir: /opt/homelab_stack
+homelab_compose_dir: "{{ homelab_stack_dir }}/compose"
+
+docker_network_name: homelab_stack

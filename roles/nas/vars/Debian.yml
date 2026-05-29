@@ -1,35 +1,6 @@
----
-# Core user mapping
-nas_user: "{{ main_usr }}"
-nas_group: "{{ usr_group }}"
-nas_admin_group: "{{ admin_group }}"
-nas_home: "{{ usr_home }}"
-nas_shell: "{{ main_shell }}"
-
-# NAS feature toggles
-configure_samba: true
-configure_snapraid: true
-configure_mergerfs: true
-configure_cache_mover: true
-configure_scrutiny: true
-configure_hdidle: false # problematic on btrfs partition!
-install_rclone: true
-
-# Generic
-media_admin_group: media-admin
-media_read_group: media-read
-upload_group: upload-users
-
-# Mount paths
-media_cached: /mnt/media
-media_noncached: /mnt/media
-media_cold: /mnt/media-cold
-data_mount_path: /mnt/data-disks
-parity_mount_path: /mnt/parity-disks
-cache_mount_path: /mnt/cache-disks
-cache_pool: /mnt/cache-pool
-
+# -------------------------------------------------
 # MergerFS
+# -------------------------------------------------
 cache_pool_policy: epmfs
 pool_policy: epmfs
 configure_mergerfs_cache_minfreespace: 50G
@@ -44,7 +15,9 @@ mergerfs_arch: "{{ mergerfs_arch_map[ansible_facts.userspace_architecture | defa
 mergerfs_pkg_prefix: mergerfs_
 mergerfs_pkg_suffix: .{{ mergerfs_dist }}_{{ mergerfs_arch }}.deb
 
+# -------------------------------------------------
 # SnapRAID
+# -------------------------------------------------
 configure_snapraid_snapraid_deletethreshold: 150
 split_parity_files: 3
 split_parity_migrate: true
@@ -57,112 +30,9 @@ content_files:
 
 dir_snapraid_btfs_runner: /var/snapraid-btrfs-runner
 
-# Directories inside the media pool
-data_directories:
-  - movies
-  - tv
-  - music
-  - podcasts
-  - fotos
-  - documents
-
-upload_root_directory: uploads
-
-upload_users:
-  - kesslers
-
-# Users and groups for NAS access
-users:
-  - name: "{{ nas_user }}"
-    groups:
-      - "{{ media_admin_group }}"
-      - "{{ media_read_group }}"
-      - "{{ upload_group }}"
-      - "{{ nas_admin_group }}"
-
-  - name: jellyfin
-    groups:
-      - "{{ media_read_group }}"
-    create_home: false
-    shell: /sbin/nologin
-
-  - name: media
-    groups:
-      - "{{ media_admin_group }}"
-    create_home: false
-    shell: /sbin/nologin
-
-  - name: kesslers
-    groups:
-      - "{{ upload_group }}"
-      - "{{ media_read_group }}"
-    create_home: false
-    shel: /sbin/nologin
-
-# Samba
-samba_users:
-  - name: "{{ nas_user }}"
-    password: "{{ lookup('password', 'credentials/samba_' ~ nas_user ~ '_password length=32 chars=ascii_letters,digits') }}"
-
-  - name: kesslers
-    password: "{{ lookup('password', 'credentials/samba_kesslers_password length=32 chars=ascii_letters,digits') }}"
-
-samba_global_config_extras: |
-  socket options = TCP_NODELAY IPTOS_LOWDELAY SO_RCVBUF=262144 SO_SNDBUF=262144
-  read raw = yes
-  write raw = yes
-  max xmit = 65536
-  dead time = 15
-  getwd cache = yes
-  strict allocate = yes
-  allocation roundup size = 4096
-  aio read size = 65536
-  aio write size = 65536
-  use sendfile = yes
-  server multi channel support = yes
-
-samba_shares:
-  - name: movies
-    path: "{{ media_cached }}/movies"
-    guest_ok: false
-    writable: false
-    read_only: true
-    valid_users: "@{{ media_read_group }}, {{ nas_user }}"
-    force_group: "{{ media_read_group }}"
-
-  - name: tv
-    path: "{{ media_cached }}/tv"
-    guest_ok: false
-    writable: false
-    read_only: true
-    valid_users: "@{{ media_read_group }}, {{ nas_user }}"
-    force_group: "{{ media_read_group }}"
-
-  - name: uploads
-    path: "{{ media_cached }}/{{ upload_root_directory }}/%U"
-    guest_ok: false
-    writable: true
-    read_only: false
-    valid_users: "@{{ upload_group }}, {{ nas_user }}"
-    force_group: "{{ upload_group }}"
-    create_mode: "0770"
-    directory_mode: "0770"
-    force_create_mode: "0770"
-    force_directory_mode: "0770"
-  
-  - name: uploads-admin
-    path: "{{ media_cached }}/{{ upload_root_directory }}"
-    guest_ok: false
-    writable: true
-    read_only: false
-    valid_users: "{{ nas_user }}"
-    force_group: "{{ media_admin_group }}"
-    create_mode: "0770"
-    directory_mode: "0770"
-    force_create_mode: "0770"
-    force_directory_mode: "0770"
-
+# -------------------------------------------------
 # Disk setup
+# -------------------------------------------------
 wipe_and_setup: true
 
 data_disks:
@@ -189,8 +59,9 @@ partition_path: >-
 manage_disks_nas_btrfs_mount_opts: subvol=data,nofail
 manage_disks_nas_ext4_mount_opts: defaults,nofail  
 
-
+# -------------------------------------------------
 # Cache mover
+# -------------------------------------------------
 cache_mover_autoupdate: true
 cache_mover_update_branch: main
 cache_mover_dir: /opt/mergerfs-cache-mover
@@ -208,7 +79,9 @@ cache_mover_notif_enabled: false
 cache_mover_notif_urls: []
 cache_mover_notif_threshold: true
 
+# -------------------------------------------------
 # Scrutiny
+# -------------------------------------------------
 scrutiny_mode: omnibus
 scrutiny_master_url: "http://scrutiny-master:8080"
 scrutiny_webui_port: 8081

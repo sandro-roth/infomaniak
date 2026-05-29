@@ -1,5 +1,0 @@
-- include_vars: "ports.yml"
-  tags: always
-
-- name: homelab | dashboard
-  import_tasks: glance.yml

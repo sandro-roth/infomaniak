@@ -1,0 +1,10 @@
+- include_vars: "ports.yml"
+  tags: always
+
+- name: homelab | dashboard
+  block:
+    - import_tasks: "core/glance.yml"
+      when: homelab_services.core.glance | default(false)
+
+  when: ansible_facts.os_family == "Debian"
+  become: true

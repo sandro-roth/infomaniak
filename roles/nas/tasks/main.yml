@@ -53,7 +53,6 @@
   tags: snapraid
   block:
 
-    - include_vars: "snapraid.yml"
     - import_tasks: snapraid/install_snapper.yml
     - import_tasks: snapraid/install_snapraid-btrfs.yml
     - import_tasks: snapraid/check_parity_format.yml
