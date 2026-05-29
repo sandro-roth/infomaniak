@@ -24,5 +24,5 @@
   tags: firewall
   community.general.ufw:
     rule: allow
-    port: "{{ scrutiny_webui_port | default(8081)}}"
+    port: "{{ scrutiny_webui_port | default(8081) }}"
     proto: tcp
