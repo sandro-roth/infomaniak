@@ -3,3 +3,37 @@ homelab_config_dir: "{{ homelab_base_dir }}/config"
 homelab_compose_dir: "{{ homelab_base_dir }}/compose"
 
 docker_network_name: homelab_stack
+
+glance_bookmarks:
+  - group: Core
+    links:
+      - title: Portainer
+        port: "{{ homelab_ports.portainer }}"
+      - title: Vaultwarden
+        port: "{{ homelab_ports.vaultwarden }}"
+      - title: File Browser
+        port: "{{ homelab_ports.filebrowser }}"
+
+  - group: Media
+    links:
+      - title: Jellyfin
+        port: "{{ homelab_ports.jellyfin }}"
+      - title: Seerr
+        port: "{{ homelab_ports.seerr }}"
+      - title: Sonarr
+        port: "{{ homelab_ports.sonarr }}"
+      - title: Radarr
+        port: "{{ homelab_ports.radarr }}"
+      - title: Prowlarr
+        port: "{{ homelab_ports.prowlarr }}"
+      - title: qBittorrent
+        port: "{{ homelab_ports.qbittorrent }}"
+
+  - group: Monitoring
+    links:
+      - title: Grafana
+        port: "{{ homelab_ports.grafana }}"
+      - title: Prometheus
+        port: "{{ homelab_ports.prometheus }}"
+      - title: Scrutiny
+        port: 8081
