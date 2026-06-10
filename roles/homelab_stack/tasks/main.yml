@@ -3,8 +3,8 @@
 
 - name: homelab | dashboard
   block:
-    - import_tasks: "core/glance.yml"
-      when: homelab_services.core.glance | default(false)
+    - import_tasks: "core/main.yml"
+      tags: homelab_core
 
   when: ansible_facts.os_family == "Debian"
   become: true
