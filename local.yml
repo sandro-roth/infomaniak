@@ -44,6 +44,9 @@
     - role: nas
       tags: nas
 
+    - role: homelab_stack
+      tags: homelab_stack
+
 - hosts: macbook
   gather_facts: true
   become: false
