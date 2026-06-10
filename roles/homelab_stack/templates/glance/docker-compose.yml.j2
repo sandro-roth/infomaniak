@@ -8,7 +8,7 @@ services:
       - "{{ Glance }}:8080"
 
     volumes:
-      - "{{ homelab_config_dir }}/glance/glance.yml:/app/glance.yml:ro"
+      - "{{ homelab_config_dir }}/glance:/app/config"
       - "{{ homelab_config_dir }}/glance/assets:/app/assets"
 
     networks:
