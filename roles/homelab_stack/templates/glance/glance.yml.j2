@@ -20,6 +20,6 @@ pages:
                 links:
 {% for link in bookmark_group.links %}
                   - title: {{ link.title }}
-                    url: http://{{ ansible_default_ipv4.address }}:{{ link.port }}
+                    url: http://{{ ansible_facts.default_ipv4.address }}:{{ link.port }}
 {% endfor %}
 {% endfor %}
