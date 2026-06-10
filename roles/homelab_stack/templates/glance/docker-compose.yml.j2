@@ -1,0 +1,19 @@
+services:
+  glance:
+    image: glanceapp/glance:latest
+    container_name: glance
+    restart: unless-stopped
+
+    ports:
+      - "{{ homelab_ports.glance }}:8080"
+
+    volumes:
+      - "{{ homelab_config_dir }}/glance/glance.yml:/app/glance.yml:ro"
+      - "{{ homelab_config_dir }}/glance/assets:/app/assets"
+
+    networks:
+      - {{ docker_network_name }}
+
+networks:
+  {{ docker_network_name }}:
+    external: true

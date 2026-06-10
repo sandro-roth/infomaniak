@@ -1,0 +1,25 @@
+server:
+  assets-path: /app/assets
+
+pages:
+  - name: Home
+    columns:
+      - size: small
+        widgets:
+          - type: clock
+            hour-format: 24h
+
+          - type: calendar
+
+      - size: full
+        widgets:
+          - type: bookmarks
+            groups:
+{% for bookmark_group in glance_bookmarks %}
+              - title: {{ bookmark_group.group }}
+                links:
+{% for link in bookmark_group.links %}
+                  - title: {{ link.title }}
+                    url: http://{{ ansible_default_ipv4.address }}:{{ link.port }}
+{% endfor %}
+{% endfor %}
