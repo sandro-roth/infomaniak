@@ -24,7 +24,7 @@
 
 - name: homelab_stack | core | Deploy Glance configuration
   ansible.builtin.template:
-    src: glance.yml.j2
+    src: glance/glance.yml.j2
     dest: "{{ homelab_config_dir }}/glance/glance.yml"
     owner: "{{ nas_user }}"
     group: "{{ nas_group }}"
@@ -32,7 +32,7 @@
 
 - name: homelab_stack | core | Deploy Glance compose file
   ansible.builtin.template:
-    src: docker-compose.yml.j2
+    src: glance/docker-compose.yml.j2
     dest: "{{ homelab_compose_dir }}/glance/docker-compose.yml"
     owner: "{{ nas_user }}"
     group: "{{ nas_group }}"
