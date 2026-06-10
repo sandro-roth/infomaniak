@@ -8,32 +8,32 @@ glance_bookmarks:
   - group: Core
     links:
       - title: Portainer
-        port: "{{ homelab_ports.portainer }}"
+        port: "{{ Portainer }}"
       - title: Vaultwarden
-        port: "{{ homelab_ports.vaultwarden }}"
+        port: "{{ Vaultwarden }}"
       - title: File Browser
-        port: "{{ homelab_ports.filebrowser }}"
+        port: "{{ FileBrowser }}"
 
   - group: Media
     links:
       - title: Jellyfin
-        port: "{{ homelab_ports.jellyfin }}"
+        port: "{{ Jellyfin }}"
       - title: Seerr
-        port: "{{ homelab_ports.seerr }}"
+        port: "{{ Seerr }}"
       - title: Sonarr
-        port: "{{ homelab_ports.sonarr }}"
+        port: "{{ Sonarr }}"
       - title: Radarr
-        port: "{{ homelab_ports.radarr }}"
+        port: "{{ Radarr }}"
       - title: Prowlarr
-        port: "{{ homelab_ports.prowlarr }}"
+        port: "{{ Prowlarr }}"
       - title: qBittorrent
-        port: "{{ homelab_ports.qbittorrent }}"
+        port: "{{ qBittorrentViaGluetun }}"
 
   - group: Monitoring
     links:
       - title: Grafana
-        port: "{{ homelab_ports.grafana }}"
+        port: "{{ Grafana }}"
       - title: Prometheus
-        port: "{{ homelab_ports.prometheus }}"
+        port: "{{ Prometheus }}"
       - title: Scrutiny
         port: 8081
