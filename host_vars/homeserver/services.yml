@@ -3,7 +3,7 @@ homelab_services:
     glance: true
     nginx_proxy_manager: true
     gluetun: true
-    pihole: true
+    pihole: false
     filebrowser: true
     vaultwarden: true
     portainer: true
