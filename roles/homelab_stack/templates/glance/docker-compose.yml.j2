@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
 
     ports:
-      - "{{ homelab_ports.glance }}:8080"
+      - "{{ Glance }}:8080"
 
     volumes:
       - "{{ homelab_config_dir }}/glance/glance.yml:/app/glance.yml:ro"
