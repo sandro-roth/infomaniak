@@ -79,4 +79,4 @@ users:
       - "{{ upload_group }}"
       - "{{ media_read_group }}"
     create_home: false
-    shel: /sbin/nologin
+    shell: /sbin/nologin
