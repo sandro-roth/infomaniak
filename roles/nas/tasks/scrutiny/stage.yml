@@ -26,18 +26,10 @@
     - scrutiny_mode != 'collector'
     - not config_file_stat.stat.exists
 
-- name: scrutiny | stage | check if collector configuration file exists
-  ansible.builtin.stat:
-    path: "{{ scrutiny_config_path }}/collector.yaml"
-  register: collector_config_file_stat
-
-- name: scrutiny | stage | download collector configuration file
-  ansible.builtin.get_url:
-    url: https://raw.githubusercontent.com/AnalogJ/scrutiny/master/example.collector.yaml
+- name: scrutiny | stage | deploy collector configuration file
+  ansible.builtin.template:
+    src: scrutiny/collector.yaml.j2
     dest: "{{ scrutiny_config_path }}/collector.yaml"
     owner: "{{ scrutiny_user }}"
     group: "{{ scrutiny_group }}"
     mode: "0640"
-  when:
-    - scrutiny_mode == 'collector'
-    - not collector_config_file_stat.stat.exists
