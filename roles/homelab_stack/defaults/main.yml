@@ -4,36 +4,54 @@ homelab_compose_dir: "{{ homelab_base_dir }}/compose"
 
 docker_network_name: homelab_stack
 
-glance_bookmarks:
-  - group: Core
-    links:
-      - title: Portainer
-        port: "{{ Portainer }}"
-      - title: Vaultwarden
-        port: "{{ Vaultwarden }}"
-      - title: File Browser
-        port: "{{ FileBrowser }}"
+glance_services:
+  core:
+    - name: Portainer
+      icon: si:portainer
+      port: "{{ Portainer }}"
 
-  - group: Media
-    links:
-      - title: Jellyfin
-        port: "{{ Jellyfin }}"
-      - title: Seerr
-        port: "{{ Seerr }}"
-      - title: Sonarr
-        port: "{{ Sonarr }}"
-      - title: Radarr
-        port: "{{ Radarr }}"
-      - title: Prowlarr
-        port: "{{ Prowlarr }}"
-      - title: qBittorrent
-        port: "{{ qBittorrentViaGluetun }}"
+    - name: Vaultwarden
+      icon: si:vaultwarden
+      port: "{{ Vaultwarden }}"
 
-  - group: Monitoring
-    links:
-      - title: Grafana
-        port: "{{ Grafana }}"
-      - title: Prometheus
-        port: "{{ Prometheus }}"
-      - title: Scrutiny
-        port: 8081
+    - name: File Browser
+      icon: si:filebrowser
+      port: "{{ FileBrowser }}"
+
+  media:
+    - name: Jellyfin
+      icon: si:jellyfin
+      port: "{{ Jellyfin }}"
+
+    - name: Seerr
+      icon: si:overseerr
+      port: "{{ Seerr }}"
+
+    - name: Sonarr
+      icon: si:sonarr
+      port: "{{ Sonarr }}"
+
+    - name: Radarr
+      icon: si:radarr
+      port: "{{ Radarr }}"
+
+    - name: Prowlarr
+      icon: si:prowlarr
+      port: "{{ Prowlarr }}"
+
+    - name: qBittorrent
+      icon: si:qbittorrent
+      port: "{{ qBittorrentViaGluetun }}"
+
+  monitoring:
+    - name: Grafana
+      icon: si:grafana
+      port: "{{ Grafana }}"
+
+    - name: Prometheus
+      icon: si:prometheus
+      port: "{{ Prometheus }}"
+
+    - name: Scrutiny
+      icon: si:smartthings
+      port: 8081

@@ -13,13 +13,26 @@ pages:
 
       - size: full
         widgets:
+          - type: search
+
+          - type: monitor
+            title: Services
+            sites:
+{% for category_name, services in glance_services.items() %}
+{% for service in services %}
+              - title: {{ service.name }}
+                url: http://{{ ansible_facts.default_ipv4.address }}:{{ service.port }}
+                icon: {{ service.icon | default('') }}
+{% endfor %}
+{% endfor %}
+
           - type: bookmarks
             groups:
-{% for bookmark_group in glance_bookmarks %}
-              - title: {{ bookmark_group.group }}
+{% for category_name, services in glance_services.items() %}
+              - title: {{ category_name | title }}
                 links:
-{% for link in bookmark_group.links %}
-                  - title: {{ link.title }}
-                    url: http://{{ ansible_facts.default_ipv4.address }}:{{ link.port }}
+{% for service in services %}
+                  - title: {{ service.name }}
+                    url: http://{{ ansible_facts.default_ipv4.address }}:{{ service.port }}
 {% endfor %}
 {% endfor %}
