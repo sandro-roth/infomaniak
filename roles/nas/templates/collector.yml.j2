@@ -1,0 +1,11 @@
+version: 1
+
+host:
+  id: "{{ inventory_hostname }}"
+
+devices:
+{% for disk in scrutiny_devices %}
+  - device: {{ disk.device }}
+    type: {{ disk.type | default('sat') }}
+    label: "{{ disk.label }}"
+{% endfor %}

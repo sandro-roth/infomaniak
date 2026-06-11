@@ -25,3 +25,24 @@ scrutiny_volumes:
   - "{{ scrutiny_config_file }}:/opt/scrutiny/config/scrutiny.yaml"
   - "/run/udev:/run/udev:ro"
   - "/dev:/dev:ro"
+
+scrutiny_devices:
+  - label: DISK01
+    device: "{{ data_disks[1] }}"
+    type: sat
+
+  - label: DISK02
+    device: "{{ data_disks[0] }}"
+    type: sat
+
+  - label: DISK03_PARITY01
+    device: "{{ parity_disks[0].device }}"
+    type: sat
+
+  - label: DISK04
+    device: "{{ data_disks[2] }}"
+    type: sat
+
+  - label: NVME01_OS_CACHE
+    device: /dev/nvme0
+    type: nvme
