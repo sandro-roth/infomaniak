@@ -6,33 +6,39 @@ pages:
     columns:
       - size: small
         widgets:
-          - type: clock
-            hour-format: 24h
-
-          - type: calendar
+          - type: server-stats
 
       - size: full
         widgets:
           - type: search
+            search-engine: google
 
           - type: monitor
-            title: Services
+            title: Core Services
+            cache: 1m
             sites:
-{% for category_name, services in glance_services.items() %}
-{% for service in services %}
+{% for service in glance_services.core %}
               - title: {{ service.name }}
-                url: http://{{ ansible_facts.default_ipv4.address }}:{{ service.port }}
-                icon: {{ service.icon | default('') }}
-{% endfor %}
+                url: http://{{ ansible_host }}:{{ service.port }}
+                icon: {{ service.icon }}
 {% endfor %}
 
-          - type: bookmarks
-            groups:
-{% for category_name, services in glance_services.items() %}
-              - title: {{ category_name | title }}
-                links:
-{% for service in services %}
-                  - title: {{ service.name }}
-                    url: http://{{ ansible_facts.default_ipv4.address }}:{{ service.port }}
+          - type: monitor
+            title: Media Services
+            cache: 1m
+            sites:
+{% for service in glance_services.media %}
+              - title: {{ service.name }}
+                url: http://{{ ansible_host }}:{{ service.port }}
+                icon: {{ service.icon }}
 {% endfor %}
+
+          - type: monitor
+            title: Monitoring
+            cache: 1m
+            sites:
+{% for service in glance_services.monitoring %}
+              - title: {{ service.name }}
+                url: http://{{ ansible_host }}:{{ service.port }}
+                icon: {{ service.icon }}
 {% endfor %}
