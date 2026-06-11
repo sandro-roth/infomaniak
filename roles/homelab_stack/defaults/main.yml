@@ -15,7 +15,7 @@ glance_services:
       port: "{{ Vaultwarden }}"
 
     - name: File Browser
-      icon: si:filebrowser
+      icon: di:filebrowser
       port: "{{ FileBrowser }}"
 
   media:
@@ -24,7 +24,7 @@ glance_services:
       port: "{{ Jellyfin }}"
 
     - name: Seerr
-      icon: si:overseerr
+      icon: sh:overseerr
       port: "{{ Seerr }}"
 
     - name: Sonarr
@@ -36,7 +36,7 @@ glance_services:
       port: "{{ Radarr }}"
 
     - name: Prowlarr
-      icon: si:prowlarr
+      icon: di:prowlarr
       port: "{{ Prowlarr }}"
 
     - name: qBittorrent
@@ -53,5 +53,5 @@ glance_services:
       port: "{{ Prometheus }}"
 
     - name: Scrutiny
-      icon: si:smartthings
+      icon: sh:scrutiny
       port: 8081
