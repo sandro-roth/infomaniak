@@ -28,7 +28,7 @@
 
 - name: scrutiny | stage | deploy collector configuration file
   ansible.builtin.template:
-    src: scrutiny/collector.yaml.j2
+    src: collector.yml.j2
     dest: "{{ scrutiny_config_path }}/collector.yaml"
     owner: "{{ scrutiny_user }}"
     group: "{{ scrutiny_group }}"
