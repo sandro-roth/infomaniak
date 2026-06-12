@@ -2,8 +2,6 @@ homelab_base_dir: /opt/docker
 homelab_config_dir: "{{ homelab_base_dir }}/config"
 homelab_compose_dir: "{{ homelab_base_dir }}/compose"
 
-docker_network_name: homelab_stack
-
 glance_services:
   core:
     - name: Portainer

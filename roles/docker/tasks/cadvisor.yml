@@ -1,3 +1,9 @@
+- name: docker | cadvisor | Ensure Docker network exists
+  community.docker.docker_network:
+    name: "{{ docker_network_name }}"
+    state: present
+  when: docker_network_name is defined
+
 - name: docker | cadvisor | Run container
   tags: cadvisor
   community.docker.docker_container:
@@ -6,6 +12,7 @@
     restart_policy: unless-stopped
     ports:
       - "{{ cadvisor_listen_address | default('127.0.0.1:8080') }}:8080"
+    networks: "{{ [{'name': docker_network_name}] if docker_network_name is defined else omit }}"
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro

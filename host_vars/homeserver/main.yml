@@ -30,6 +30,7 @@ security_autoupdate_mail_on_error: true
 security_autoupdate_blacklist: [] # List of packages to exclude from automatic updates
 
 # Visual: host and docker level metrics
+docker_network_name: homelab_stack
 install_node_exporter: true # host metricts
 node_exporter_listen_address: '127.0.0.1:9100'
 install_cAdvisor: true # docker metrics
