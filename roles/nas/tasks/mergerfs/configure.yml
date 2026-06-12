@@ -7,6 +7,7 @@
 - name: mergerfs | configure | set disk count facts
   ansible.builtin.set_fact:
     cache_disks_count: "{{ cache_disks_only | length }}"
+    cache_sources_count: "{{ cache_disks | default([]) | length }}"
     cache_disks_exist: "{{ cache_disks | default([]) | length > 0 }}"
     data_disks_count: "{{ data_disks | length }}"
 

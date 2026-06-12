@@ -13,7 +13,7 @@
     owner: "{{ nas_user }}"
     group: "{{ media_admin_group }}"
     mode: "0770"
-  when: cache_disks_count | int > 1
+  when: cache_sources_count | int > 1
 
 - name: mergerfs | configure | initialize cache mounts list
   ansible.builtin.set_fact:
@@ -42,10 +42,10 @@
   notify:
     - Reload systemd daemon
     - Restart mergerfs_media_cache
-  when: cache_disks_count | int == 1
+  when: cache_sources_count | int == 1
 
 - name: mergerfs | configure | configure multiple cache disks or paths
-  when: cache_disks_count | int > 1
+  when: cache_sources_count | int > 1
   block:
     - name: mergerfs | configure | deploy cache_disks service
       ansible.builtin.template:
