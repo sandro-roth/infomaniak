@@ -78,6 +78,10 @@
 - name: Ensure handlers are notified now to avoid firewall conflicts.
   meta: flush_handlers
 
+- name: Include task docker-networks.yml
+  include_tasks: docker-networks.yml
+  when: docker_networks is defined and docker_networks | length > 0
+
 - name: Include task docker-compose.yml
   include_tasks: docker-compose.yml
   when: docker_install_compose | bool

@@ -31,6 +31,14 @@ security_autoupdate_blacklist: [] # List of packages to exclude from automatic u
 
 # Visual: host and docker level metrics
 docker_network_name: homelab_stack
+docker_network_subnet: 172.18.0.0/16
+
+docker_networks:
+  - name: "{{ docker_network_name }}"
+    driver: bridge
+    ipam_config:
+      - subnet: "{{ docker_network_subnet }}"
+
 install_node_exporter: true # host metricts
 node_exporter_listen_address: '127.0.0.1:9100'
 install_cAdvisor: true # docker metrics

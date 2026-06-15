@@ -4,10 +4,8 @@
 - name: homelab | dashboard
   block:
 
-    - name: homelab_stack | dashboard | create docker network
-      community.docker.docker_network:
-        name: "{{ docker_network_name }}"
-        state: present
+    - import_tasks: "core/ufw.yml"
+      tags: homelab_core
 
     - import_tasks: "core/main.yml"
       tags: homelab_core

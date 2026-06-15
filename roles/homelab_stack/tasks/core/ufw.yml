@@ -1,0 +1,4 @@
+- name: ufw | allow homelab docker network
+  community.general.ufw:
+    rule: allow
+    src: "{{ docker_network_subnet }}"
