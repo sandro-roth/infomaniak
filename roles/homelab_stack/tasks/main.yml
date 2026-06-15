@@ -4,9 +4,6 @@
 - name: homelab | dashboard
   block:
 
-    - import_tasks: "core/ufw.yml"
-      tags: homelab_core
-
     - import_tasks: "core/main.yml"
       tags: homelab_core
 

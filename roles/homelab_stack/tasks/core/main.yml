@@ -1,3 +1,7 @@
+- name: homelab_stack | core | ufw
+  import_tasks: 'ufw.yml'
+  when: homelab_services.core.ufw | default(false)
+
 - name: homelab_stack | core | Install glance
   import_tasks: 'glance.yml'
   when: homelab_services.core.glance | default(false)
