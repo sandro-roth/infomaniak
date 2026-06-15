@@ -7,5 +7,8 @@
     - import_tasks: "core/main.yml"
       tags: homelab_core
 
+    - import_tasks: "monitoring/main.yml"
+      tags: homelab_monitoring
+
   when: ansible_facts.os_family == "Debian"
   become: true
