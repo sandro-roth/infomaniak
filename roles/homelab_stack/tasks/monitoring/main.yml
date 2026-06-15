@@ -1,3 +1,7 @@
 - name: homelab_stack | monitoring | Install Prometheus
   import_tasks: 'prometheus.yml'
   when: homelab_services.monitoring.prometheus | default(false)
+
+- name: homelab_stack | monitoring | Install Grafana
+  import_tasks: grafana.yml
+  when: homelab_services.monitoring.grafana | default(false)
