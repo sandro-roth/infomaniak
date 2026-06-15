@@ -1,0 +1,37 @@
+- name: homelab_stack | grafana | Create config directory
+  ansible.builtin.file:
+    path: "{{ homelab_config_dir }}/grafana"
+    state: directory
+    owner: "472"
+    group: "472"
+    mode: "0755"
+
+- name: homelab_stack | grafana | Create data directory
+  ansible.builtin.file:
+    path: "{{ homelab_config_dir }}/grafana/data"
+    state: directory
+    owner: "472"
+    group: "472"
+    mode: "0755"
+
+- name: homelab_stack | grafana | Create compose directory
+  ansible.builtin.file:
+    path: "{{ homelab_compose_dir }}/grafana"
+    state: directory
+    owner: "{{ nas_user }}"
+    group: "{{ nas_group }}"
+    mode: "0755"
+
+- name: homelab_stack | grafana | Deploy compose file
+  ansible.builtin.template:
+    src: grafana/docker-compose.yml.j2
+    dest: "{{ homelab_compose_dir }}/grafana/docker-compose.yml"
+    owner: "{{ nas_user }}"
+    group: "{{ nas_group }}"
+    mode: "0644"
+
+- name: homelab_stack | grafana | Start stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ homelab_compose_dir }}/grafana"
+    pull: always
+    state: present

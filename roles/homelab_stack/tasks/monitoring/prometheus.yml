@@ -1,0 +1,37 @@
+- name: homelab_stack | prometheus | Create config directory
+  ansible.builtin.file:
+    path: "{{ homelab_config_dir }}/prometheus"
+    state: directory
+    owner: "{{ nas_user }}"
+    group: "{{ nas_group }}"
+    mode: "0755"
+
+- name: homelab_stack | prometheus | Create compose directory
+  ansible.builtin.file:
+    path: "{{ homelab_compose_dir }}/prometheus"
+    state: directory
+    owner: "{{ nas_user }}"
+    group: "{{ nas_group }}"
+    mode: "0755"
+
+- name: homelab_stack | prometheus | Deploy Prometheus config
+  ansible.builtin.template:
+    src: prometheus/prometheus.yml.j2
+    dest: "{{ homelab_config_dir }}/prometheus/prometheus.yml"
+    owner: "{{ nas_user }}"
+    group: "{{ nas_group }}"
+    mode: "0644"
+
+- name: homelab_stack | prometheus | Deploy compose file
+  ansible.builtin.template:
+    src: prometheus/docker-compose.yml.j2
+    dest: "{{ homelab_compose_dir }}/prometheus/docker-compose.yml"
+    owner: "{{ nas_user }}"
+    group: "{{ nas_group }}"
+    mode: "0644"
+
+- name: homelab_stack | prometheus | Start stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ homelab_compose_dir }}/prometheus"
+    pull: always
+    state: present
