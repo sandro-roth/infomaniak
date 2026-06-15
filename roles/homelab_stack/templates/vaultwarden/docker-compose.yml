@@ -1,0 +1,25 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+
+    ports:
+      - "{{ Vaultwarden }}:80"
+
+    environment:
+      DOMAIN: "http://{{ ansible_host }}:{{ Vaultwarden }}"
+      SIGNUPS_ALLOWED: "{{ vaultwarden_signups_allowed | default('false') }}"
+      INVITATIONS_ALLOWED: "{{ vaultwarden_invitations_allowed | default('false') }}"
+      WEBSOCKET_ENABLED: "true"
+      ADMIN_TOKEN: "{{ vaultwarden_admin_token }}"
+
+    volumes:
+      - "{{ homelab_config_dir }}/vaultwarden/data:/data"
+
+    networks:
+      - "{{ docker_network_name }}"
+
+networks:
+  {{ docker_network_name }}:
+    external: true

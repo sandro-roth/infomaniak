@@ -1,0 +1,6 @@
+vaultwarden_admin_token: >-
+  {{ lookup('password',
+     'credentials/vaultwarden_admin_token length=64 chars=ascii_letters,digits') }}
+
+vaultwarden_signups_allowed: false
+vaultwarden_invitations_allowed: false

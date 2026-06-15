@@ -4,4 +4,8 @@
 
 - name: homelab_stack | core | Install glance
   import_tasks: 'glance.yml'
-  when: homelab_services.core.ufw | default(false)  
+  when: homelab_services.core.ufw | default(false)
+
+- name: homelab_stack | core | Install Vaultwarden
+  import_tasks: 'vaultwarden.yml'
+  when: homelab_services.core.vaultwarden | default(false)
