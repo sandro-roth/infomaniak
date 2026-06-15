@@ -8,10 +8,10 @@ services:
       - "{{ Vaultwarden }}:80"
 
     environment:
-      DOMAIN: "http://{{ ansible_host }}:{{ Vaultwarden }}"
-      SIGNUPS_ALLOWED: "{{ vaultwarden_signups_allowed | default('false') }}"
-      INVITATIONS_ALLOWED: "{{ vaultwarden_invitations_allowed | default('false') }}"
-      WEBSOCKET_ENABLED: "true"
+      DOMAIN: "{{ vaultwarden_domain }}"
+      SIGNUPS_ALLOWED: "{{ vaultwarden_signups_allowed }}"
+      INVITATIONS_ALLOWED: "{{ vaultwarden_invitations_allowed }}"
+      WEBSOCKET_ENABLED: "{{ vaultwarden_websocket_enabled }}"
       ADMIN_TOKEN: "{{ vaultwarden_admin_token }}"
 
     volumes:

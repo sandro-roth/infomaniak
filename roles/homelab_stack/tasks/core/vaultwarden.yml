@@ -22,7 +22,7 @@
     group: "{{ nas_group }}"
     mode: "0644"
 
-- name: homelab_stack | vaultwarden | Allow Vaultwarden port
+- name: homelab_stack | vaultwarden | Allow port
   community.general.ufw:
     rule: allow
     port: "{{ Vaultwarden }}"
