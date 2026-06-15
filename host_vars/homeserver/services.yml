@@ -1,9 +1,10 @@
 homelab_services:
   core:
+    ufw: true
     glance: true
     nginx_proxy_manager: true
     gluetun: true
-    pihole: false
+    adguard: true
     filebrowser: true
     vaultwarden: true
     portainer: true
