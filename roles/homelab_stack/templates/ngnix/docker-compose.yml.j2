@@ -1,0 +1,20 @@
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: unless-stopped
+
+    ports:
+      - "80:80"
+      - "443:443"
+
+    volumes:
+      - "{{ homelab_config_dir }}/nginx/conf.d:/etc/nginx/conf.d:ro"
+      - "{{ homelab_config_dir }}/nginx/certs:/etc/nginx/certs:ro"
+
+    networks:
+      - "{{ docker_network_name }}"
+
+networks:
+  {{ docker_network_name }}:
+    external: true
