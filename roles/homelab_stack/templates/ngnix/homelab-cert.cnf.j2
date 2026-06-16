@@ -1,0 +1,19 @@
+[req]
+default_bits = 4096
+prompt = no
+default_md = sha256
+distinguished_name = dn
+req_extensions = req_ext
+
+[dn]
+CN = *.{{ homelab_domain }}
+
+[req_ext]
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = *.{{ homelab_domain }}
+DNS.2 = {{ homelab_domain }}
+{% for host in homelab_proxy_hosts %}
+DNS.{{ loop.index + 2 }} = {{ host.domain }}
+{% endfor %}
