@@ -1,0 +1,138 @@
+- name: homelab_stack | nginx | Create local cert directory
+  ansible.builtin.file:
+    path: "{{ playbook_dir }}/credentials/certs"
+    state: directory
+    mode: "0700"
+  delegate_to: localhost
+  become: false
+
+- name: homelab_stack | nginx | Create root CA key
+  ansible.builtin.command:
+    cmd: openssl genrsa -out "{{ playbook_dir }}/credentials/certs/homelab-root-ca.key" 4096
+    creates: "{{ playbook_dir }}/credentials/certs/homelab-root-ca.key"
+  delegate_to: localhost
+  become: false
+
+- name: homelab_stack | nginx | Create root CA certificate
+  ansible.builtin.command:
+    cmd: >
+      openssl req -x509 -new -nodes
+      -key "{{ playbook_dir }}/credentials/certs/homelab-root-ca.key"
+      -sha256 -days 3650
+      -out "{{ playbook_dir }}/credentials/certs/homelab-root-ca.crt"
+      -subj "/CN=Homelab Local Root CA"
+    creates: "{{ playbook_dir }}/credentials/certs/homelab-root-ca.crt"
+  delegate_to: localhost
+  become: false
+
+- name: homelab_stack | nginx | Deploy OpenSSL config
+  ansible.builtin.template:
+    src: nginx/homelab-cert.cnf.j2
+    dest: "{{ playbook_dir }}/credentials/certs/homelab-cert.cnf"
+    mode: "0600"
+  delegate_to: localhost
+  become: false
+
+- name: homelab_stack | nginx | Create wildcard cert key
+  ansible.builtin.command:
+    cmd: openssl genrsa -out "{{ playbook_dir }}/credentials/certs/homelab.key" 4096
+    creates: "{{ playbook_dir }}/credentials/certs/homelab.key"
+  delegate_to: localhost
+  become: false
+
+- name: homelab_stack | nginx | Create wildcard cert CSR
+  ansible.builtin.command:
+    cmd: >
+      openssl req -new
+      -key "{{ playbook_dir }}/credentials/certs/homelab.key"
+      -out "{{ playbook_dir }}/credentials/certs/homelab.csr"
+      -config "{{ playbook_dir }}/credentials/certs/homelab-cert.cnf"
+    creates: "{{ playbook_dir }}/credentials/certs/homelab.csr"
+  delegate_to: localhost
+  become: false
+
+- name: homelab_stack | nginx | Sign wildcard cert
+  ansible.builtin.command:
+    cmd: >
+      openssl x509 -req
+      -in "{{ playbook_dir }}/credentials/certs/homelab.csr"
+      -CA "{{ playbook_dir }}/credentials/certs/homelab-root-ca.crt"
+      -CAkey "{{ playbook_dir }}/credentials/certs/homelab-root-ca.key"
+      -CAcreateserial
+      -out "{{ playbook_dir }}/credentials/certs/homelab.crt"
+      -days 825
+      -sha256
+      -extensions req_ext
+      -extfile "{{ playbook_dir }}/credentials/certs/homelab-cert.cnf"
+    creates: "{{ playbook_dir }}/credentials/certs/homelab.crt"
+  delegate_to: localhost
+  become: false
+
+- name: homelab_stack | nginx | Trust root CA on MacBook
+  ansible.builtin.command:
+    cmd: >
+      security add-trusted-cert
+      -d -r trustRoot
+      -k /Library/Keychains/System.keychain
+      "{{ playbook_dir }}/credentials/certs/homelab-root-ca.crt"
+  delegate_to: localhost
+  become: true
+  changed_when: false
+  tags: trust_mac
+
+- name: homelab_stack | nginx | Create server directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ nas_user }}"
+    group: "{{ nas_group }}"
+    mode: "0755"
+  loop:
+    - "{{ homelab_config_dir }}/nginx/conf.d"
+    - "{{ homelab_config_dir }}/nginx/certs"
+    - "{{ homelab_compose_dir }}/nginx"
+
+- name: homelab_stack | nginx | Copy cert files
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/credentials/certs/{{ item }}"
+    dest: "{{ homelab_config_dir }}/nginx/certs/{{ item }}"
+    owner: "{{ nas_user }}"
+    group: "{{ nas_group }}"
+    mode: "0640"
+  loop:
+    - homelab.crt
+    - homelab.key
+
+- name: homelab_stack | nginx | Deploy nginx config
+  ansible.builtin.template:
+    src: nginx/default.conf.j2
+    dest: "{{ homelab_config_dir }}/nginx/conf.d/default.conf"
+    owner: "{{ nas_user }}"
+    group: "{{ nas_group }}"
+    mode: "0644"
+
+- name: homelab_stack | nginx | Deploy compose file
+  ansible.builtin.template:
+    src: nginx/docker-compose.yml.j2
+    dest: "{{ homelab_compose_dir }}/nginx/docker-compose.yml"
+    owner: "{{ nas_user }}"
+    group: "{{ nas_group }}"
+    mode: "0644"
+
+- name: homelab_stack | nginx | Allow HTTP internally
+  community.general.ufw:
+    rule: allow
+    port: "80"
+    proto: tcp
+
+- name: homelab_stack | nginx | Allow HTTPS internally
+  community.general.ufw:
+    rule: allow
+    port: "443"
+    proto: tcp
+
+- name: homelab_stack | nginx | Start stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ homelab_compose_dir }}/nginx"
+    pull: always
+    state: present
