@@ -1,6 +1,6 @@
 # Ngnix configuration
 homelab_domain: "homelab"
-homelab_server_ip: "{{ ansible.facts ['homeserver']['ansible_default_ipv4']['address'] }}"
+homelab_server_ip: "{{ ansible_default_ipv4.address }}"
 
 homelab_proxy_hosts:
   - name: glance
