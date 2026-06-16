@@ -1,3 +1,25 @@
+# Ngnix configuration
+homelab_domain: "homelab.local"
+homelab_server_ip: "{{ ansible.facts ['homeserver']['ansible_default_ipv4']['address'] }}"
+
+homelab_proxy_hosts:
+  - name: glance
+    domain: "glance.{{ homelab_domain }}"
+    upstream: "http://glance:8080"
+
+  - name: vaultwarden
+    domain: "vaultwarden.{{ homelab_domain }}"
+    upstream: "http://vaultwarden:80"
+
+  - name: grafana
+    domain: "grafana.{{ homelab_domain }}"
+    upstream: "http://grafana:3000"
+
+  - name: scrutiny
+    domain: "scrutiny.{{ homelab_domain }}"
+    upstream: "http://scrutiny:8080"
+
+# Vaultwarden configuration
 vaultwarden_signups_allowed: "true"
 vaultwarden_invitations_allowed: "false"
 vaultwarden_websocket_enabled: "true"
