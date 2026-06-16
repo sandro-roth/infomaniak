@@ -4,7 +4,11 @@
 
 - name: homelab_stack | core | Install glance
   import_tasks: 'glance.yml'
-  when: homelab_services.core.ufw | default(false)
+  when: homelab_services.core.glance | default(false)
+
+- name: homelab_stack | core | Install nginx
+  import_tasks: 'nginx.yml'
+  when: homelab_services.core.nginx | default(false)
 
 - name: homelab_stack | core | Install Vaultwarden
   import_tasks: 'vaultwarden.yml'
