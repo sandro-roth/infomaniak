@@ -17,3 +17,5 @@ Immich: 2283
 Grafana: 3000
 Prometheus: 9090
 InfluxDB: 8087
+AdGuardAdmin: 8053
+AdGuardDNS: 53

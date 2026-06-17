@@ -1,0 +1,26 @@
+- name: homelab_stack | adguard | Create directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ nas_user }}"
+    group: "{{ nas_group }}"
+    mode: "0755"
+  loop:
+    - "{{ homelab_config_dir }}/adguard"
+    - "{{ homelab_config_dir }}/adguard/work"
+    - "{{ homelab_config_dir }}/adguard/conf"
+    - "{{ homelab_compose_dir }}/adguard"
+
+- name: homelab_stack | adguard | Deploy compose
+  ansible.builtin.template:
+    src: adguard/docker-compose.yml.j2
+    dest: "{{ homelab_compose_dir }}/adguard/docker-compose.yml"
+    owner: "{{ nas_user }}"
+    group: "{{ nas_group }}"
+    mode: "0644"
+
+- name: homelab_stack | adguard | Start stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ homelab_compose_dir }}/adguard"
+    pull: always
+    state: present

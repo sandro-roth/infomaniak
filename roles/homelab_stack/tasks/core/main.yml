@@ -10,6 +10,10 @@
   import_tasks: 'vaultwarden.yml'
   when: homelab_services.core.vaultwarden | default(false)
 
+- name: homelab_stack | core | Install AdGuard
+  import_tasks: adguard.yml
+  when: homelab_services.core.adguard | default(false)
+
 - name: homelab_stack | core | Install glance
   import_tasks: 'glance.yml'
   when: homelab_services.core.glance | default(false)

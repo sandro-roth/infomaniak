@@ -1,13 +1,7 @@
 {% for host in homelab_proxy_hosts %}
 server {
-    listen 80;
-    server_name {{ host.domain }};
-
-    return 301 https://$host$request_uri;
-}
-
-server {
-    listen 443 ssl http2;
+    listen 443 ssl;
+    http2 on;
     server_name {{ host.domain }};
 
     ssl_certificate /etc/nginx/certs/homelab.crt;

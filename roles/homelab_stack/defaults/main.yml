@@ -16,6 +16,10 @@ glance_services:
       icon: di:filebrowser
       url: "https://filebrowser.{{ homelab_domain }}"
 
+    - name: Adguard
+      icon: si:adguard
+      url: "https://adguard.{{ homelab_domain }}"
+
   media:
     - name: Jellyfin
       icon: si:jellyfin

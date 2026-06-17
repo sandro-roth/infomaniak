@@ -1,0 +1,21 @@
+services:
+  adguard:
+    image: adguard/adguardhome:latest
+    container_name: adguard
+    restart: unless-stopped
+
+    ports:
+      - "{{ AdGuardAdmin }}:3000"
+      - "{{ AdGuardDNS }}:53/tcp"
+      - "{{ AdGuardDNS }}:53/udp"
+
+    volumes:
+      - "{{ homelab_config_dir }}/adguard/work:/opt/adguardhome/work"
+      - "{{ homelab_config_dir }}/adguard/conf:/opt/adguardhome/conf"
+
+    networks:
+      - "{{ docker_network_name }}"
+
+networks:
+  {{ docker_network_name }}:
+    external: true
