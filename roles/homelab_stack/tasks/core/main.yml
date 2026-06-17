@@ -6,10 +6,10 @@
   import_tasks: 'nginx.yml'
   when: homelab_services.core.nginx_proxy_manager | default(false)
 
-- name: homelab_stack | core | Install glance
-  import_tasks: 'glance.yml'
-  when: homelab_services.core.glance | default(false)
-
 - name: homelab_stack | core | Install Vaultwarden
   import_tasks: 'vaultwarden.yml'
   when: homelab_services.core.vaultwarden | default(false)
+
+- name: homelab_stack | core | Install glance
+  import_tasks: 'glance.yml'
+  when: homelab_services.core.glance | default(false)

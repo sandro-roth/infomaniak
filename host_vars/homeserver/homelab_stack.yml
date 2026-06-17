@@ -20,7 +20,7 @@ homelab_proxy_hosts:
     upstream: "http://scrutiny:8080"
   
   - name: prometheus
-    domain: "prometheus.{{ homelab_domain }}”
+    domain: "prometheus.{{ homelab_domain }}"
     upstream: "http://prometheus:9090"
 
 # Vaultwarden configuration
