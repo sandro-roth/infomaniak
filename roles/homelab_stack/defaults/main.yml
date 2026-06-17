@@ -6,50 +6,50 @@ glance_services:
   core:
     - name: Portainer
       icon: si:portainer
-      port: "{{ Portainer }}"
+      url: "https://portainer.{{ homelab_domain }}"
 
     - name: Vaultwarden
       icon: si:vaultwarden
-      port: "{{ Vaultwarden }}"
+      url: "https://vaultwarden.{{ homelab_domain}}"
 
     - name: File Browser
       icon: di:filebrowser
-      port: "{{ FileBrowser }}"
+      url: "https://filebrowser.{{ homelab_domain }}"
 
   media:
     - name: Jellyfin
       icon: si:jellyfin
-      port: "{{ Jellyfin }}"
+      url: "https://jellyfin.{{ homelab_domain }}"
 
     - name: Seerr
       icon: sh:overseerr
-      port: "{{ Seerr }}"
+      url: "https://seerr.{{ homelab_domain }}"
 
     - name: Sonarr
       icon: si:sonarr
-      port: "{{ Sonarr }}"
+      url: "https://sonarr.{{ homelab_domain }}"
 
     - name: Radarr
       icon: si:radarr
-      port: "{{ Radarr }}"
+      url: "https://radarr.{{ homelab_domain }}"
 
     - name: Prowlarr
       icon: di:prowlarr
-      port: "{{ Prowlarr }}"
+      url: "https://prowlarr.{{ homelab_domain }}"
 
     - name: qBittorrent
       icon: si:qbittorrent
-      port: "{{ qBittorrentViaGluetun }}"
+      url: "https://qbittorrent.{{ homelab_domain }}"
 
   monitoring:
     - name: Grafana
       icon: si:grafana
-      port: "{{ Grafana }}"
+      url: "https://grafana.{{ homelab_domain }}"
 
     - name: Prometheus
       icon: si:prometheus
-      port: "{{ Prometheus }}"
+      url: "https://prometheus.{{ homelab_domain }}"
 
     - name: Scrutiny
       icon: sh:scrutiny
-      port: 8081
+      url: "https://scrutiny.{{ homelab_domain }}"

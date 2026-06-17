@@ -18,6 +18,10 @@ homelab_proxy_hosts:
   - name: scrutiny
     domain: "scrutiny.{{ homelab_domain }}"
     upstream: "http://scrutiny:8080"
+  
+  - name: prometheus
+    domain: "prometheus.{{ homelab_domain }}”
+    upstream: "http://prometheus:9090"
 
 # Vaultwarden configuration
 vaultwarden_signups_allowed: "true"

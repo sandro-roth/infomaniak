@@ -19,7 +19,7 @@ pages:
             sites:
 {% for service in glance_services.core %}
               - title: {{ service.name }}
-                url: {{ service.url | default('http://' ~ ansible_host ~ ':' ~ service.port) }}
+                url: {{ service.url }}
                 icon: {{ service.icon }}
 {% endfor %}
 
@@ -29,7 +29,7 @@ pages:
             sites:
 {% for service in glance_services.media %}
               - title: {{ service.name }}
-                url: {{ service.url | default('http://' ~ ansible_host ~ ':' ~ service.port) }}
+                url: {{ service.url }}
                 icon: {{ service.icon }}
 {% endfor %}
 
@@ -39,6 +39,6 @@ pages:
             sites:
 {% for service in glance_services.monitoring %}
               - title: {{ service.name }}
-                url: {{ service.url | default('http://' ~ ansible_host ~ ':' ~ service.port) }}
+                url: {{ service.url }}
                 icon: {{ service.icon }}
 {% endfor %}
