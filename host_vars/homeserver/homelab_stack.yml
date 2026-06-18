@@ -1,6 +1,6 @@
 # Ngnix configuration
 homelab_domain: "homelab"
-homelab_server_ip: "{{ ansible_default_ipv4.address }}"
+homelab_server_ip: "{{ ansible_facts['default_ipv4']['address'] }}"
 
 homelab_proxy_hosts:
   - name: glance
@@ -42,3 +42,11 @@ adguard_admin_user: admin
 adguard_admin_password: >-
   {{ lookup('password',
      'credentials/adguard_admin_password length=32 chars=ascii_letters,digits') }}
+
+adguard_upstream_dns:
+  - https://dns.quad9.net/dns-query
+  - https://cloudflare-dns.com/dns-query
+
+adguard_dns_rewrites:
+  - domain: "*.{{ homelab_domain }}"
+    answer: "{{ homelab_server_ip }}"

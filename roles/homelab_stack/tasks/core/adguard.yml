@@ -11,6 +11,27 @@
     - "{{ homelab_config_dir }}/adguard/conf"
     - "{{ homelab_compose_dir }}/adguard"
 
+- name: homelab_stack | adguard | Install python bcrypt dependency
+  ansible.builtin.apt:
+    name: python3-bcrypt
+    state: present
+
+- name: homelab_stack | adguard | Generate bcrypt password hash
+  ansible.builtin.command:
+    cmd: >
+      python3 -c 'import bcrypt; print(bcrypt.hashpw(b"{{ adguard_admin_password }}", bcrypt.gensalt()).decode())'
+  register: adguard_password_hash_cmd
+  changed_when: false
+  no_log: true
+
+- name: homelab_stack | adguard | Deploy config
+  ansible.builtin.template:
+    src: adguard/AdGuardHome.yaml.j2
+    dest: "{{ homelab_config_dir }}/adguard/conf/AdGuardHome.yaml"
+    owner: "{{ nas_user }}"
+    group: "{{ nas_group }}"
+    mode: "0644"
+
 - name: homelab_stack | adguard | Deploy compose
   ansible.builtin.template:
     src: adguard/docker-compose.yml.j2
@@ -19,8 +40,21 @@
     group: "{{ nas_group }}"
     mode: "0644"
 
+- name: homelab_stack | adguard | Allow DNS tcp
+  community.general.ufw:
+    rule: allow
+    port: "53"
+    proto: tcp
+
+- name: homelab_stack | adguard | Allow DNS udp
+  community.general.ufw:
+    rule: allow
+    port: "53"
+    proto: udp
+
 - name: homelab_stack | adguard | Start stack
   community.docker.docker_compose_v2:
     project_src: "{{ homelab_compose_dir }}/adguard"
     pull: always
     state: present
+    recreate: always
