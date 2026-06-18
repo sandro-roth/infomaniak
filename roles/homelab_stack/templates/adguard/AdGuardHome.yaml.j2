@@ -70,6 +70,7 @@ filtering:
 {% for host in homelab_proxy_hosts %}
     - domain: "{{ host.domain }}"
       answer: "{{ homelab_server_ip }}"
+      enabled: true
 {% endfor %}
   protection_enabled: true
   parental_enabled: false
