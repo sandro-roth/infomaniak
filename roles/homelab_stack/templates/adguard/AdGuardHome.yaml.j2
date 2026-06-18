@@ -1,13 +1,20 @@
-bind_host: 0.0.0.0
-bind_port: 3000
+http:
+  pprof:
+    port: 6060
+    enabled: false
+  address: 0.0.0.0:3000
+  session_ttl: 30d
+
 users:
   - name: "{{ adguard_admin_user }}"
     password: "{{ adguard_password_hash_cmd.stdout }}"
+
 auth_attempts: 5
 block_auth_min: 15
 http_proxy: ""
 language: en
 theme: auto
+
 dns:
   bind_hosts:
     - 0.0.0.0
@@ -20,21 +27,25 @@ dns:
     - 9.9.9.9
     - 1.1.1.1
   fallback_dns: []
+  upstream_mode: load_balance
   protection_enabled: true
   filtering_enabled: true
-  blocked_response_ttl: 10
-  ratelimit: 20
-  ratelimit_subnet_len_ipv4: 24
-  ratelimit_subnet_len_ipv6: 56
+  cache_enabled: true
   cache_size: 4194304
-  cache_ttl_min: 0
-  cache_ttl_max: 0
-  bogus_nxdomain: []
-  rewrites:
-{% for rewrite in adguard_dns_rewrites %}
-    - domain: "{{ rewrite.domain }}"
-      answer: "{{ rewrite.answer }}"
-{% endfor %}
+  ratelimit: 20
+  refuse_any: true
+  serve_plain_dns: true
+
+querylog:
+  enabled: true
+  file_enabled: true
+  interval: 90d
+  size_memory: 1000
+
+statistics:
+  enabled: true
+  interval: 1d
+
 filters:
   - enabled: true
     url: https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt
@@ -44,16 +55,35 @@ filters:
     url: https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt
     name: AdAway Default Blocklist
     id: 2
+
 whitelist_filters: []
 user_rules: []
+
 dhcp:
   enabled: false
+
+filtering:
+  blocking_mode: default
+  filtering_enabled: true
+  rewrites_enabled: true
+  rewrites:
+{% for host in homelab_proxy_hosts %}
+    - domain: "{{ host.domain }}"
+      answer: "{{ homelab_server_ip }}"
+{% endfor %}
+  protection_enabled: true
+  parental_enabled: false
+  safebrowsing_enabled: false
+
 clients:
   runtime_sources:
     whois: true
     arp: true
     rdns: true
     dhcp: false
+    hosts: true
+  persistent: []
+
 log:
   enabled: true
   file: ""
@@ -61,4 +91,7 @@ log:
   max_size: 100
   max_age: 3
   compress: false
-schema_version: 29
+  local_time: false
+  verbose: false
+
+schema_version: 34
