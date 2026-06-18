@@ -21,6 +21,10 @@ pages:
               - title: {{ service.name }}
                 url: {{ service.url }}
                 icon: {{ service.icon }}
+{% if homelab_services.core.adguard | default(false) %}
+                allow-insecure: true
+                timeout: 10s
+{% endif %}
 {% endfor %}
 
           - type: monitor
@@ -31,6 +35,10 @@ pages:
               - title: {{ service.name }}
                 url: {{ service.url }}
                 icon: {{ service.icon }}
+{% if homelab_services.core.adguard | default(false) %}
+                allow-insecure: true
+                timeout: 10s
+{% endif %}
 {% endfor %}
 
           - type: monitor
@@ -41,4 +49,8 @@ pages:
               - title: {{ service.name }}
                 url: {{ service.url }}
                 icon: {{ service.icon }}
+{% if homelab_services.core.adguard | default(false) %}
+                allow-insecure: true
+                timeout: 10s
+{% endif %}
 {% endfor %}

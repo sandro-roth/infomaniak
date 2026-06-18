@@ -15,6 +15,7 @@ services:
     volumes:
       - "{{ homelab_config_dir }}/glance:/app/config"
       - "{{ homelab_config_dir }}/glance/assets:/app/assets"
+      - "{{ homelab_config_dir }}/nginx/certs/homelab-root-ca.crt:/usr/local/share/ca-certificates/homelab-root-ca.crt:ro"
 
     networks:
       - "{{ docker_network_name }}"

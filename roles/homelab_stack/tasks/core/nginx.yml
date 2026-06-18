@@ -102,6 +102,7 @@
   loop:
     - homelab.crt
     - homelab.key
+    - homelab-root-ca.crt
 
 - name: homelab_stack | nginx | Deploy nginx config
   ansible.builtin.template:
