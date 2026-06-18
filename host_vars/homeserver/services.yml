@@ -4,7 +4,7 @@ homelab_services:
     glance: true
     nginx_proxy_manager: true
     gluetun: true
-    adguard: false # setup on pfsense
+    adguard: true
     filebrowser: true
     vaultwarden: true
     portainer: true
