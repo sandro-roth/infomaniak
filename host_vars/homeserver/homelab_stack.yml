@@ -32,7 +32,12 @@ homelab_proxy_hosts:
 vaultwarden_signups_allowed: "true"
 vaultwarden_invitations_allowed: "false"
 vaultwarden_websocket_enabled: "true"
-vaultwarden_domain: "http://{{ ansible_host }}:{{ Vaultwarden }}"
+vaultwarden_domain: >-
+  {{
+    'https://vaultwarden.' ~ homelab_domain
+    if homelab_services.core.nginx_proxy_manager | default(false)
+    else 'http://' ~ ansible_host ~ ':' ~ (Vaultwarden | string)
+  }}
 
 vaultwarden_admin_token: "{{ lookup('password', 'credentials/vaultwarden_admin_token length=64 chars=ascii_letters,digits') }}"
 

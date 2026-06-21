@@ -4,8 +4,13 @@ services:
     container_name: vaultwarden
     restart: unless-stopped
 
+{% if homelab_services.core.nginx_proxy_manager | default(false) %}
+    expose:
+      - "80"
+{% else %}
     ports:
       - "{{ Vaultwarden }}:80"
+{% endif %}
 
     environment:
       DOMAIN: "{{ vaultwarden_domain }}"

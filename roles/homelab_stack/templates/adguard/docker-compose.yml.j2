@@ -5,9 +5,16 @@ services:
     restart: unless-stopped
 
     ports:
-      - "{{ AdGuardAdmin }}:3000"
       - "{{ AdGuardDNS }}:53/tcp"
       - "{{ AdGuardDNS }}:53/udp"
+{% if not (homelab_services.core.nginx_proxy_manager | default(false)) %}
+      - "{{ AdGuardAdmin }}:3000"
+{% endif %}
+
+{% if homelab_services.core.nginx_proxy_manager | default(false) %}
+    expose:
+      - "3000"
+{% endif %}
 
     volumes:
       - "{{ homelab_config_dir }}/adguard/work:/opt/adguardhome/work"

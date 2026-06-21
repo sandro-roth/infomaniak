@@ -9,13 +9,17 @@ services:
       - "{{ homelab_server_ip }}"
 {% endif %}
 
+{% if homelab_services.core.nginx_proxy_manager | default(false) %}
+    expose:
+      - "8080"
+{% else %}
     ports:
       - "{{ Glance }}:8080"
+{% endif %}
 
     volumes:
       - "{{ homelab_config_dir }}/glance:/app/config"
       - "{{ homelab_config_dir }}/glance/assets:/app/assets"
-      - "{{ homelab_config_dir }}/nginx/certs/homelab-root-ca.crt:/usr/local/share/ca-certificates/homelab-root-ca.crt:ro"
 
     networks:
       - "{{ docker_network_name }}"

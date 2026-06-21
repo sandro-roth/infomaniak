@@ -3,8 +3,14 @@ services:
     image: grafana/grafana:latest
     container_name: grafana
     restart: unless-stopped
+{% if homelab_services.core.nginx_proxy_manager | default(false) %}
+    expose:
+      - "3000"
+{% else %}
     ports:
       - "{{ Grafana }}:3000"
+{% endif %}
+
     volumes:
       - "{{ homelab_config_dir }}/grafana/data:/var/lib/grafana"
     networks:
