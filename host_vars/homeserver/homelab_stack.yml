@@ -27,6 +27,10 @@ homelab_proxy_hosts:
     domain: "adguard.{{ homelab_domain }}"
     upstream: "http://adguard:3000"
 
+  - name: portainer
+    domain: "portainer.{{ homelab_domain }}"
+    upstream: "http://portainer:9000"
+
 
 # Vaultwarden configuration
 vaultwarden_signups_allowed: "true"
