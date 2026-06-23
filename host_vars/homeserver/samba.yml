@@ -20,6 +20,17 @@ samba_global_config_extras: |
   server multi channel support = yes
 
 samba_shares:
+
+  # potential fotos samba share (only for nas admin)
+
+  # - name: fotos
+  #   path: "{{ media_cached }}/fotos"
+  #   guest_ok: false
+  #   writable: true
+  #   read_only: false
+  #   valid_users: "{{ nas_user }}"
+  #   force_group: "{{ media_admin_group }}"
+
   - name: movies
     path: "{{ media_cached }}/movies"
     guest_ok: false
