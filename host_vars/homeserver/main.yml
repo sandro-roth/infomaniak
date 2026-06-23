@@ -5,7 +5,7 @@ main_usr: sandro
 admin_group: sudo
 usr_group: sandro
 root_group: root
-main_shell: /bin/zsh
+main_shell: /usr/bin/zsh
 ansible_python_interpreter: /usr/bin/python3
 
 # User

@@ -9,7 +9,9 @@
   ansible.builtin.user:
     name: "{{ main_usr }}"
     group: "{{ usr_group }}"
-    groups: "{{ admin_group }}"
+    groups: 
+      - "{{ admin_group }}"
+    append: true
     state: present
     password: "{{ usr_pwd }}"
     comment: "Admin user created by Ansible"
