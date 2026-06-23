@@ -1,0 +1,20 @@
+- name: homelab_stack | portainer | ensure compose directory exists
+  ansible.builtin.file:
+    path: "{{ homelab_compose_dir }}/portainer"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: homelab_stack | portainer | deploy docker compose
+  ansible.builtin.template:
+    src: portainer/docker-compose.yml.j2
+    dest: "{{ homelab_compose_dir }}/portainer/docker-compose.yml"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: homelab_stack | portainer | start container
+  community.docker.docker_compose_v2:
+    project_src: "{{ homelab_compose_dir }}/portainer"
+    state: present

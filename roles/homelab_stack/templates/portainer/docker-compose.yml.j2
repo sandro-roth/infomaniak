@@ -1,0 +1,24 @@
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+
+{% if homelab_services.core.nginx_proxy_manager | default(false) %}
+    expose:
+      - "9000"
+{% else %}
+    ports:
+      - "{{ Portainer }}:9000"
+{% endif %}
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - "{{ homelab_config_dir }}/portainer/data:/data"
+
+    networks:
+      - "{{ docker_network_name }}"
+
+networks:
+  {{ docker_network_name }}:
+    external: true
