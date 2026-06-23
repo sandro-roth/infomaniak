@@ -111,6 +111,7 @@
     owner: "{{ nas_user }}"
     group: "{{ nas_group }}"
     mode: "0644"
+  notify: Restart Nginx
 
 - name: homelab_stack | nginx | Deploy compose file
   ansible.builtin.template:
