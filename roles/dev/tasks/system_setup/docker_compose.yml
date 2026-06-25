@@ -61,3 +61,13 @@
     project_src: "{{ dev_dir }}"
     state: present
     remove_orphans: true
+
+- name: dev | grafana | reset admin password from credentials file
+  ansible.builtin.command:
+    cmd: >
+      docker exec grafana grafana cli
+      admin reset-admin-password
+      {{ grafana_admin_password }}
+  when: grafana_enabled | default(false)
+  changed_when: false
+  no_log: true
