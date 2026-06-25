@@ -13,7 +13,11 @@ services:
       - "{{ homelab_config_dir }}/nginx/certs:/etc/nginx/certs:ro"
 
     networks:
-      - "{{ docker_network_name }}"
+      {{ docker_network_name }}:
+        aliases:
+{% for host in homelab_proxy_hosts %}
+          - "{{ host.domain }}"
+{% endfor %}
 
 networks:
   {{ docker_network_name }}:
