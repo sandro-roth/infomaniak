@@ -30,7 +30,7 @@
         "address": "",
         "log": "stdout",
         "database": "/database.db",
-        "root": "/srv/media"
+        "root": "/srv"
       }
 
 - name: homelab_stack | filebrowser | Deploy compose file
@@ -77,9 +77,9 @@
         'credentials/filebrowser_' ~ item.name ~ '_password length=32 chars=ascii_letters,digits'
       ) }}
       --scope {{
-        '/srv/media'
+        '/media'
         if item.name == nas_user
-        else '/srv/media/uploads/' ~ item.name
+        else '/media/uploads/' ~ item.name
       }}
   loop: "{{ samba_users }}"
   register: filebrowser_create_users
@@ -104,9 +104,9 @@
         )
       }}
       --scope {{
-        '/srv/media'
+        '/media'
         if item.name == nas_user
-        else '/srv/media/uploads/' ~ item.name
+        else '/media/uploads/' ~ item.name
       }}
   loop: "{{ samba_users }}"
   changed_when: false
