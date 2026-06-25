@@ -2,3 +2,8 @@
   community.docker.docker_container:
     name: nginx
     restart: true
+
+- name: Restart AdGuard
+  community.docker.docker_container:
+    name: adguard
+    restart: true

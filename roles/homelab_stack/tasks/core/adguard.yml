@@ -31,6 +31,7 @@
     owner: "{{ nas_user }}"
     group: "{{ nas_group }}"
     mode: "0644"
+  notify: Restart AdGuard
 
 - name: homelab_stack | adguard | Deploy compose
   ansible.builtin.template:
@@ -57,4 +58,3 @@
     project_src: "{{ homelab_compose_dir }}/adguard"
     pull: always
     state: present
-    recreate: always
