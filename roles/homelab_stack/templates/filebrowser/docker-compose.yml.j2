@@ -1,0 +1,25 @@
+services:
+  filebrowser:
+    image: filebrowser/filebrowser:latest
+    container_name: filebrowser
+    restart: unless-stopped
+
+{% if homelab_services.core.nginx_proxy_manager | default(false) %}
+    expose:
+      - "80"
+{% else %}
+    ports:
+      - "{{ FileBrowser }}:80"
+{% endif %}
+
+    volumes:
+      - "{{ media_cached }}:/srv/media"
+      - "{{ homelab_config_dir }}/filebrowser/database.db:/database.db"
+      - "{{ homelab_config_dir }}/filebrowser/settings.json:/config/settings.json"
+
+    networks:
+      - "{{ docker_network_name }}"
+
+networks:
+  {{ docker_network_name }}:
+    external: true

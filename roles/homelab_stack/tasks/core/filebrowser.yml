@@ -1,0 +1,98 @@
+- name: homelab_stack | filebrowser | Create directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ nas_user }}"
+    group: "{{ nas_group }}"
+    mode: "0755"
+  loop:
+    - "{{ homelab_config_dir }}/filebrowser"
+    - "{{ homelab_compose_dir }}/filebrowser"
+
+- name: homelab_stack | filebrowser | Create database file
+  ansible.builtin.file:
+    path: "{{ homelab_config_dir }}/filebrowser/database.db"
+    state: touch
+    owner: "{{ nas_user }}"
+    group: "{{ nas_group }}"
+    mode: "0640"
+
+- name: homelab_stack | filebrowser | Deploy settings file
+  ansible.builtin.copy:
+    dest: "{{ homelab_config_dir }}/filebrowser/settings.json"
+    owner: "{{ nas_user }}"
+    group: "{{ nas_group }}"
+    mode: "0640"
+    content: |
+      {
+        "port": 80,
+        "baseURL": "",
+        "address": "",
+        "log": "stdout",
+        "database": "/database.db",
+        "root": "/srv/media"
+      }
+
+- name: homelab_stack | filebrowser | Deploy compose file
+  ansible.builtin.template:
+    src: filebrowser/docker-compose.yml.j2
+    dest: "{{ homelab_compose_dir }}/filebrowser/docker-compose.yml"
+    owner: "{{ nas_user }}"
+    group: "{{ nas_group }}"
+    mode: "0644"
+
+- name: homelab_stack | filebrowser | Start stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ homelab_compose_dir }}/filebrowser"
+    pull: always
+    state: present
+
+- name: homelab_stack | filebrowser | Wait for container
+  ansible.builtin.command:
+    cmd: docker exec filebrowser filebrowser version
+  register: filebrowser_ready
+  retries: 10
+  delay: 2
+  until: filebrowser_ready.rc == 0
+  changed_when: false
+
+- name: homelab_stack | filebrowser | Ensure upload folders exist for non admin samba users
+  ansible.builtin.file:
+    path: "{{ media_cached }}/uploads/{{ item.name }}"
+    state: directory
+    owner: "{{ item.name }}"
+    group: "{{ media_admin_group }}"
+    mode: "0770"
+  loop: "{{ samba_users }}"
+  when: item.name != nas_user
+
+- name: homelab_stack | filebrowser | Create users from samba users
+  ansible.builtin.command:
+    cmd: >
+      docker exec filebrowser filebrowser users add
+      {{ item.name }}
+      {{ lookup('password', 'credentials/filebrowser_' ~ item.name ~ '_password length=32 chars=ascii_letters,digits') }}
+      --scope {{
+        '/srv/media'
+        if item.name == nas_user
+        else '/srv/media/uploads/' ~ item.name
+      }}
+  loop: "{{ samba_users }}"
+  register: filebrowser_create_users
+  changed_when: filebrowser_create_users.rc == 0
+  failed_when:
+    - filebrowser_create_users.rc != 0
+    - "'already exists' not in filebrowser_create_users.stderr"
+
+- name: homelab_stack | filebrowser | Ensure user scopes are correct
+  ansible.builtin.command:
+    cmd: >
+      docker exec filebrowser filebrowser users update
+      {{ item.name }}
+      --scope {{
+        '/srv/media'
+        if item.name == nas_user
+        else '/srv/media/uploads/' ~ item.name
+      }}
+  loop: "{{ samba_users }}"
+  changed_when: false

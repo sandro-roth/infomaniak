@@ -23,6 +23,10 @@ homelab_proxy_hosts:
     domain: "prometheus.{{ homelab_domain }}"
     upstream: "http://prometheus:9090"
 
+  - name: filebrowser
+    domain: 'filebrowser.{{ homelab_domain }}'
+    upstream: 'http://filebrowser:80'
+
   - name: adguard
     domain: "adguard.{{ homelab_domain }}"
     upstream: "http://adguard:3000"

@@ -14,6 +14,10 @@
   import_tasks: 'portainer.yml'
   when: homelab_services.core.portainer | default(false)
 
+- name: homelab_stack | core | Install Filebrowser
+  import_tasks: 'filebrowser.yml'
+  when: homelab_services.core.filebrowser | default(false)
+
 - name: homelab_stack | core | Install AdGuard
   import_tasks: 'adguard.yml'
   when: homelab_services.core.adguard | default(false)
