@@ -61,6 +61,7 @@
     project_src: "{{ dev_dir }}"
     state: present
     remove_orphans: true
+    recreate: auto
 
 - name: dev | grafana | reset admin password from credentials file
   ansible.builtin.command:
