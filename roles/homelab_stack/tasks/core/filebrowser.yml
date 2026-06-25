@@ -41,24 +41,13 @@
     group: "{{ nas_group }}"
     mode: "0644"
 
-- name: homelab_stack | filebrowser | Start stack
-  community.docker.docker_compose_v2:
-    project_src: "{{ homelab_compose_dir }}/filebrowser"
-    pull: always
-    state: present
-
-- name: homelab_stack | filebrowser | Wait for container
-  ansible.builtin.command:
-    cmd: docker exec filebrowser filebrowser -d /database.db version
-  register: filebrowser_ready
-  retries: 10
-  delay: 2
-  until: filebrowser_ready.rc == 0
-  changed_when: false
-
 - name: homelab_stack | filebrowser | Init database
   ansible.builtin.command:
-    cmd: docker exec filebrowser filebrowser -d /database.db config init
+    cmd: >
+      docker run --rm
+      -v {{ homelab_config_dir }}/filebrowser/database.db:/database.db
+      filebrowser/filebrowser:latest
+      -d /database.db config init
   register: filebrowser_config_init
   changed_when: filebrowser_config_init.rc == 0
   failed_when:
@@ -75,11 +64,6 @@
   loop: "{{ samba_users }}"
   when: item.name != nas_user
 
-- name: homelab_stack | filebrowser | Stop container before user management
-  community.docker.docker_container:
-    name: filebrowser
-    state: stopped
-
 - name: homelab_stack | filebrowser | Create users from samba users
   ansible.builtin.command:
     cmd: >
@@ -88,7 +72,10 @@
       filebrowser/filebrowser:latest
       -d /database.db users add
       {{ item.name }}
-      {{ lookup('password', 'credentials/filebrowser_' ~ item.name ~ '_password length=32 chars=ascii_letters,digits') }}
+      {{ lookup(
+        'password',
+        'credentials/filebrowser_' ~ item.name ~ '_password length=32 chars=ascii_letters,digits'
+      ) }}
       --scope {{
         '/srv/media'
         if item.name == nas_user
@@ -96,6 +83,7 @@
       }}
   loop: "{{ samba_users }}"
   register: filebrowser_create_users
+  changed_when: filebrowser_create_users.rc == 0
   failed_when:
     - filebrowser_create_users.rc != 0
     - "'already exists' not in filebrowser_create_users.stderr"
@@ -109,7 +97,12 @@
       filebrowser/filebrowser:latest
       -d /database.db users update
       {{ item.name }}
-      --password {{ lookup('password', 'credentials/filebrowser_' ~ item.name ~ '_password length=32 chars=ascii_letters,digits') }}
+      --password {{
+        lookup(
+          'password',
+          'credentials/filebrowser_' ~ item.name ~ '_password length=32 chars=ascii_letters,digits'
+        )
+      }}
       --scope {{
         '/srv/media'
         if item.name == nas_user
@@ -122,4 +115,5 @@
 - name: homelab_stack | filebrowser | Start stack
   community.docker.docker_compose_v2:
     project_src: "{{ homelab_compose_dir }}/filebrowser"
+    pull: always
     state: present
