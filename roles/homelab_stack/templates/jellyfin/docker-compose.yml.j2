@@ -1,0 +1,26 @@
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    restart: unless-stopped
+
+{% if homelab_services.core.nginx_proxy_manager | default(false) %}
+    expose:
+      - "8096"
+{% else %}
+    ports:
+      - "{{ Jellyfin }}:8096"
+{% endif %}
+
+    volumes:
+      - "{{ homelab_config_dir }}/jellyfin/config:/config"
+      - "{{ homelab_config_dir }}/jellyfin/cache:/cache"
+      - "{{ media_cached }}/movies:/media/movies:ro"
+      - "{{ media_cached }}/tv:/media/tv:ro"
+
+    networks:
+      - "{{ docker_network_name }}"
+
+networks:
+  {{ docker_network_name }}:
+    external: true
