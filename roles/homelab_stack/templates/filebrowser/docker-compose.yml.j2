@@ -12,6 +12,11 @@ services:
       - "{{ FileBrowser }}:80"
 {% endif %}
 
+    user: "{{ filebrowser_uid_cmd.stdout }}:{{ filebrowser_gid_cmd.stdout }}"
+    group_add:
+      - "{{ filebrowser_media_admin_gid }}"
+      - "{{ filebrowser_upload_gid }}"
+
     volumes:
       - "{{ media_cached }}:/srv/media"
       - "{{ homelab_config_dir }}/filebrowser/database.db:/database.db"

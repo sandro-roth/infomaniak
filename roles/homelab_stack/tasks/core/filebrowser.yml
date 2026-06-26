@@ -1,3 +1,12 @@
+- name: homelab_stack | filebrowser | Get required groups
+  ansible.builtin.getent:
+    database: group
+    key: "{{ item }}"
+  loop:
+    - "{{ media_admin_group }}"
+    - "{{ media_read_group }}"
+    - "{{ upload_group }}"
+
 - name: homelab_stack | filebrowser | Create directories
   ansible.builtin.file:
     path: "{{ item }}"
@@ -33,6 +42,35 @@
         "root": "/srv"
       }
 
+- name: homelab_stack | filebrowser | Get nas user UID
+  ansible.builtin.command:
+    cmd: "id -u {{ nas_user }}"
+  register: filebrowser_uid_cmd
+  changed_when: false
+
+- name: homelab_stack | filebrowser | Get nas user GID
+  ansible.builtin.command:
+    cmd: "id -g {{ nas_user }}"
+  register: filebrowser_gid_cmd
+  changed_when: false
+
+- name: homelab_stack | filebrowser | Get media admin group
+  ansible.builtin.command:
+    cmd: "getent group {{ media_admin_group }}"
+  register: filebrowser_media_admin_group_cmd
+  changed_when: false
+
+- name: homelab_stack | filebrowser | Get upload group
+  ansible.builtin.command:
+    cmd: "getent group {{ upload_group }}"
+  register: filebrowser_upload_group_cmd
+  changed_when: false
+
+- name: homelab_stack | filebrowser | Set group GID facts
+  ansible.builtin.set_fact:
+    filebrowser_media_admin_gid: "{{ filebrowser_media_admin_group_cmd.stdout.split(':')[2] }}"
+    filebrowser_upload_gid: "{{ filebrowser_upload_group_cmd.stdout.split(':')[2] }}"
+
 - name: homelab_stack | filebrowser | Deploy compose file
   ansible.builtin.template:
     src: filebrowser/docker-compose.yml.j2
@@ -41,12 +79,19 @@
     group: "{{ nas_group }}"
     mode: "0644"
 
+- name: homelab_stack | filebrowser | Stop container before database management
+  community.docker.docker_container:
+    name: filebrowser
+    state: stopped
+  failed_when: false
+
 - name: homelab_stack | filebrowser | Init database
   ansible.builtin.command:
     cmd: >
       docker run --rm
       -v {{ homelab_config_dir }}/filebrowser/database.db:/database.db
       filebrowser/filebrowser:latest
+      --config /tmp/no-config.json
       -d /database.db config init
   register: filebrowser_config_init
   changed_when: filebrowser_config_init.rc == 0
@@ -70,6 +115,7 @@
       docker run --rm
       -v {{ homelab_config_dir }}/filebrowser/database.db:/database.db
       filebrowser/filebrowser:latest
+      --config /tmp/no-config.json
       -d /database.db users add
       {{ item.name }}
       {{ lookup(
@@ -87,6 +133,7 @@
   failed_when:
     - filebrowser_create_users.rc != 0
     - "'already exists' not in filebrowser_create_users.stderr"
+    - "'already exists' not in filebrowser_create_users.stdout"
   no_log: true
 
 - name: homelab_stack | filebrowser | Update users from samba users
@@ -95,6 +142,7 @@
       docker run --rm
       -v {{ homelab_config_dir }}/filebrowser/database.db:/database.db
       filebrowser/filebrowser:latest
+      --config /tmp/no-config.json
       -d /database.db users update
       {{ item.name }}
       --password {{
