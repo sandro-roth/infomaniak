@@ -35,6 +35,10 @@ homelab_proxy_hosts:
     domain: "portainer.{{ homelab_domain }}"
     upstream: "http://portainer:9000"
 
+  - name: jellyfin
+    domain: 'jellyfin.{{ homelab_domain }}'
+    upstream: 'http://jellyfin:8096'
+
 
 # Vaultwarden configuration
 vaultwarden_signups_allowed: "true"

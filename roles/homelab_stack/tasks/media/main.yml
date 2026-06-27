@@ -1,0 +1,3 @@
+- name: homelab_stack | media | Install Jellyfin
+  import_tasks: 'jellyfin.yml'
+  when: homelab_services.media.jellyfin | default(false)
