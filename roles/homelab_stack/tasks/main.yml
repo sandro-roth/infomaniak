@@ -10,5 +10,8 @@
     - import_tasks: "monitoring/main.yml"
       tags: homelab_monitoring
 
+    - import_tasks: 'media/main.yml'
+      tags: homelab_media
+
   when: ansible_facts.os_family == "Debian"
   become: true
