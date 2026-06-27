@@ -1,15 +1,44 @@
-- name: homelab_stack | jellyfin | Create directories
+- name: homelab_stack | jellyfin | Get jellyfin UID
+  ansible.builtin.command:
+    cmd: "id -u jellyfin"
+  register: jellyfin_uid_cmd
+  changed_when: false
+
+- name: homelab_stack | jellyfin | Get jellyfin GID
+  ansible.builtin.command:
+    cmd: "id -g jellyfin"
+  register: jellyfin_gid_cmd
+  changed_when: false
+
+- name: homelab_stack | jellyfin | Get media-read group
+  ansible.builtin.command:
+    cmd: "getent group {{ media_read_group }}"
+  register: jellyfin_media_read_group_cmd
+  changed_when: false
+
+- name: homelab_stack | jellyfin | Set media-read GID
+  ansible.builtin.set_fact:
+    jellyfin_media_read_gid: "{{ jellyfin_media_read_group_cmd.stdout.split(':')[2] }}"
+
+- name: homelab_stack | jellyfin | Create config directories
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
-    owner: "{{ nas_user }}"
+    owner: jellyfin
     group: "{{ media_read_group }}"
     mode: "0775"
   loop:
     - "{{ homelab_config_dir }}/jellyfin"
     - "{{ homelab_config_dir }}/jellyfin/config"
     - "{{ homelab_config_dir }}/jellyfin/cache"
-    - "{{ homelab_compose_dir }}/jellyfin"
+
+- name: homelab_stack | jellyfin | Create compose directory
+  ansible.builtin.file:
+    path: "{{ homelab_compose_dir }}/jellyfin"
+    state: directory
+    owner: "{{ nas_user }}"
+    group: "{{ nas_group }}"
+    mode: "0755"
 
 - name: homelab_stack | jellyfin | Deploy compose file
   ansible.builtin.template:

@@ -67,3 +67,16 @@ adguard_upstream_dns:
 adguard_dns_rewrites:
   - domain: "*.{{ homelab_domain }}"
     answer: "{{ homelab_server_ip }}"
+
+# Jellyfin configuration
+jellyfin_admin_user: admin
+jellyfin_admin_password: "{{ lookup('password', 'credentials/jellyfin_admin_password length=32 chars=ascii_letters,digits') }}"
+
+jellyfin_libraries:
+  - name: Movies
+    path: /media/movies
+    collection_type: movies
+
+  - name: TV Shows
+    path: /media/tv
+    collection_type: tvshows
