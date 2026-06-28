@@ -1,0 +1,35 @@
+- name: Restore media permissions on data disks
+  ansible.builtin.file:
+    path: "{{ data_mount_path }}/data{{ '%02d' % item.0 }}/{{ item.1 }}"
+    state: directory
+    owner: "{{ nas_user }}"
+    group: "{{ media_admin_group }}"
+    mode: "2770"
+  loop: "{{ range(1, data_disks_count | int + 1) | product(['movies', 'tv']) | list }}"
+
+- name: Restore upload permissions on data disks
+  ansible.builtin.file:
+    path: "{{ data_mount_path }}/data{{ '%02d' % item }}/{{ upload_root_directory }}"
+    state: directory
+    owner: "{{ nas_user }}"
+    group: "{{ upload_group }}"
+    mode: "2770"
+  loop: "{{ range(1, data_disks_count | int + 1) | list }}"
+
+- name: Restore media permissions on cache paths
+  ansible.builtin.file:
+    path: "{{ item.0 }}/{{ item.1 }}"
+    state: directory
+    owner: "{{ nas_user }}"
+    group: "{{ media_admin_group }}"
+    mode: "2770"
+  loop: "{{ cache_paths_only | product(['movies', 'tv']) | list }}"
+
+- name: Restore upload permissions on cache paths
+  ansible.builtin.file:
+    path: "{{ item }}/{{ upload_root_directory }}"
+    state: directory
+    owner: "{{ nas_user }}"
+    group: "{{ upload_group }}"
+    mode: "2770"
+  loop: "{{ cache_paths_only }}"

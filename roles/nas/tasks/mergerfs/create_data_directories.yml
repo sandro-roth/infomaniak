@@ -2,6 +2,13 @@
   ansible.builtin.set_fact:
     data_disks_count: "{{ data_disks | length }}"
 
+- name: DEBUG data_directories and defaults
+  ansible.builtin.debug:
+    msg:
+      - "nas_user={{ nas_user }}"
+      - "media_admin_group={{ media_admin_group }}"
+      - "data_directories={{ data_directories }}"
+
 - name: mergerfs | root_dirs | create root directories on data disks
   ansible.builtin.file:
     path: "{{ data_mount_path }}/data{{ '%02d' % item.0 }}/{{ item.1.name if item.1.name is defined else item.1 }}"
@@ -42,7 +49,7 @@
     path: "{{ media_cached }}/{{ upload_root_directory }}/{{ item.name }}"
     state: directory
     owner: "{{ item.name }}"
-    group: "{{ media_admin_group }}"
+    group: "{{ upload_group }}"
     mode: "0770"
   loop: "{{ users }}"
   when:

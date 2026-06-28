@@ -69,6 +69,7 @@
   
     - include_role: 
         name: vladgh.samba.server
+    - import_tasks: system_setup/sambaFixPermissions.yml
   
   when: ansible_facts.os_family == "Debian"
   become: true

@@ -40,12 +40,35 @@ cache_pool: /mnt/cache-pool
 # Directories inside the media pool
 # -------------------------------------------------
 data_directories:
-  - movies
-  - tv
-  - music
-  - podcasts
-  - fotos
-  - documents
+  - name: movies
+    owner: "{{ nas_user }}"
+    group: "{{ media_admin_group }}"
+    mode: "2770"
+
+  - name: tv
+    owner: "{{ nas_user }}"
+    group: "{{ media_admin_group }}"
+    mode: "2770"
+
+  - name: music
+    owner: "{{ nas_user }}"
+    group: "{{ media_admin_group }}"
+    mode: "2770"
+
+  - name: podcasts
+    owner: "{{ nas_user }}"
+    group: "{{ media_admin_group }}"
+    mode: "2770"
+
+  - name: fotos
+    owner: "{{ nas_user }}"
+    group: "{{ media_admin_group }}"
+    mode: "2770"
+
+  - name: documents
+    owner: "{{ nas_user }}"
+    group: "{{ media_admin_group }}"
+    mode: "2770"
 
 upload_root_directory: uploads
 upload_users:
@@ -69,8 +92,15 @@ users:
     create_home: false
     shell: /sbin/nologin
 
+  - name: media
+    groups:
+      - "{{ media_admin_group }}"
+    create_home: false
+    shell: /sbin/nologin
+
   - name: kesslers
     groups:
       - "{{ upload_group }}"
+
     create_home: false
     shell: /sbin/nologin
