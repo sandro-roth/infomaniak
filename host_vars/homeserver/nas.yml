@@ -64,19 +64,13 @@ users:
 
   - name: jellyfin
     groups:
-      - "{{ media_read_group }}"
-    create_home: false
-    shell: /sbin/nologin
-
-  - name: media
-    groups:
       - "{{ media_admin_group }}"
+      - "{{ media_read_group }}"
     create_home: false
     shell: /sbin/nologin
 
   - name: kesslers
     groups:
       - "{{ upload_group }}"
-      - "{{ media_read_group }}"
     create_home: false
     shell: /sbin/nologin
