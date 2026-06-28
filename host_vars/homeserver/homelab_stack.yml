@@ -71,6 +71,12 @@ adguard_dns_rewrites:
 # Jellyfin configuration
 jellyfin_admin_user: admin
 jellyfin_admin_password: "{{ lookup('password', 'credentials/jellyfin_admin_password length=32 chars=ascii_letters,digits') }}"
+jellyfin_server_name: "RothFlix"
+jellyfin_ui_culture: "de-CH"
+jellyfin_metadata_language: "de"
+jellyfin_metadata_country: "CH"
+jellyfin_enable_remote_access: false
+jellyfin_enable_automatic_port_mapping: false
 
 jellyfin_libraries:
   - name: Movies

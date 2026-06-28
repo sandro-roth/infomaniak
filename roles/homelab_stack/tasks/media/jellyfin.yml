@@ -73,3 +73,75 @@
     project_src: "{{ homelab_compose_dir }}/jellyfin"
     pull: always
     state: present
+
+- name: homelab_stack | jellyfin | Wait for API
+  ansible.builtin.command:
+    cmd: >
+      docker run --rm
+      --network {{ docker_network_name }}
+      curlimages/curl:latest
+      -fsS http://jellyfin:8096/System/Info/Public
+  register: jellyfin_api_ready
+  retries: 30
+  delay: 2
+  until: jellyfin_api_ready.rc == 0
+  changed_when: false
+
+- name: homelab_stack | jellyfin | Check startup state
+  ansible.builtin.command:
+    cmd: >
+      docker run --rm
+      --network {{ docker_network_name }}
+      curlimages/curl:latest
+      -s -o /dev/null -w "%{http_code}"
+      http://jellyfin:8096/Startup/Configuration
+  register: jellyfin_startup_config
+  changed_when: false
+  failed_when: false
+
+- name: homelab_stack | jellyfin | Set startup configuration
+  ansible.builtin.command:
+    cmd: >
+      docker run --rm
+      --network {{ docker_network_name }}
+      curlimages/curl:latest
+      -fsS -X POST
+      -H "Content-Type: application/json"
+      -d '{"UICulture":"{{ jellyfin_ui_culture }}","MetadataCountryCode":"{{ jellyfin_metadata_country }}","PreferredMetadataLanguage":"{{ jellyfin_metadata_language }}","ServerName":"{{ jellyfin_server_name }}"}'
+      http://jellyfin:8096/Startup/Configuration
+  when: jellyfin_startup_config.stdout == "200"
+
+- name: homelab_stack | jellyfin | Create initial admin user
+  ansible.builtin.command:
+    cmd: >
+      docker run --rm
+      --network {{ docker_network_name }}
+      curlimages/curl:latest
+      -fsS -X POST
+      -H "Content-Type: application/json"
+      -d '{"Name":"{{ jellyfin_admin_user }}","Password":"{{ jellyfin_admin_password }}"}'
+      http://jellyfin:8096/Startup/User
+  when: jellyfin_startup_config.stdout == "200"
+  no_log: true
+
+- name: homelab_stack | jellyfin | Configure remote access
+  ansible.builtin.command:
+    cmd: >
+      docker run --rm
+      --network {{ docker_network_name }}
+      curlimages/curl:latest
+      -fsS -X POST
+      -H "Content-Type: application/json"
+      -d '{"EnableRemoteAccess":{{ jellyfin_enable_remote_access | default(false) | lower }},"EnableAutomaticPortMapping":{{ jellyfin_enable_automatic_port_mapping | default(false) | lower }}}'
+      http://jellyfin:8096/Startup/RemoteAccess
+  when: jellyfin_startup_config.stdout == "200"
+
+- name: homelab_stack | jellyfin | Complete startup wizard
+  ansible.builtin.command:
+    cmd: >
+      docker run --rm
+      --network {{ docker_network_name }}
+      curlimages/curl:latest
+      -fsS -X POST
+      http://jellyfin:8096/Startup/Complete
+  when: jellyfin_startup_config.stdout == "200"
