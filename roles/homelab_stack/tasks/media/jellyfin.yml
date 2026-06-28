@@ -43,6 +43,15 @@
     - "{{ homelab_config_dir }}/jellyfin/config"
     - "{{ homelab_config_dir }}/jellyfin/cache"
 
+- name: homelab_stack | jellyfin | Ensure config permissions
+  ansible.builtin.file:
+    path: "{{ homelab_config_dir }}/jellyfin"
+    state: directory
+    owner: jellyfin
+    group: "{{ media_read_group }}"
+    mode: "0775"
+    recurse: true
+
 - name: homelab_stack | jellyfin | Create compose directory
   ansible.builtin.file:
     path: "{{ homelab_compose_dir }}/jellyfin"
