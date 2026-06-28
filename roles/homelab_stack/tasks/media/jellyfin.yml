@@ -1,3 +1,14 @@
+- name: homelab_stack | jellyfin | Ensure jellyfin user exists
+  ansible.builtin.user:
+    name: jellyfin
+    groups:
+      - "{{ media_read_group }}"
+    append: true
+    create_home: false
+    shell: /sbin/nologin
+    system: true
+  become: true
+
 - name: homelab_stack | jellyfin | Get jellyfin UID
   ansible.builtin.command:
     cmd: "id -u jellyfin"
