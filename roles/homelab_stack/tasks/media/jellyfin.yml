@@ -3,6 +3,7 @@
     name: jellyfin
     groups:
       - "{{ media_read_group }}"
+      - "{{ media_admin_group }}"
     append: true
     create_home: false
     shell: /sbin/nologin
@@ -27,9 +28,16 @@
   register: jellyfin_media_read_group_cmd
   changed_when: false
 
-- name: homelab_stack | jellyfin | Set media-read GID
+- name: homelab_stack | jellyfin | Get media-admin group
+  ansible.builtin.command:
+    cmd: "getent group {{ media_admin_group }}"
+  register: jellyfin_media_admin_group_cmd
+  changed_when: false
+
+- name: homelab_stack | jellyfin | Set media group GIDs
   ansible.builtin.set_fact:
     jellyfin_media_read_gid: "{{ jellyfin_media_read_group_cmd.stdout.split(':')[2] }}"
+    jellyfin_media_admin_gid: "{{ jellyfin_media_admin_group_cmd.stdout.split(':')[2] }}"
 
 - name: homelab_stack | jellyfin | Create config directories
   ansible.builtin.file:

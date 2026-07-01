@@ -6,6 +6,7 @@ services:
     user: "{{ jellyfin_uid_cmd.stdout }}:{{ jellyfin_gid_cmd.stdout }}"
     group_add:
       - "{{ jellyfin_media_read_gid }}"
+      - "{{ jellyfin_media_admin_gid }}"
 
 {% if homelab_services.core.nginx_proxy_manager | default(false) %}
     expose:
