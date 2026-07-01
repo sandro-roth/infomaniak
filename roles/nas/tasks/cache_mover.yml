@@ -67,6 +67,14 @@
         group: "{{ media_admin_group }}"
         mode: "0640"
 
+    - name: cache_mover | logging | create log file
+      ansible.builtin.file:
+        path: /var/log/cache-mover.log
+        state: touch
+        owner: "{{ nas_user }}"
+        group: "{{ media_admin_group }}"
+        mode: "0664"
+
     - name: cache_mover | systemd | deploy service unit
       ansible.builtin.template:
         src: cache_mover.service.j2
