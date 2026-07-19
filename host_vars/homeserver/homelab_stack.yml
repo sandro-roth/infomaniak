@@ -38,6 +38,12 @@ homelab_proxy_hosts:
   - name: jellyfin
     domain: 'jellyfin.{{ homelab_domain }}'
     upstream: 'http://jellyfin:8096'
+    allow_restricted_clients: true
+
+  # - name: seerr
+  #   domain: "seerr.{{ homelab_domain }}"
+  #   upstream: "http://seerr:5055"
+  #   allow_restricted_clients: true
 
 
 # Vaultwarden configuration
