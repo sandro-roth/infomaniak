@@ -10,19 +10,11 @@ server {
     client_max_body_size 0;
 
     location / {
-
-{% if not host.restricted_access | default(false) %}
-
-{% for ip in wireguard_unrestricted_clients %}
-        allow {{ ip }};
-{% endfor %}
-
+{% if not host.allow_restricted_clients | default(false) %}
 {% for ip in wireguard_restricted_clients %}
         deny {{ ip }};
 {% endfor %}
-
         allow all;
-
 {% endif %}
 
         proxy_pass {{ host.upstream }};
