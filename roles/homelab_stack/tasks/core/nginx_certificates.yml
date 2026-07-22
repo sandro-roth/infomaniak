@@ -1,0 +1,76 @@
+- name: homelab_stack | nginx | Install Certbot packages
+  ansible.builtin.apt:
+    name:
+      - certbot
+      - python3-certbot-dns-cloudflare
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: homelab_stack | nginx | Create Cloudflare credentials directory
+  ansible.builtin.file:
+    path: /root/.secrets/certbot
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: homelab_stack | nginx | Deploy Cloudflare API credentials
+  ansible.builtin.template:
+    src: nginx/cloudflare.ini.j2
+    dest: /root/.secrets/certbot/cloudflare.ini
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+
+- name: homelab_stack | nginx | Check whether trusted certificate exists
+  ansible.builtin.stat:
+    path: "/etc/letsencrypt/live/{{ homelab_certificate_name }}/fullchain.pem"
+  register: homelab_certificate
+
+- name: homelab_stack | nginx | Request Let's Encrypt wildcard certificate
+  ansible.builtin.command:
+    argv:
+      - certbot
+      - certonly
+      - --dns-cloudflare
+      - --dns-cloudflare-credentials
+      - /root/.secrets/certbot/cloudflare.ini
+      - --dns-cloudflare-propagation-seconds
+      - "30"
+      - --non-interactive
+      - --agree-tos
+      - --email
+      - "{{ homelab_acme_email }}"
+      - --cert-name
+      - "{{ homelab_certificate_name }}"
+      - -d
+      - "{{ homelab_domain }}"
+      - -d
+      - "*.{{ homelab_domain }}"
+  when: not homelab_certificate.stat.exists
+  notify: Restart Nginx
+
+- name: homelab_stack | nginx | Create Certbot deploy-hook directory
+  ansible.builtin.file:
+    path: /etc/letsencrypt/renewal-hooks/deploy
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: homelab_stack | nginx | Deploy Nginx certificate reload hook
+  ansible.builtin.template:
+    src: nginx/reload-nginx.sh.j2
+    dest: /etc/letsencrypt/renewal-hooks/deploy/reload-nginx.sh
+    owner: root
+    group: root
+    mode: "0750"
+
+- name: homelab_stack | nginx | Enable Certbot renewal timer
+  ansible.builtin.systemd_service:
+    name: certbot.timer
+    enabled: true
+    state: started
+    daemon_reload: true

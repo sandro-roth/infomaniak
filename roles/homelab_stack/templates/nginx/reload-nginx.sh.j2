@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if docker container inspect nginx >/dev/null 2>&1; then
+    docker exec nginx nginx -t
+    docker exec nginx nginx -s reload
+fi

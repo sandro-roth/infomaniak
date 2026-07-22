@@ -1,5 +1,16 @@
 # Ngnix configuration
-homelab_domain: "homelab"
+homelab_base_domain: "rothsrv.com"
+homelab_domain: "home.rothsrv.com"
+homelab_certificate_name: "home.rothsrv.com"
+
+homelab_acme_email: "roth1.sandro@gmail.com"
+
+cloudflare_dns_api_token: >-
+  {{ lookup(
+      'ansible.builtin.file',
+      playbook_dir ~ '/credentials/nginx_token'
+    ) | trim }}
+
 homelab_server_ip: "{{ ansible_facts['default_ipv4']['address'] }}"
 
 homelab_proxy_hosts:

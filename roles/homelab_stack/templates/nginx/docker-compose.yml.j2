@@ -10,7 +10,7 @@ services:
 
     volumes:
       - "{{ homelab_config_dir }}/nginx/conf.d:/etc/nginx/conf.d:ro"
-      - "{{ homelab_config_dir }}/nginx/certs:/etc/nginx/certs:ro"
+      - "/etc/letsencrypt:/etc/letsencrypt:ro"
 
     networks:
       {{ docker_network_name }}:
