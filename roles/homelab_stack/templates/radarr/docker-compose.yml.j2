@@ -1,0 +1,30 @@
+services:
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    restart: unless-stopped
+
+    environment:
+      PUID: "{{ media_service_uid }}"
+      PGID: "{{ media_service_gid }}"
+      TZ: "{{ timezone }}"
+      UMASK: "002"
+
+{% if homelab_services.core.nginx_proxy_manager | default(false) %}
+    expose:
+      - "7878"
+{% else %}
+    ports:
+      - "{{ Radarr }}:7878"
+{% endif %}
+
+    volumes:
+      - "{{ homelab_config_dir }}/radarr:/config"
+      - "{{ media_cached }}:/data"
+
+    networks:
+      - "{{ docker_network_name }}"
+
+networks:
+  {{ docker_network_name }}:
+    external: true

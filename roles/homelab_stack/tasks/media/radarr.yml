@@ -1,0 +1,33 @@
+- name: Radarr | create configuration directory
+  tags: radarr
+  ansible.builtin.file:
+    path: "{{ homelab_config_dir }}/radarr"
+    state: directory
+    owner: "{{ main_usr }}"
+    group: "{{ media_admin_group }}"
+    mode: "0775"
+
+- name: Radarr | create compose directory
+  tags: radarr
+  ansible.builtin.file:
+    path: "{{ homelab_compose_dir }}/radarr"
+    state: directory
+    owner: "{{ main_usr }}"
+    group: "{{ media_admin_group }}"
+    mode: "0775"
+
+- name: Radarr | deploy compose file
+  tags: radarr
+  ansible.builtin.template:
+    src: radarr/docker-compose.yml.j2
+    dest: "{{ homelab_compose_dir }}/radarr/docker-compose.yml"
+    owner: "{{ main_usr }}"
+    group: "{{ media_admin_group }}"
+    mode: "0644"
+
+- name: Radarr | start container
+  tags: radarr
+  community.docker.docker_compose_v2:
+    project_src: "{{ homelab_compose_dir }}/radarr"
+    state: present
+    pull: always

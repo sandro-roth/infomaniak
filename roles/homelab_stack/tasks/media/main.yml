@@ -24,3 +24,10 @@
   tags:
     - prowlarr
     - usenet
+
+- name: homelab_stack | media | Configure Radarr
+  ansible.builtin.include_tasks: radarr.yml
+  when: homelab_services.media.radarr | default(false)
+  tags:
+    - radarr
+    - usenet
