@@ -1,7 +1,7 @@
 - name: Prowlarr | create configuration directory
   tags: prowlarr
   ansible.builtin.file:
-    path: "{{ docker_config_dir }}/prowlarr"
+    path: "{{ homelab_config_dir }}/prowlarr"
     state: directory
     owner: "{{ main_usr }}"
     group: "{{ media_admin_group }}"
@@ -10,7 +10,7 @@
 - name: Prowlarr | create compose directory
   tags: prowlarr
   ansible.builtin.file:
-    path: "{{ docker_compose_dir }}/prowlarr"
+    path: "{{ homelab_compose_dir }}/prowlarr"
     state: directory
     owner: "{{ main_usr }}"
     group: "{{ media_admin_group }}"
@@ -20,7 +20,7 @@
   tags: prowlarr
   ansible.builtin.template:
     src: media/prowlarr-compose.yml.j2
-    dest: "{{ docker_compose_dir }}/prowlarr/docker-compose.yml"
+    dest: "{{ homelab_compose_dir }}/prowlarr/docker-compose.yml"
     owner: "{{ main_usr }}"
     group: "{{ media_admin_group }}"
     mode: "0644"
@@ -28,6 +28,6 @@
 - name: Prowlarr | start container
   tags: prowlarr
   community.docker.docker_compose_v2:
-    project_src: "{{ docker_compose_dir }}/prowlarr"
+    project_src: "{{ homelab_compose_dir }}/prowlarr"
     state: present
     pull: always

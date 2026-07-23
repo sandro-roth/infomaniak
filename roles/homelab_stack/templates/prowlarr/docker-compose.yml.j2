@@ -10,7 +10,7 @@ services:
       TZ: "{{ system_timezone }}"
 
     volumes:
-      - "{{ docker_config_dir }}/prowlarr:/config"
+      - "{{ homelab_config_dir }}/prowlarr:/config"
 
     expose:
       - "9696"
