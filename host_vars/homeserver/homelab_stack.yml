@@ -11,6 +11,9 @@ cloudflare_dns_api_token: >-
       playbook_dir ~ '/credentials/nginx_token'
     ) | trim }}
 
+radarr_api_key: "{{ lookup('ansible.builtin.file', 'credentials/radarr_api_key') | trim }}"
+sonarr_api_key: "{{ lookup('ansible.builtin.file', 'credentials/sonarr_api_key') | trim }}"
+
 homelab_server_ip: "{{ ansible_facts['default_ipv4']['address'] }}"
 
 homelab_proxy_hosts:
