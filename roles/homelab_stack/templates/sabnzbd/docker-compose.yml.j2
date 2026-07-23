@@ -7,7 +7,7 @@ services:
     environment:
       PUID: "{{ media_service_uid }}"
       PGID: "{{ media_service_gid }}"
-      TZ: "{{ system_timezone | default('Europe/Zurich') }}"
+      TZ: "{{ timezone | default('Europe/Zurich') }}"
       UMASK: "002"
 
 {% if homelab_services.core.nginx_proxy_manager | default(false) %}
