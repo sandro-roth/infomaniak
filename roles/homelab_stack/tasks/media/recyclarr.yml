@@ -23,27 +23,12 @@
     mode: "0644"
 
 - name: Recyclarr | deploy configuration
-  ansible.builtin.copy:
+  ansible.builtin.template:
+    src: recyclarr/recyclarr.yml.j2
     dest: "{{ homelab_config_dir }}/recyclarr/recyclarr.yml"
     owner: "{{ main_usr }}"
     group: "{{ media_admin_group }}"
     mode: "0600"
-    content: |
-      radarr:
-        radarr:
-          base_url: http://radarr:7878
-          api_key: "{{ radarr_api_key }}"
-
-          quality_definition:
-            type: movie
-
-      sonarr:
-        sonarr:
-          base_url: http://sonarr:8989
-          api_key: "{{ sonarr_api_key }}"
-
-          quality_definition:
-            type: series
 
 - name: Recyclarr | synchronize Radarr and Sonarr
   community.docker.docker_compose_v2_run:
