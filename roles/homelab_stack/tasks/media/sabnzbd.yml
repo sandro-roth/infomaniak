@@ -44,3 +44,27 @@
     state: present
     pull: missing
     remove_orphans: true
+
+- name: homelab_stack | sabnzbd | Wait for configuration file
+  ansible.builtin.wait_for:
+    path: "{{ homelab_config_dir }}/sabnzbd/sabnzbd.ini"
+    state: present
+    timeout: 30
+
+- name: homelab_stack | sabnzbd | Configure allowed hostnames
+  community.general.ini_file:
+    path: "{{ homelab_config_dir }}/sabnzbd/sabnzbd.ini"
+    section: misc
+    option: host_whitelist
+    value: "sabnzbd.{{ homelab_domain }},sabnzbd"
+    no_extra_spaces: true
+    owner: "{{ main_usr }}"
+    group: "{{ media_admin_group }}"
+    mode: "0660"
+  register: sabnzbd_host_whitelist
+
+- name: homelab_stack | sabnzbd | Restart after hostname configuration
+  community.docker.docker_compose_v2:
+    project_src: "{{ homelab_compose_dir }}/sabnzbd"
+    state: restarted
+  when: sabnzbd_host_whitelist.changed
