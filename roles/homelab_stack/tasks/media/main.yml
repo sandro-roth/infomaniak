@@ -1,3 +1,16 @@
+- name: homelab_stack | media | Load shared media service IDs
+  ansible.builtin.include_tasks:
+    file: common.yml
+    apply:
+      tags:
+        - always
+  tags:
+    - always
+
 - name: homelab_stack | media | Install Jellyfin
   import_tasks: 'jellyfin.yml'
   when: homelab_services.media.jellyfin | default(false)
+
+- name: homelab_stack | media | Configure SABnzbd
+  ansible.builtin.include_tasks: sabnzbd.yml
+  when: homelab_services.media.sabnzbd | default(false)

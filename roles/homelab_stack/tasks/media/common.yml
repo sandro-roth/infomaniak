@@ -1,0 +1,16 @@
+- name: homelab_stack | media | Get main user UID
+  ansible.builtin.command:
+    cmd: "id -u {{ main_usr }}"
+  register: media_service_uid_cmd
+  changed_when: false
+
+- name: homelab_stack | media | Get media-admin group
+  ansible.builtin.command:
+    cmd: "getent group {{ media_admin_group }}"
+  register: media_service_admin_group_cmd
+  changed_when: false
+
+- name: homelab_stack | media | Set media service IDs
+  ansible.builtin.set_fact:
+    media_service_uid: "{{ media_service_uid_cmd.stdout }}"
+    media_service_gid: "{{ media_service_admin_group_cmd.stdout.split(':')[2] }}"

@@ -45,6 +45,10 @@ glance_services:
       icon: si:qbittorrent
       url: "https://qbittorrent.{{ homelab_domain }}"
 
+    - name: SABnzbd
+      icon: si:sabnzbd
+      url: "https://sabnzbd.{{ homelab_domain }}"
+
   monitoring:
     - name: Grafana
       icon: si:grafana
