@@ -1,0 +1,19 @@
+services:
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    restart: unless-stopped
+
+    environment:
+      PUID: "{{ media_service_uid }}"
+      PGID: "{{ media_service_gid }}"
+      TZ: "{{ system_timezone }}"
+
+    volumes:
+      - "{{ docker_config_dir }}/prowlarr:/config"
+
+    expose:
+      - "9696"
+
+    networks:
+      - homelab_stack

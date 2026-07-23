@@ -60,6 +60,10 @@ homelab_proxy_hosts:
     domain: "sabnzbd.{{ homelab_domain }}"
     upstream: "http://sabnzbd:8080"
 
+  - name: prowlarr
+    domain: "prowlarr.{{ homelab_domain }}"
+    upstream: "http://prowlarr:9696"
+
 
 # Vaultwarden configuration
 vaultwarden_signups_allowed: "true"

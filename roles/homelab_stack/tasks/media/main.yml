@@ -17,3 +17,10 @@
   tags: 
     - sabnzbd
     - usenet
+
+- name: homelab_stack | media | Configure Prowlarr
+  ansible.builtin.include_tasks: prowlarr.yml
+  when: homelab_services.media.prowlarr | default(false)
+  tags:
+    - prowlarr
+    - usenet
