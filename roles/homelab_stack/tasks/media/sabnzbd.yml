@@ -1,0 +1,46 @@
+- name: homelab_stack | sabnzbd | Create config directory
+  ansible.builtin.file:
+    path: "{{ homelab_config_dir }}/sabnzbd"
+    state: directory
+    owner: "{{ main_usr }}"
+    group: "{{ media_admin_group }}"
+    mode: "2770"
+
+- name: homelab_stack | sabnzbd | Create compose directory
+  ansible.builtin.file:
+    path: "{{ homelab_compose_dir }}/sabnzbd"
+    state: directory
+    owner: "{{ main_usr }}"
+    group: "{{ usr_group }}"
+    mode: "0750"
+
+- name: homelab_stack | sabnzbd | Create Usenet download directories
+  ansible.builtin.file:
+    path: "{{ media_cached }}/{{ item }}"
+    state: directory
+    owner: "{{ main_usr }}"
+    group: "{{ media_admin_group }}"
+    mode: "2770"
+  loop:
+    - downloads
+    - downloads/usenet
+    - downloads/usenet/incomplete
+    - downloads/usenet/complete
+    - downloads/usenet/complete/movies
+    - downloads/usenet/complete/tv
+
+- name: homelab_stack | sabnzbd | Deploy Docker Compose template
+  ansible.builtin.template:
+    src: sabnzbd/docker-compose.yml.j2
+    dest: "{{ homelab_compose_dir }}/sabnzbd/docker-compose.yml"
+    owner: "{{ main_usr }}"
+    group: "{{ usr_group }}"
+    mode: "0640"
+  register: sabnzbd_compose_template
+
+- name: homelab_stack | sabnzbd | Deploy SABnzbd
+  community.docker.docker_compose_v2:
+    project_src: "{{ homelab_compose_dir }}/sabnzbd"
+    state: present
+    pull: missing
+    remove_orphans: true
