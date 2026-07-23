@@ -1,0 +1,17 @@
+services:
+  recyclarr:
+    image: ghcr.io/recyclarr/recyclarr:latest
+    container_name: recyclarr
+
+    environment:
+      TZ: "{{ timezone }}"
+
+    volumes:
+      - "{{ homelab_config_dir }}/recyclarr:/config"
+
+    networks:
+      - "{{ docker_network_name }}"
+
+networks:
+  {{ docker_network_name }}:
+    external: true

@@ -38,3 +38,19 @@
   tags:
     - sonarr
     - usenet
+
+- name: homelab_stack | media | Sync with recyclarr
+  ansible.builtin.include_tasks:
+    file: recyclarr.yml
+    apply:
+      tags:
+        - recyclarr
+        - recyclarr_sync
+        - usenet
+  when:
+    - homelab_services.media.sonarr | default(false) | bool
+    - homelab_services.media.radarr | default(false) | bool
+  tags:
+    - recyclarr
+    - recyclarr_sync
+    - usenet
