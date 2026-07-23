@@ -19,7 +19,7 @@
 - name: Prowlarr | deploy compose file
   tags: prowlarr
   ansible.builtin.template:
-    src: media/prowlarr-compose.yml.j2
+    src: prowlarr/docker-compose.yml.j2
     dest: "{{ homelab_compose_dir }}/prowlarr/docker-compose.yml"
     owner: "{{ main_usr }}"
     group: "{{ media_admin_group }}"
