@@ -7,7 +7,7 @@ services:
     environment:
       PUID: "{{ media_service_uid }}"
       PGID: "{{ media_service_gid }}"
-      TZ: "{{ system_timezone }}"
+      TZ: "{{ timezone }}"
 
     volumes:
       - "{{ homelab_config_dir }}/prowlarr:/config"
