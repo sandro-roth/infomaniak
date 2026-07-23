@@ -1,0 +1,23 @@
+media_preferences:
+  language:
+    primary: german_dl
+    fallback: english
+    reject:
+      - german
+
+  quality:
+  allowed:
+    - bluray_1080p
+    - web_1080p
+
+  video:
+    hdr: false
+    dolby_vision: false
+    x265: prefer
+
+  upgrades:
+    enabled: true
+    until_quality: Bluray-1080p
+
+  anime:
+    enabled: false
