@@ -46,7 +46,7 @@ glance_services:
       url: "https://qbittorrent.{{ homelab_domain }}"
 
     - name: SABnzbd
-      icon: si:sabnzbd
+      icon: di:sabnzbd
       url: "https://sabnzbd.{{ homelab_domain }}"
 
   monitoring:
