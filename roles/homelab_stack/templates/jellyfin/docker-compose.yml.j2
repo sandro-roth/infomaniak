@@ -7,6 +7,10 @@ services:
     group_add:
       - "{{ jellyfin_media_read_gid }}"
       - "{{ jellyfin_media_admin_gid }}"
+      - "{{ jellyfin_render_gid }}"
+    
+    devices:
+      - /dev/dri:/dev/dri
 
 {% if homelab_services.core.nginx_proxy_manager | default(false) %}
     expose:
