@@ -8,12 +8,22 @@ services:
       PUID: "{{ media_service_uid }}"
       PGID: "{{ media_service_gid }}"
       TZ: "{{ timezone }}"
+      UMASK: "002"
+
+{% if homelab_services.core.nginx_proxy_manager | default(false) %}
+    expose:
+      - "9696"
+{% else %}
+    ports:
+      - "{{ Prowlarr }}:9696"
+{% endif %}
 
     volumes:
       - "{{ homelab_config_dir }}/prowlarr:/config"
 
-    expose:
-      - "9696"
-
     networks:
-      - homelab_stack
+      - "{{ docker_network_name }}"
+
+networks:
+  {{ docker_network_name }}:
+    external: true
