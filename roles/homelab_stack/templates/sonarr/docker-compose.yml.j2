@@ -1,0 +1,30 @@
+services:
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    restart: unless-stopped
+
+    environment:
+      PUID: "{{ media_service_uid }}"
+      PGID: "{{ media_service_gid }}"
+      TZ: "{{ timezone }}"
+      UMASK: "002"
+
+{% if homelab_services.core.nginx_proxy_manager | default(false) %}
+    expose:
+      - "8989"
+{% else %}
+    ports:
+      - "{{ Sonarr }}:8989"
+{% endif %}
+
+    volumes:
+      - "{{ homelab_config_dir }}/sonarr:/config"
+      - "{{ media_cached }}:/data"
+
+    networks:
+      - "{{ docker_network_name }}"
+
+networks:
+  {{ docker_network_name }}:
+    external: true

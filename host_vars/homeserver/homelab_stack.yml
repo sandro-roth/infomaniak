@@ -68,6 +68,10 @@ homelab_proxy_hosts:
     domain: "radarr.{{ homelab_domain }}"
     upstream: "http://radarr:7878"
 
+  - name: sonarr
+    domain: "sonarr.{{ homelab_domain }}"
+    upstream: "http://sonarr:8989"
+
 
 # Vaultwarden configuration
 vaultwarden_signups_allowed: "true"

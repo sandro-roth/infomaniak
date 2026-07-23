@@ -31,3 +31,10 @@
   tags:
     - radarr
     - usenet
+
+- name: homelab_stack | media | Configure Sonarr
+  ansible.builtin.include_tasks: sonarr.yml
+  when: homelab_services.media.sonarr | default(false)
+  tags:
+    - sonarr
+    - usenet

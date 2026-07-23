@@ -1,0 +1,33 @@
+- name: Sonarr | create configuration directory
+  tags: sonarr
+  ansible.builtin.file:
+    path: "{{ homelab_config_dir }}/sonarr"
+    state: directory
+    owner: "{{ main_usr }}"
+    group: "{{ media_admin_group }}"
+    mode: "0775"
+
+- name: Sonarr | create compose directory
+  tags: sonarr
+  ansible.builtin.file:
+    path: "{{ homelab_compose_dir }}/sonarr"
+    state: directory
+    owner: "{{ main_usr }}"
+    group: "{{ media_admin_group }}"
+    mode: "0775"
+
+- name: Sonarr | deploy compose file
+  tags: sonarr
+  ansible.builtin.template:
+    src: sonarr/docker-compose.yml.j2
+    dest: "{{ homelab_compose_dir }}/sonarr/docker-compose.yml"
+    owner: "{{ main_usr }}"
+    group: "{{ media_admin_group }}"
+    mode: "0644"
+
+- name: Sonarr | start container
+  tags: sonarr
+  community.docker.docker_compose_v2:
+    project_src: "{{ homelab_compose_dir }}/sonarr"
+    state: present
+    pull: always
