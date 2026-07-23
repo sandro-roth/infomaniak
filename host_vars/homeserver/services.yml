@@ -17,7 +17,7 @@ homelab_services:
     sonarr: true
     prowlarr: true
     qbittorrent: true
-    nzbget: true
+    sabnzbd: true
 
   files_install:
     nextcloud: true

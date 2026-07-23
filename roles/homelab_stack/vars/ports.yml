@@ -11,7 +11,7 @@ Radarr: 7878
 Sonarr: 8989
 Prowlarr: 9696
 qBittorrentViaGluetun: 8099
-NZBGet: 6789
+SABnzbd: 6789
 Nextcloud: 8100
 Immich: 2283
 Grafana: 3000

@@ -56,6 +56,10 @@ homelab_proxy_hosts:
   #   upstream: "http://seerr:5055"
   #   allow_restricted_clients: true
 
+  - name: sabnzbd
+    domain: "sabnzbd.{{ homelab_domain }}"
+    upstream: "http://sabnzbd:8080"
+
 
 # Vaultwarden configuration
 vaultwarden_signups_allowed: "true"
