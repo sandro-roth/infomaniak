@@ -1,0 +1,29 @@
+services:
+  seerr:
+    image: ghcr.io/seerr-team/seerr:latest
+    container_name: seerr
+    restart: unless-stopped
+    init: true
+
+    environment:
+      TZ: "{{ timezone }}"
+      LOG_LEVEL: "info"
+      PORT: "5055"
+
+{% if homelab_services.core.nginx_proxy_manager | default(false) %}
+    expose:
+      - "5055"
+{% else %}
+    ports:
+      - "{{ Seerr }}:5055"
+{% endif %}
+
+    volumes:
+      - "{{ homelab_config_dir }}/seerr:/app/config"
+
+    networks:
+      - "{{ docker_network_name }}"
+
+networks:
+  {{ docker_network_name }}:
+    external: true

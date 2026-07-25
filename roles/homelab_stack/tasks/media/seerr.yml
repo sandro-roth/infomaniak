@@ -1,0 +1,40 @@
+- name: homelab_stack | seerr | Create config directory
+  ansible.builtin.file:
+    path: "{{ homelab_config_dir }}/seerr"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: "0750"
+
+- name: homelab_stack | seerr | Ensure config permissions
+  ansible.builtin.file:
+    path: "{{ homelab_config_dir }}/seerr"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: "0750"
+    recurse: true
+    
+- name: homelab_stack | seerr | Create compose directory
+  ansible.builtin.file:
+    path: "{{ homelab_compose_dir }}/seerr"
+    state: directory
+    owner: "{{ nas_user }}"
+    group: "{{ nas_group }}"
+    mode: "0755"
+
+- name: homelab_stack | seerr | Deploy compose file
+  ansible.builtin.template:
+    src: seerr/docker-compose.yml.j2
+    dest: "{{ homelab_compose_dir }}/seerr/docker-compose.yml"
+    owner: "{{ nas_user }}"
+    group: "{{ nas_group }}"
+    mode: "0644"
+  register: seerr_compose_template
+
+- name: homelab_stack | seerr | Start stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ homelab_compose_dir }}/seerr"
+    pull: always
+    state: present
+    recreate: "{{ 'always' if seerr_compose_template.changed else 'auto' }}"

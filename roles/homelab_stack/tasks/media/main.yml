@@ -54,3 +54,15 @@
     - recyclarr
     - recyclarr_sync
     - usenet
+
+- name: homelab_stack | media | Configure Seerr
+  ansible.builtin.include_tasks:
+    file: seerr.yml
+    apply:
+      tags:
+        - seerr
+        - usenet
+  when: homelab_services.media.seerr | default(false) | bool
+  tags:
+    - seerr
+    - usenet
