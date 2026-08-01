@@ -3,6 +3,7 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     restart: unless-stopped
+    stop_grace_period: 60s
 
 {% if homelab_services.core.nginx_proxy_manager | default(false) %}
     expose:

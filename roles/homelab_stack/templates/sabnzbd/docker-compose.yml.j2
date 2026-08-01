@@ -3,6 +3,7 @@ services:
     image: lscr.io/linuxserver/sabnzbd:latest
     container_name: sabnzbd
     restart: unless-stopped
+    stop_grace_period: 60s
 
     environment:
       PUID: "{{ media_service_uid }}"

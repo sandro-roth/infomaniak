@@ -3,6 +3,7 @@ services:
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
     restart: unless-stopped
+    stop_grace_period: 60s
 
     environment:
       PUID: "{{ media_service_uid }}"

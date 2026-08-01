@@ -3,6 +3,7 @@ services:
     image: jellyfin/jellyfin:latest
     container_name: jellyfin
     restart: unless-stopped
+    stop_grace_period: 60s
     user: "{{ jellyfin_uid_cmd.stdout }}:{{ jellyfin_gid_cmd.stdout }}"
     group_add:
       - "{{ jellyfin_media_read_gid }}"

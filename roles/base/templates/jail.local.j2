@@ -1,5 +1,5 @@
 [DEFAULT]
-ignoreip = 127.0.0.0/8 ::1
+ignoreip = {{ security_fail2ban_ignore_ips | join(' ') }}
 maxretry = 3
 bantime = 1w
 findtime = 10m

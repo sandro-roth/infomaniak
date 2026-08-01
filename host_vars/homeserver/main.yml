@@ -49,6 +49,12 @@ use_backup: false
 backup_dir: /opt/backups
 backup_script: /usr/local/bin/server-backup.sh
 
+# fail2ban settings
+security_fail2ban_ignore_ips:
+  - "127.0.0.0/8"
+  - "::1"
+  - "10.58.140.2"
+
 # microcode setup
 amd_microcode_package: amd64-microcode
 intel_microcode_package: intel-microcode

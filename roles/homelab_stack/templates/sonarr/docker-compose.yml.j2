@@ -3,6 +3,7 @@ services:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
     restart: unless-stopped
+    stop_grace_period: 60s
 
     environment:
       PUID: "{{ media_service_uid }}"
