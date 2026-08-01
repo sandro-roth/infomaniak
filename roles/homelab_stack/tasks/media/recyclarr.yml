@@ -54,7 +54,6 @@
     service: recyclarr
     command: sync
     tty: false
-    interactive: false
     remove_orphans: false
   register: recyclarr_sync
   changed_when: >-
