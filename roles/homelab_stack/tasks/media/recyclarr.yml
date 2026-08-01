@@ -21,6 +21,7 @@
     owner: "{{ main_usr }}"
     group: "{{ media_admin_group }}"
     mode: "0644"
+  register: recyclarr_compose_template
 
 - name: Recyclarr | deploy configuration
   ansible.builtin.template:
@@ -29,12 +30,44 @@
     owner: "{{ main_usr }}"
     group: "{{ media_admin_group }}"
     mode: "0600"
+  register: recyclarr_configuration
+
+- name: Recyclarr | check resource version marker
+  ansible.builtin.stat:
+    path: "{{ homelab_config_dir }}/recyclarr/.resources-v8"
+  register: recyclarr_resource_marker
+
+- name: Recyclarr | remove resources from previous version
+  ansible.builtin.file:
+    path: "{{ homelab_config_dir }}/recyclarr/resources"
+    state: absent
+  when: not recyclarr_resource_marker.stat.exists
+
+- name: Recyclarr | pull container image
+  community.docker.docker_compose_v2_pull:
+    project_src: "{{ homelab_compose_dir }}/recyclarr"
+  when: recyclarr_compose_template.changed
 
 - name: Recyclarr | synchronize Radarr and Sonarr
   community.docker.docker_compose_v2_run:
     project_src: "{{ homelab_compose_dir }}/recyclarr"
     service: recyclarr
     command: sync
-    remove_orphans: true
+    tty: false
+    interactive: false
+    remove_orphans: false
   register: recyclarr_sync
-  changed_when: "'No changes' not in recyclarr_sync.stdout"
+  changed_when: >-
+    'No changes' not in
+    (recyclarr_sync.stdout | default(''))
+
+- name: Recyclarr | create resource version marker
+  ansible.builtin.file:
+    path: "{{ homelab_config_dir }}/recyclarr/.resources-v8"
+    state: touch
+    owner: "{{ main_usr }}"
+    group: "{{ media_admin_group }}"
+    mode: "0644"
+    modification_time: preserve
+    access_time: preserve
+  when: recyclarr_sync.rc == 0

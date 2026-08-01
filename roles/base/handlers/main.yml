@@ -1,8 +1,5 @@
-- name: validate_fail2ban
-  ansible.builtin.command: fail2ban-client -t
-  changed_when: false
-
 - name: restart_fail2ban
+  become: true
   block:
     - name: Stop fail2ban
       ansible.builtin.systemd:
