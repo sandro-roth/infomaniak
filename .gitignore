@@ -2,3 +2,4 @@ ansible.log
 fact_cache/
 hosts
 credentials/
+.DS_Store
