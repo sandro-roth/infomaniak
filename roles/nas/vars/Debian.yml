@@ -73,7 +73,7 @@ cache_mover_max_workers: 8
 cache_mover_max_log_size_mb: 100
 cache_mover_log_backup_count: 5
 cache_mover_excluded_dirs: []
-on_calendar_schedule: "*-*-* 03:00:00"
+on_calendar_schedule: "*-*-* 05:00:00"
 
 cache_mover_notif_enabled: false
 cache_mover_notif_urls: []
