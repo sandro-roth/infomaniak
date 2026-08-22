@@ -4,6 +4,7 @@ import re
 import requests
 import json
 import hashlib
+import base64
 
 from PIL import Image, ImageDraw
 
@@ -382,15 +383,21 @@ def download_poster_bytes(item_id):
 
 def upload_poster(item_id, poster_path):
     with open(poster_path, "rb") as file:
-        response = requests.post(
-            f"{JELLYFIN_URL}/Items/{item_id}/Images/Primary",
-            headers={
-                **HEADERS,
-                "Content-Type": "image/jpeg",
-            },
-            data=file,
-            timeout=60,
-        )
+        image_bytes = file.read()
+
+    encoded_image = base64.b64encode(
+        image_bytes
+    )
+
+    response = requests.post(
+        f"{JELLYFIN_URL}/Items/{item_id}/Images/Primary",
+        headers={
+            **HEADERS,
+            "Content-Type": "image/jpeg",
+        },
+        data=encoded_image,
+        timeout=60,
+    )
 
     response.raise_for_status()
 
