@@ -501,8 +501,8 @@ def add_flags(poster, languages):
     poster_width, poster_height = poster.size
 
     flag_height = max(
-        32,
-        int(poster_height * 0.04)
+        24,
+        int(poster_height * 0.03)
     )
 
     flag_width = int(
@@ -727,13 +727,10 @@ def main():
         f"Found {len(movies)} movies"
     )
 
-    print(
-        "Test mode: processing first 3 movies"
-    )
 
     changed = False
 
-    for movie in movies[:3]:
+    for movie in movies:
         if process_movie(
             movie,
             state
