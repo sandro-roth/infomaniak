@@ -7,6 +7,20 @@
   tags:
     - always
 
+- name: homelab_stack | media | Load Jellyfin API key
+  ansible.builtin.set_fact:
+    jellyfin_poster_flags_api_key: >-
+      {{
+        lookup(
+          'ansible.builtin.file',
+          playbook_dir + '/credentials/jellyfin_api_key'
+        ) | trim
+      }}
+  no_log: true
+  when: homelab_services.media.jellyfin | default(false) | bool
+  tags:
+    - always
+
 - name: homelab_stack | media | Install Jellyfin
   import_tasks: 'jellyfin.yml'
   when: homelab_services.media.jellyfin | default(false)
