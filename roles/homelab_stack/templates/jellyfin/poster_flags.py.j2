@@ -139,125 +139,72 @@ def draw_japanese_flag(draw, x, y, width, height):
     )
 
 
-def draw_uk_flag(draw, x, y, width, height):
+def draw_us_flag(draw, x, y, width, height):
+    # White background
     draw.rectangle(
-        (
-            x,
-            y,
-            x + width,
-            y + height
-        ),
-        fill=(1, 33, 105)
-    )
-
-    white_diag = max(
-        2,
-        int(height * 0.18)
-    )
-
-    red_diag = max(
-        1,
-        int(height * 0.08)
-    )
-
-    draw.line(
-        (
-            x,
-            y,
-            x + width,
-            y + height
-        ),
-        fill=(255, 255, 255),
-        width=white_diag
-    )
-
-    draw.line(
-        (
-            x + width,
-            y,
-            x,
-            y + height
-        ),
-        fill=(255, 255, 255),
-        width=white_diag
-    )
-
-    draw.line(
-        (
-            x,
-            y,
-            x + width,
-            y + height
-        ),
-        fill=(200, 16, 46),
-        width=red_diag
-    )
-
-    draw.line(
-        (
-            x + width,
-            y,
-            x,
-            y + height
-        ),
-        fill=(200, 16, 46),
-        width=red_diag
-    )
-
-    white_cross = max(
-        2,
-        int(height * 0.30)
-    )
-
-    red_cross = max(
-        1,
-        int(height * 0.16)
-    )
-
-    draw.rectangle(
-        (
-            x,
-            y + height // 2 - white_cross // 2,
-            x + width,
-            y + height // 2 + white_cross // 2
-        ),
+        (x, y, x + width, y + height),
         fill=(255, 255, 255)
     )
 
-    draw.rectangle(
-        (
-            x + width // 2 - white_cross // 2,
-            y,
-            x + width // 2 + white_cross // 2,
-            y + height
-        ),
-        fill=(255, 255, 255)
-    )
+    # 13 stripes
+    stripe_height = height / 13
+
+    for i in range(13):
+        if i % 2 == 0:
+            y1 = int(y + i * stripe_height)
+            y2 = int(y + (i + 1) * stripe_height)
+
+            draw.rectangle(
+                (x, y1, x + width, y2),
+                fill=(178, 34, 52)
+            )
+
+    # Blue canton
+    canton_width = int(width * 0.40)
+    canton_height = int(stripe_height * 7)
 
     draw.rectangle(
         (
             x,
-            y + height // 2 - red_cross // 2,
-            x + width,
-            y + height // 2 + red_cross // 2
+            y,
+            x + canton_width,
+            y + canton_height
         ),
-        fill=(200, 16, 46)
+        fill=(60, 59, 110)
     )
 
-    draw.rectangle(
-        (
-            x + width // 2 - red_cross // 2,
-            y,
-            x + width // 2 + red_cross // 2,
-            y + height
-        ),
-        fill=(200, 16, 46)
-    )
+    # Simplified white stars/dots
+    dot_radius = max(1, int(height * 0.018))
+
+    rows = 5
+    columns = 6
+
+    for row in range(rows):
+        for column in range(columns):
+            cx = int(
+                x
+                + canton_width * (column + 0.5) / columns
+            )
+
+            cy = int(
+                y
+                + canton_height * (row + 0.5) / rows
+            )
+
+            draw.ellipse(
+                (
+                    cx - dot_radius,
+                    cy - dot_radius,
+                    cx + dot_radius,
+                    cy + dot_radius
+                ),
+                fill=(255, 255, 255)
+            )
 
 
 FLAG_DRAWERS = {
     "deu": draw_german_flag,
-    "eng": draw_uk_flag,
+    "eng": draw_us_flag,
     "jpn": draw_japanese_flag,
 }
 
@@ -343,28 +290,7 @@ def add_flags(poster, languages):
         - total_width
     )
 
-    y = (
-        poster_height
-        - margin
-        - flag_height
-    )
-
-    padding = int(
-        flag_height * 0.15
-    )
-
-    draw.rounded_rectangle(
-        (
-            x - padding,
-            y - padding,
-            x + total_width + padding,
-            y + flag_height + padding
-        ),
-        radius=int(
-            flag_height * 0.15
-        ),
-        fill=(0, 0, 0)
-    )
+    y = margin
 
     for language in supported_languages:
         drawer = FLAG_DRAWERS[language]
