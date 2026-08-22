@@ -11,6 +11,16 @@
   import_tasks: 'jellyfin.yml'
   when: homelab_services.media.jellyfin | default(false)
 
+- name: homelab_stack | media | Configure Jellyfin poster flags
+  ansible.builtin.include_tasks:
+    file: jellyfin_poster_flags.yml
+    apply:
+      tags:
+        - jellyfin_poster_flags
+  when: homelab_services.media.jellyfin | default(false) | bool
+  tags:
+    - jellyfin_poster_flags
+
 - name: homelab_stack | media | Configure SABnzbd
   ansible.builtin.include_tasks: sabnzbd.yml
   when: homelab_services.media.sabnzbd | default(false)
