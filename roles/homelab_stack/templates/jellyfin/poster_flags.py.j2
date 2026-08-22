@@ -42,3 +42,421 @@ LANGUAGE_MAP = {
     "ja": "jpn",
     "und": "eng",
 }
+
+
+def normalize_language(language):
+    if language is None:
+        return "eng"
+
+    language = language.lower().strip()
+
+    return LANGUAGE_MAP.get(
+        language,
+        language
+    )
+
+
+def get_languages(movie):
+    name = movie["Name"]
+
+    if name in LANGUAGE_OVERRIDES:
+        return LANGUAGE_OVERRIDES[name]
+
+    languages = []
+
+    for stream in movie.get("MediaStreams", []):
+        if stream.get("Type") != "Audio":
+            continue
+
+        language = normalize_language(
+            stream.get("Language")
+        )
+
+        if language not in languages:
+            languages.append(language)
+
+    return languages
+
+
+def draw_german_flag(draw, x, y, width, height):
+    stripe_height = height // 3
+
+    draw.rectangle(
+        (
+            x,
+            y,
+            x + width,
+            y + stripe_height
+        ),
+        fill=(0, 0, 0)
+    )
+
+    draw.rectangle(
+        (
+            x,
+            y + stripe_height,
+            x + width,
+            y + stripe_height * 2
+        ),
+        fill=(221, 0, 0)
+    )
+
+    draw.rectangle(
+        (
+            x,
+            y + stripe_height * 2,
+            x + width,
+            y + height
+        ),
+        fill=(255, 206, 0)
+    )
+
+
+def draw_japanese_flag(draw, x, y, width, height):
+    draw.rectangle(
+        (
+            x,
+            y,
+            x + width,
+            y + height
+        ),
+        fill=(255, 255, 255)
+    )
+
+    radius = int(height * 0.30)
+
+    center_x = x + width // 2
+    center_y = y + height // 2
+
+    draw.ellipse(
+        (
+            center_x - radius,
+            center_y - radius,
+            center_x + radius,
+            center_y + radius
+        ),
+        fill=(188, 0, 45)
+    )
+
+
+def draw_uk_flag(draw, x, y, width, height):
+    draw.rectangle(
+        (
+            x,
+            y,
+            x + width,
+            y + height
+        ),
+        fill=(1, 33, 105)
+    )
+
+    white_diag = max(
+        2,
+        int(height * 0.18)
+    )
+
+    red_diag = max(
+        1,
+        int(height * 0.08)
+    )
+
+    draw.line(
+        (
+            x,
+            y,
+            x + width,
+            y + height
+        ),
+        fill=(255, 255, 255),
+        width=white_diag
+    )
+
+    draw.line(
+        (
+            x + width,
+            y,
+            x,
+            y + height
+        ),
+        fill=(255, 255, 255),
+        width=white_diag
+    )
+
+    draw.line(
+        (
+            x,
+            y,
+            x + width,
+            y + height
+        ),
+        fill=(200, 16, 46),
+        width=red_diag
+    )
+
+    draw.line(
+        (
+            x + width,
+            y,
+            x,
+            y + height
+        ),
+        fill=(200, 16, 46),
+        width=red_diag
+    )
+
+    white_cross = max(
+        2,
+        int(height * 0.30)
+    )
+
+    red_cross = max(
+        1,
+        int(height * 0.16)
+    )
+
+    draw.rectangle(
+        (
+            x,
+            y + height // 2 - white_cross // 2,
+            x + width,
+            y + height // 2 + white_cross // 2
+        ),
+        fill=(255, 255, 255)
+    )
+
+    draw.rectangle(
+        (
+            x + width // 2 - white_cross // 2,
+            y,
+            x + width // 2 + white_cross // 2,
+            y + height
+        ),
+        fill=(255, 255, 255)
+    )
+
+    draw.rectangle(
+        (
+            x,
+            y + height // 2 - red_cross // 2,
+            x + width,
+            y + height // 2 + red_cross // 2
+        ),
+        fill=(200, 16, 46)
+    )
+
+    draw.rectangle(
+        (
+            x + width // 2 - red_cross // 2,
+            y,
+            x + width // 2 + red_cross // 2,
+            y + height
+        ),
+        fill=(200, 16, 46)
+    )
+
+
+FLAG_DRAWERS = {
+    "deu": draw_german_flag,
+    "eng": draw_uk_flag,
+    "jpn": draw_japanese_flag,
+}
+
+
+def get_movies():
+    response = requests.get(
+        f"{JELLYFIN_URL}/Items",
+        headers=HEADERS,
+        params={
+            "IncludeItemTypes": "Movie",
+            "Recursive": "true",
+            "Fields": "MediaStreams",
+        },
+        timeout=60
+    )
+
+    response.raise_for_status()
+
+    return response.json()["Items"]
+
+
+def download_poster(item_id):
+    response = requests.get(
+        f"{JELLYFIN_URL}/Items/{item_id}/Images/Primary",
+        headers=HEADERS,
+        timeout=60
+    )
+
+    response.raise_for_status()
+
+    return Image.open(
+        io.BytesIO(response.content)
+    ).convert("RGB")
+
+
+def safe_filename(name):
+    return re.sub(
+        r"[^a-zA-Z0-9äöüÄÖÜß ._()]",
+        "_",
+        name
+    )
+
+
+def add_flags(poster, languages):
+    supported_languages = [
+        language
+        for language in languages
+        if language in FLAG_DRAWERS
+    ]
+
+    if not supported_languages:
+        return poster
+
+    draw = ImageDraw.Draw(poster)
+
+    poster_width, poster_height = poster.size
+
+    flag_height = max(
+        45,
+        int(poster_height * 0.055)
+    )
+
+    flag_width = int(
+        flag_height * 1.5
+    )
+
+    margin = int(
+        flag_height * 0.35
+    )
+
+    gap = int(
+        flag_height * 0.18
+    )
+
+    total_width = (
+        len(supported_languages) * flag_width
+        + (len(supported_languages) - 1) * gap
+    )
+
+    x = (
+        poster_width
+        - margin
+        - total_width
+    )
+
+    y = (
+        poster_height
+        - margin
+        - flag_height
+    )
+
+    padding = int(
+        flag_height * 0.15
+    )
+
+    draw.rounded_rectangle(
+        (
+            x - padding,
+            y - padding,
+            x + total_width + padding,
+            y + flag_height + padding
+        ),
+        radius=int(
+            flag_height * 0.15
+        ),
+        fill=(0, 0, 0)
+    )
+
+    for language in supported_languages:
+        drawer = FLAG_DRAWERS[language]
+
+        drawer(
+            draw,
+            x,
+            y,
+            flag_width,
+            flag_height
+        )
+
+        x += flag_width + gap
+
+    return poster
+
+
+def process_movie(movie):
+    name = movie["Name"]
+    item_id = movie["Id"]
+
+    languages = get_languages(movie)
+
+    print(
+        f"{name}: "
+        f"{', '.join(languages) if languages else 'none'}"
+    )
+
+    supported = [
+        language
+        for language in languages
+        if language in FLAG_DRAWERS
+    ]
+
+    if not supported:
+        print("  No supported language flag")
+        return
+
+    try:
+        poster = download_poster(
+            item_id
+        )
+
+    except requests.HTTPError as error:
+        print(
+            f"  Could not download poster: {error}"
+        )
+        return
+
+    poster = add_flags(
+        poster,
+        supported
+    )
+
+    filename = (
+        safe_filename(name)
+        + ".jpg"
+    )
+
+    output_path = os.path.join(
+        OUTPUT_DIR,
+        filename
+    )
+
+    poster.save(
+        output_path,
+        "JPEG",
+        quality=95
+    )
+
+    print(
+        f"  Saved: {output_path}"
+    )
+
+
+def main():
+    os.makedirs(
+        OUTPUT_DIR,
+        exist_ok=True
+    )
+
+    movies = get_movies()
+
+    print(
+        f"Found {len(movies)} movies"
+    )
+
+    print("Test mode: processing first 3 movies")
+
+    for movie in movies[:3]:
+        process_movie(movie)
+
+
+if __name__ == "__main__":
+    main()
