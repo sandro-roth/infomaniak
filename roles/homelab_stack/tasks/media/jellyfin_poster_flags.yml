@@ -29,3 +29,46 @@
     owner: sandro
     group: sandro
     mode: "0755"
+
+- name: homelab_stack | jellyfin poster flags | Install systemd service
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/jellyfin-poster-flags.service
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      [Unit]
+      Description=Jellyfin Poster Language Flags
+      Requires=docker.service
+      After=docker.service
+
+      [Service]
+      Type=oneshot
+      ExecStart=/usr/bin/docker compose -f /opt/docker/compose/jellyfin/docker-compose.yml run --rm jellyfin-poster-flags
+
+- name: homelab_stack | jellyfin poster flags | Install systemd timer
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/jellyfin-poster-flags.timer
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      [Unit]
+      Description=Run Jellyfin Poster Language Flags daily
+
+      [Timer]
+      OnCalendar=*-*-* 08:30:00
+      Persistent=true
+
+      [Install]
+      WantedBy=timers.target
+  
+- name: homelab_stack | jellyfin poster flags | Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: homelab_stack | jellyfin poster flags | Enable timer
+  ansible.builtin.systemd:
+    name: jellyfin-poster-flags.timer
+    enabled: true
+    state: started
