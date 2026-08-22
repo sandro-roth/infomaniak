@@ -379,6 +379,22 @@ def download_poster_bytes(item_id):
 
     return response.content
 
+
+def upload_poster(item_id, poster_path):
+    with open(poster_path, "rb") as file:
+        response = requests.post(
+            f"{JELLYFIN_URL}/Items/{item_id}/Images/Primary",
+            headers={
+                **HEADERS,
+                "Content-Type": "image/jpeg",
+            },
+            data=file,
+            timeout=60,
+        )
+
+    response.raise_for_status()
+
+
 def calculate_hash(data):
     return hashlib.sha256(data).hexdigest()
 
@@ -638,6 +654,19 @@ def process_movie(movie, state):
         output_path
     )
 
+    try:
+        upload_poster(
+            item_id,
+            output_path
+        )
+
+    except requests.HTTPError as error:
+        print(
+            f"  Could not upload poster: {error}"
+        )
+        return False
+
+
     state[item_id] = {
         "name": name,
         "languages": selected_languages,
@@ -648,6 +677,10 @@ def process_movie(movie, state):
 
     print(
         f"  Saved: {output_path}"
+    )
+
+    print(
+        "  Uploaded poster to Jellyfin"
     )
 
     return True
