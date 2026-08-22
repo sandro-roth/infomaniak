@@ -35,11 +35,21 @@ LANGUAGE_OVERRIDES = {
 LANGUAGE_MAP = {
     "eng": "eng",
     "en": "eng",
+
     "deu": "deu",
     "ger": "deu",
     "de": "deu",
+
     "jpn": "jpn",
     "ja": "jpn",
+
+    "kor": "kor",
+    "ko": "kor",
+
+    "fra": "fra",
+    "fre": "fra",
+    "fr": "fra",
+
     "und": "eng",
 }
 
@@ -138,6 +148,98 @@ def draw_japanese_flag(draw, x, y, width, height):
         fill=(188, 0, 45)
     )
 
+def draw_french_flag(draw, x, y, width, height):
+    stripe_width = width // 3
+
+    draw.rectangle(
+        (
+            x,
+            y,
+            x + stripe_width,
+            y + height
+        ),
+        fill=(0, 35, 149)
+    )
+
+    draw.rectangle(
+        (
+            x + stripe_width,
+            y,
+            x + stripe_width * 2,
+            y + height
+        ),
+        fill=(255, 255, 255)
+    )
+
+    draw.rectangle(
+        (
+            x + stripe_width * 2,
+            y,
+            x + width,
+            y + height
+        ),
+        fill=(237, 41, 57)
+    )
+
+def draw_korean_flag(draw, x, y, width, height):
+    draw.rectangle(
+        (
+            x,
+            y,
+            x + width,
+            y + height
+        ),
+        fill=(255, 255, 255)
+    )
+
+    center_x = x + width // 2
+    center_y = y + height // 2
+
+    radius = int(height * 0.24)
+
+    draw.ellipse(
+        (
+            center_x - radius,
+            center_y - radius,
+            center_x + radius,
+            center_y + radius
+        ),
+        fill=(205, 46, 58)
+    )
+
+    draw.pieslice(
+        (
+            center_x - radius,
+            center_y - radius,
+            center_x + radius,
+            center_y + radius
+        ),
+        start=0,
+        end=180,
+        fill=(0, 71, 160)
+    )
+
+    small_radius = radius // 2
+
+    draw.ellipse(
+        (
+            center_x - radius,
+            center_y - small_radius,
+            center_x,
+            center_y + small_radius
+        ),
+        fill=(0, 71, 160)
+    )
+
+    draw.ellipse(
+        (
+            center_x,
+            center_y - small_radius,
+            center_x + radius,
+            center_y + small_radius
+        ),
+        fill=(205, 46, 58)
+    )
 
 def draw_us_flag(draw, x, y, width, height):
     # White background
@@ -206,6 +308,8 @@ FLAG_DRAWERS = {
     "deu": draw_german_flag,
     "eng": draw_us_flag,
     "jpn": draw_japanese_flag,
+    "kor": draw_korean_flag,
+    "fra": draw_french_flag,
 }
 
 
@@ -247,13 +351,43 @@ def safe_filename(name):
         name
     )
 
+def select_display_languages(languages):
+    unique_languages = []
+
+    for language in languages:
+        if (
+            language in FLAG_DRAWERS
+            and language not in unique_languages
+        ):
+            unique_languages.append(language)
+
+    selected = []
+
+    # German always first
+    if "deu" in unique_languages:
+        selected.append("deu")
+
+    # English always second if available
+    if "eng" in unique_languages:
+        selected.append("eng")
+
+    # Fill remaining space with other languages
+    for language in unique_languages:
+        if language in selected:
+            continue
+
+        selected.append(language)
+
+        if len(selected) == 3:
+            break
+
+    return selected[:3]
+
 
 def add_flags(poster, languages):
-    supported_languages = [
-        language
-        for language in languages
-        if language in FLAG_DRAWERS
-    ]
+    supported_languages = select_display_languages(
+    languages
+)
 
     if not supported_languages:
         return poster
