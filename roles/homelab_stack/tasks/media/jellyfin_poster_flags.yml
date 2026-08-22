@@ -1,0 +1,35 @@
+---
+- name: homelab_stack | Jellyfin poster flags | Load Jellyfin API key
+  ansible.builtin.set_fact:
+    jellyfin_poster_flags_api_key: >-
+      {{
+        lookup(
+          'ansible.builtin.file',
+          playbook_dir + '/credentials/jellyfin_api_key'
+        ) | trim
+      }}
+  no_log: true
+
+- name: homelab_stack | Jellyfin poster flags | Create application directory
+  ansible.builtin.file:
+    path: /opt/jellyfin-poster-flags
+    state: directory
+    owner: sandro
+    group: sandro
+    mode: "0755"
+
+- name: homelab_stack | Jellyfin poster flags | Create output directory
+  ansible.builtin.file:
+    path: /opt/jellyfin-poster-flags/output
+    state: directory
+    owner: sandro
+    group: sandro
+    mode: "0755"
+
+- name: homelab_stack | Jellyfin poster flags | Deploy poster script
+  ansible.builtin.template:
+    src: jellyfin/poster_flags.py.j2
+    dest: /opt/jellyfin-poster-flags/poster_flags.py
+    owner: sandro
+    group: sandro
+    mode: "0755"

@@ -1,0 +1,44 @@
+import io
+import os
+import re
+import requests
+
+from PIL import Image, ImageDraw
+
+
+JELLYFIN_URL = os.environ.get(
+    "JELLYFIN_URL",
+    "http://jellyfin:8096"
+)
+
+API_KEY = os.environ.get("JELLYFIN_API_KEY")
+
+OUTPUT_DIR = "/app/output"
+
+
+if not API_KEY:
+    raise RuntimeError(
+        "JELLYFIN_API_KEY environment variable is missing."
+    )
+
+
+HEADERS = {
+    "X-Emby-Token": API_KEY
+}
+
+
+LANGUAGE_OVERRIDES = {
+    "One Piece: Stampede": ["jpn"],
+}
+
+
+LANGUAGE_MAP = {
+    "eng": "eng",
+    "en": "eng",
+    "deu": "deu",
+    "ger": "deu",
+    "de": "deu",
+    "jpn": "jpn",
+    "ja": "jpn",
+    "und": "eng",
+}
