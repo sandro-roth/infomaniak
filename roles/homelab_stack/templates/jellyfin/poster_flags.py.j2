@@ -3,6 +3,7 @@ import os
 import re
 import requests
 import json
+import hashlib
 
 from PIL import Image, ImageDraw
 
@@ -367,7 +368,7 @@ def get_movies():
     return response.json()["Items"]
 
 
-def download_poster(item_id):
+def download_poster_bytes(item_id):
     response = requests.get(
         f"{JELLYFIN_URL}/Items/{item_id}/Images/Primary",
         headers=HEADERS,
@@ -376,37 +377,37 @@ def download_poster(item_id):
 
     response.raise_for_status()
 
+    return response.content
+
+def calculate_hash(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def image_from_bytes(data):
     return Image.open(
-        io.BytesIO(response.content)
+        io.BytesIO(data)
     ).convert("RGB")
 
 
-def get_original_poster(item_id):
+def save_original_poster(item_id, poster_bytes):
     original_path = os.path.join(
         ORIGINAL_DIR,
         f"{item_id}.jpg"
     )
 
-    if os.path.exists(original_path):
-        return Image.open(
-            original_path
-        ).convert("RGB")
-
-    poster = download_poster(
-        item_id
-    )
-
-    poster.save(
-        original_path,
-        "JPEG",
-        quality=95
-    )
+    with open(original_path, "wb") as file:
+        file.write(poster_bytes)
 
     print(
         f"  Saved original poster: {original_path}"
     )
 
-    return poster
+
+def calculate_file_hash(path):
+    with open(path, "rb") as file:
+        return calculate_hash(
+            file.read()
+        )
 
 
 def safe_filename(name):
@@ -531,9 +532,90 @@ def process_movie(movie, state):
         {}
     )
 
+    try:
+        current_poster_bytes = download_poster_bytes(
+            item_id
+        )
+
+    except requests.HTTPError as error:
+        print(
+            f"  Could not download poster: {error}"
+        )
+        return False
+
+    current_hash = calculate_hash(
+        current_poster_bytes
+    )
+
+    generated_hash = previous_state.get(
+        "generated_hash"
+    )
+
     previous_languages = previous_state.get(
         "languages",
         []
+    )
+
+    poster_was_changed = (
+        generated_hash is not None
+        and current_hash != generated_hash
+    )
+
+    first_run = (
+        generated_hash is None
+    )
+
+    languages_changed = (
+        previous_languages != selected_languages
+    )
+
+    if (
+        not first_run
+        and not poster_was_changed
+        and not languages_changed
+    ):
+        print("  Unchanged, skipping")
+        return False
+
+    if first_run or poster_was_changed:
+        original_poster_bytes = current_poster_bytes
+
+        save_original_poster(
+            item_id,
+            original_poster_bytes
+        )
+
+        if poster_was_changed:
+            print(
+                "  New Jellyfin poster detected"
+            )
+
+    else:
+        original_path = os.path.join(
+            ORIGINAL_DIR,
+            f"{item_id}.jpg"
+        )
+
+        if not os.path.exists(original_path):
+            print(
+                "  Original poster missing, skipping"
+            )
+            return False
+
+        with open(original_path, "rb") as file:
+            original_poster_bytes = file.read()
+
+    original_hash = calculate_hash(
+        original_poster_bytes
+    )
+
+    poster = image_from_bytes(
+        original_poster_bytes
+    )
+
+    poster = add_flags(
+        poster,
+        selected_languages
     )
 
     output_filename = (
@@ -546,38 +628,21 @@ def process_movie(movie, state):
         output_filename
     )
 
-    if (
-        previous_languages == selected_languages
-        and os.path.exists(output_path)
-    ):
-        print("  Unchanged, skipping")
-        return False
-
-    try:
-        poster = get_original_poster(
-            item_id
-        )
-
-    except requests.HTTPError as error:
-        print(
-            f"  Could not download poster: {error}"
-        )
-        return False
-
-    poster = add_flags(
-        poster,
-        selected_languages
-    )
-
     poster.save(
         output_path,
         "JPEG",
         quality=95
     )
 
+    new_generated_hash = calculate_file_hash(
+        output_path
+    )
+
     state[item_id] = {
         "name": name,
         "languages": selected_languages,
+        "original_hash": original_hash,
+        "generated_hash": new_generated_hash,
         "output": output_filename,
     }
 
