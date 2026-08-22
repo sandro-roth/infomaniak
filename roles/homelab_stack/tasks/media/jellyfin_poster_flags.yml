@@ -14,6 +14,14 @@
     group: sandro
     mode: "0755"
 
+- name: homelab_stack | Jellyfin poster flags | Create originals directory
+  ansible.builtin.file:
+    path: /opt/jellyfin-poster-flags/originals
+    state: directory
+    owner: sandro
+    group: sandro
+    mode: "0755"
+
 - name: homelab_stack | Jellyfin poster flags | Deploy poster script
   ansible.builtin.template:
     src: jellyfin/poster_flags.py.j2

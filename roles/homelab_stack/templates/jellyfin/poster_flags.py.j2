@@ -2,6 +2,7 @@ import io
 import os
 import re
 import requests
+import json
 
 from PIL import Image, ImageDraw
 
@@ -14,7 +15,8 @@ JELLYFIN_URL = os.environ.get(
 API_KEY = os.environ.get("JELLYFIN_API_KEY")
 
 OUTPUT_DIR = "/app/output"
-
+ORIGINAL_DIR = "/app/originals"
+STATE_FILE = "/app/state.json"
 
 if not API_KEY:
     raise RuntimeError(
@@ -312,6 +314,41 @@ FLAG_DRAWERS = {
     "fra": draw_french_flag,
 }
 
+def load_state():
+    if not os.path.exists(STATE_FILE):
+        return {}
+
+    try:
+        with open(
+            STATE_FILE,
+            "r",
+            encoding="utf-8"
+        ) as file:
+            return json.load(file)
+
+    except (json.JSONDecodeError, OSError):
+        return {}
+
+
+def save_state(state):
+    temp_file = STATE_FILE + ".tmp"
+
+    with open(
+        temp_file,
+        "w",
+        encoding="utf-8"
+    ) as file:
+        json.dump(
+            state,
+            file,
+            indent=2,
+            ensure_ascii=False
+        )
+
+    os.replace(
+        temp_file,
+        STATE_FILE
+    )
 
 def get_movies():
     response = requests.get(
@@ -342,6 +379,34 @@ def download_poster(item_id):
     return Image.open(
         io.BytesIO(response.content)
     ).convert("RGB")
+
+
+def get_original_poster(item_id):
+    original_path = os.path.join(
+        ORIGINAL_DIR,
+        f"{item_id}.jpg"
+    )
+
+    if os.path.exists(original_path):
+        return Image.open(
+            original_path
+        ).convert("RGB")
+
+    poster = download_poster(
+        item_id
+    )
+
+    poster.save(
+        original_path,
+        "JPEG",
+        quality=95
+    )
+
+    print(
+        f"  Saved original poster: {original_path}"
+    )
+
+    return poster
 
 
 def safe_filename(name):
@@ -442,29 +507,54 @@ def add_flags(poster, languages):
     return poster
 
 
-def process_movie(movie):
+def process_movie(movie, state):
     name = movie["Name"]
     item_id = movie["Id"]
 
     languages = get_languages(movie)
 
-    print(
-        f"{name}: "
-        f"{', '.join(languages) if languages else 'none'}"
+    selected_languages = select_display_languages(
+        languages
     )
 
-    supported = [
-        language
-        for language in languages
-        if language in FLAG_DRAWERS
-    ]
+    print(
+        f"{name}: "
+        f"{', '.join(selected_languages) if selected_languages else 'none'}"
+    )
 
-    if not supported:
+    if not selected_languages:
         print("  No supported language flag")
-        return
+        return False
+
+    previous_state = state.get(
+        item_id,
+        {}
+    )
+
+    previous_languages = previous_state.get(
+        "languages",
+        []
+    )
+
+    output_filename = (
+        safe_filename(name)
+        + ".jpg"
+    )
+
+    output_path = os.path.join(
+        OUTPUT_DIR,
+        output_filename
+    )
+
+    if (
+        previous_languages == selected_languages
+        and os.path.exists(output_path)
+    ):
+        print("  Unchanged, skipping")
+        return False
 
     try:
-        poster = download_poster(
+        poster = get_original_poster(
             item_id
         )
 
@@ -472,21 +562,11 @@ def process_movie(movie):
         print(
             f"  Could not download poster: {error}"
         )
-        return
+        return False
 
     poster = add_flags(
         poster,
-        supported
-    )
-
-    filename = (
-        safe_filename(name)
-        + ".jpg"
-    )
-
-    output_path = os.path.join(
-        OUTPUT_DIR,
-        filename
+        selected_languages
     )
 
     poster.save(
@@ -495,9 +575,17 @@ def process_movie(movie):
         quality=95
     )
 
+    state[item_id] = {
+        "name": name,
+        "languages": selected_languages,
+        "output": output_filename,
+    }
+
     print(
         f"  Saved: {output_path}"
     )
+
+    return True
 
 
 def main():
@@ -506,16 +594,45 @@ def main():
         exist_ok=True
     )
 
+    os.makedirs(
+        ORIGINAL_DIR,
+        exist_ok=True
+    )
+
+    state = load_state()
+
     movies = get_movies()
 
     print(
         f"Found {len(movies)} movies"
     )
 
-    print("Test mode: processing first 3 movies")
+    print(
+        "Test mode: processing first 3 movies"
+    )
+
+    changed = False
 
     for movie in movies[:3]:
-        process_movie(movie)
+        if process_movie(
+            movie,
+            state
+        ):
+            changed = True
+
+    if changed:
+        save_state(
+            state
+        )
+
+        print(
+            "State saved"
+        )
+
+    else:
+        print(
+            "Nothing changed"
+        )
 
 
 if __name__ == "__main__":
