@@ -378,6 +378,21 @@ def download_poster_bytes(item_id):
 
     response.raise_for_status()
 
+    if not response.content:
+        raise ValueError(
+            f"Jellyfin returned an empty poster for item {item_id}"
+        )
+
+    content_type = response.headers.get(
+        "Content-Type",
+        ""
+    )
+
+    if not content_type.startswith("image/"):
+        raise ValueError(
+            f"Unexpected poster content type: {content_type}"
+        )
+
     return response.content
 
 
@@ -560,7 +575,7 @@ def process_movie(movie, state):
             item_id
         )
 
-    except requests.HTTPError as error:
+    except (requests.HTTPError, ValueError) as error:
         print(
             f"  Could not download poster: {error}"
         )
