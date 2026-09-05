@@ -5,6 +5,8 @@
 - name: homelab_stack | core | Install nginx
   import_tasks: 'nginx.yml'
   when: homelab_services.core.nginx_proxy_manager | default(false)
+  tags:
+    - nginx
 
 - name: homelab_stack | core | Install Vaultwarden
   import_tasks: 'vaultwarden.yml'
