@@ -40,7 +40,7 @@
     file: sabnzbd.yml
     apply:
       tags:
-        - sabnzbd
+        - sabnzbd 
         - usenet
   when: homelab_services.media.sabnzbd | default(false) | bool
   tags:
@@ -48,22 +48,40 @@
     - usenet
 
 - name: homelab_stack | media | Configure Prowlarr
-  ansible.builtin.include_tasks: prowlarr.yml
-  when: homelab_services.media.prowlarr | default(false)
+  ansible.builtin.include_tasks: 
+    file: prowlarr.yml
+    apply:
+      tags:
+        - prowlarr
+        - usenet
+
+  when: homelab_services.media.prowlarr | default(false) | bool
   tags:
     - prowlarr
     - usenet
 
 - name: homelab_stack | media | Configure Radarr
-  ansible.builtin.include_tasks: radarr.yml
-  when: homelab_services.media.radarr | default(false)
+  ansible.builtin.include_tasks: 
+    file: radarr.yml
+    apply:
+      tags:
+        - radarr
+        - usenet
+        
+  when: homelab_services.media.radarr | default(false) | bool
   tags:
     - radarr
     - usenet
 
 - name: homelab_stack | media | Configure Sonarr
-  ansible.builtin.include_tasks: sonarr.yml
-  when: homelab_services.media.sonarr | default(false)
+  ansible.builtin.include_tasks:
+    file: sonarr.yml
+    apply:
+      tags:
+        - sonarr
+        - usenet
+
+  when: homelab_services.media.sonarr | default(false) | bool
   tags:
     - sonarr
     - usenet
