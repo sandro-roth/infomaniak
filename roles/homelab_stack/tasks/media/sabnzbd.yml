@@ -42,7 +42,7 @@
   community.docker.docker_compose_v2:
     project_src: "{{ homelab_compose_dir }}/sabnzbd"
     state: present
-    pull: missing
+    pull: always
     remove_orphans: true
 
 - name: homelab_stack | sabnzbd | Wait for configuration file
