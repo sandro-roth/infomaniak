@@ -36,9 +36,14 @@
     - jellyfin_poster_flags
 
 - name: homelab_stack | media | Configure SABnzbd
-  ansible.builtin.include_tasks: sabnzbd.yml
-  when: homelab_services.media.sabnzbd | default(false)
-  tags: 
+  ansible.builtin.include_tasks:
+    file: sabnzbd.yml
+    apply:
+      tags:
+        - sabnzbd
+        - usenet
+  when: homelab_services.media.sabnzbd | default(false) | bool
+  tags:
     - sabnzbd
     - usenet
 
