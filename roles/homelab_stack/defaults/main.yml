@@ -32,14 +32,20 @@ glance_services:
     - name: Sonarr
       icon: si:sonarr
       url: "https://sonarr.{{ homelab_domain }}"
+      alt_status_codes:
+        - 302
 
     - name: Radarr
       icon: si:radarr
       url: "https://radarr.{{ homelab_domain }}"
+      alt_status_codes:
+        - 302
 
     - name: Prowlarr
       icon: di:prowlarr
       url: "https://prowlarr.{{ homelab_domain }}"
+      alt_status_codes:
+        - 302
 
     - name: qBittorrent
       icon: si:qbittorrent

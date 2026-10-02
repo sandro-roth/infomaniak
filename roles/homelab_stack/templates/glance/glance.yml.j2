@@ -35,6 +35,12 @@ pages:
               - title: {{ service.name }}
                 url: {{ service.url }}
                 icon: {{ service.icon }}
+{% if service.alt_status_codes is defined %}
+                alt-status-codes:
+{% for code in service.alt_status_codes %}
+                  - {{ code }}
+{% endfor %}
+{% endif %}
 {% if homelab_services.core.adguard | default(false) %}
                 allow-insecure: true
                 timeout: 10s
