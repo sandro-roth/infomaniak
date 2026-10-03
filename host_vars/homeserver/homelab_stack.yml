@@ -66,14 +66,17 @@ homelab_proxy_hosts:
   - name: prowlarr
     domain: "prowlarr.{{ homelab_domain }}"
     upstream: "http://prowlarr:9696"
+    fix_http_redirect: true
 
   - name: radarr
     domain: "radarr.{{ homelab_domain }}"
     upstream: "http://radarr:7878"
+    fix_http_redirect: true
 
   - name: sonarr
     domain: "sonarr.{{ homelab_domain }}"
     upstream: "http://sonarr:8989"
+    fix_http_redirect: true
 
 
 # Vaultwarden configuration
