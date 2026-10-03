@@ -38,6 +38,7 @@ services:
     environment:
       JELLYFIN_URL: "http://jellyfin:8096"
       JELLYFIN_API_KEY: "{{ jellyfin_poster_flags_api_key }}"
+      FORCE_REBUILD: "false"
 
     volumes:
       - /opt/jellyfin-poster-flags:/app
